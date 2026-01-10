@@ -1,5 +1,34 @@
 {
   "version": "7",
   "dialect": "mysql",
-  "entries": []
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1768054920271,
+      "tag": "0000_dusty_whistler",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1768055187042,
+      "tag": "0001_thankful_lifeguard",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1768055892096,
+      "tag": "0002_medical_brood",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1768056272293,
+      "tag": "0003_glamorous_wilson_fisk",
+      "breakpoints": true
+    }
+  ]
 }

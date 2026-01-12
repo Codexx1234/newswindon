@@ -116,7 +116,7 @@ export function Chatbot() {
           'chatbot-container',
           isOpen ? 'open' : 'closed'
         )}
-        style={{ bottom: '100px', zIndex: 90 }}
+        style={{ bottom: '160px', zIndex: 90 }}
       >
         {/* Header */}
         <div className="gradient-primary text-white p-4 relative">

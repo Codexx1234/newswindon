@@ -132,3 +132,18 @@ export const auditLogs = mysqlTable("audit_logs", {
 
 export type AuditLog = typeof auditLogs.$inferSelect;
 export type InsertAuditLog = typeof auditLogs.$inferInsert;
+
+/**
+ * Gallery images
+ */
+export const gallery = mysqlTable("gallery", {
+  id: int("id").autoincrement().primaryKey(),
+  url: text("url").notNull(),
+  caption: varchar("caption", { length: 255 }),
+  displayOrder: int("displayOrder").default(0).notNull(),
+  isActive: boolean("isActive").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type GalleryImage = typeof gallery.$inferSelect;
+export type InsertGalleryImage = typeof gallery.$inferInsert;

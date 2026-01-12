@@ -52,7 +52,20 @@ import {
   Trash2,
   Loader2,
   LogIn,
+  Image as ImageIcon,
+  Pencil
 } from 'lucide-react';
+import { 
+  LineChart, 
+  Line, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip as RechartsTooltip, 
+  ResponsiveContainer,
+  AreaChart,
+  Area
+} from 'recharts';
 import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -64,6 +77,7 @@ const navItems = [
   { href: '/admin/appointments', icon: Clock, label: 'Reservas' },
   { href: '/admin/testimonials', icon: Star, label: 'Testimonios' },
   { href: '/admin/chatbot', icon: HelpCircle, label: 'Chatbot FAQs' },
+  { href: '/admin/gallery', icon: ImageIcon, label: 'Galería' },
   { href: '/admin/audit', icon: Users, label: 'Auditoría' },
 ];
 
@@ -111,34 +125,87 @@ function DashboardOverview() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
+        <Card className="col-span-1">
+          <CardHeader>
+            <CardTitle>Tendencia de Vistas (7 días)</CardTitle>
+          </CardHeader>
+          <CardContent className="h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={metrics || []}>
+                <defs>
+                  <linearGradient id="colorViews" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#1a6b6b" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="#1a6b6b" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <XAxis 
+                  dataKey="date" 
+                  tickFormatter={(date) => new Date(date).toLocaleDateString('es-AR', { day: 'numeric', month: 'short' })}
+                  fontSize={12}
+                />
+                <YAxis fontSize={12} />
+                <RechartsTooltip 
+                  labelFormatter={(date) => new Date(date).toLocaleDateString('es-AR', { full: true } as any)}
+                />
+                <Area type="monotone" dataKey="pageViews" stroke="#1a6b6b" fillOpacity={1} fill="url(#colorViews)" />
+              </AreaChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        <Card className="col-span-1">
+          <CardHeader>
+            <CardTitle>Actividad de Contactos</CardTitle>
+          </CardHeader>
+          <CardContent className="h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={metrics || []}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <XAxis 
+                  dataKey="date" 
+                  tickFormatter={(date) => new Date(date).toLocaleDateString('es-AR', { day: 'numeric', month: 'short' })}
+                  fontSize={12}
+                />
+                <YAxis fontSize={12} />
+                <RechartsTooltip />
+                <Line type="monotone" dataKey="contactSubmissions" name="Contactos" stroke="#3b82f6" strokeWidth={2} />
+                <Line type="monotone" dataKey="appointmentBookings" name="Reservas" stroke="#8b5cf6" strokeWidth={2} />
+              </LineChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle>Acciones Rápidas</CardTitle>
             <CardDescription>Gestiona el contenido de tu sitio</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-2">
-            <Button variant="outline" className="w-full justify-start" asChild>
+          <CardContent className="grid grid-cols-2 gap-2">
+            <Button variant="outline" className="justify-start" asChild>
               <a href="/admin/contacts">
                 <MessageSquare className="mr-2 h-4 w-4" />
-                Ver contactos recientes
+                Contactos
               </a>
             </Button>
-            <Button variant="outline" className="w-full justify-start" asChild>
-              <a href="/admin/testimonials">
-                <Star className="mr-2 h-4 w-4" />
-                Gestionar testimonios
-              </a>
-            </Button>
-            <Button variant="outline" className="w-full justify-start" asChild>
+            <Button variant="outline" className="justify-start" asChild>
               <a href="/admin/appointments">
                 <Clock className="mr-2 h-4 w-4" />
-                Gestionar reservas
+                Reservas
               </a>
             </Button>
-            <Button variant="outline" className="w-full justify-start" asChild>
-              <a href="/admin/chatbot">
-                <HelpCircle className="mr-2 h-4 w-4" />
-                Configurar chatbot
+            <Button variant="outline" className="justify-start" asChild>
+              <a href="/admin/testimonials">
+                <Star className="mr-2 h-4 w-4" />
+                Testimonios
+              </a>
+            </Button>
+            <Button variant="outline" className="justify-start" asChild>
+              <a href="/admin/gallery">
+                <ImageIcon className="mr-2 h-4 w-4" />
+                Galería
               </a>
             </Button>
           </CardContent>
@@ -150,17 +217,13 @@ function DashboardOverview() {
             <CardDescription>Datos de contacto configurados</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div>
+            <div className="flex justify-between">
               <p className="text-sm font-medium">Teléfono</p>
               <p className="text-sm text-muted-foreground">15 3070-7350</p>
             </div>
-            <div>
+            <div className="flex justify-between">
               <p className="text-sm font-medium">Email</p>
               <p className="text-sm text-muted-foreground">swindoncollege2@gmail.com</p>
-            </div>
-            <div>
-              <p className="text-sm font-medium">Ubicación</p>
-              <p className="text-sm text-muted-foreground">Carapachay, Buenos Aires</p>
             </div>
           </CardContent>
         </Card>
@@ -841,6 +904,170 @@ function AdminSidebar({ currentPath }: { currentPath: string }) {
   );
 }
 
+// Gallery Management
+function GalleryManagement() {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingImage, setEditingImage] = useState<any>(null);
+  const [formData, setFormData] = useState({
+    url: '',
+    caption: '',
+    displayOrder: 0,
+    isActive: true,
+  });
+
+  const { data: images, isLoading, refetch } = trpc.gallery.listAll.useQuery();
+  const createMutation = trpc.gallery.create.useMutation({
+    onSuccess: () => {
+      toast.success('Imagen añadida');
+      setIsDialogOpen(false);
+      resetForm();
+      refetch();
+    },
+  });
+  const updateMutation = trpc.gallery.update.useMutation({
+    onSuccess: () => {
+      toast.success('Imagen actualizada');
+      setIsDialogOpen(false);
+      resetForm();
+      refetch();
+    },
+  });
+  const deleteMutation = trpc.gallery.delete.useMutation({
+    onSuccess: () => {
+      toast.success('Imagen eliminada');
+      refetch();
+    },
+  });
+
+  const resetForm = () => {
+    setFormData({ url: '', caption: '', displayOrder: 0, isActive: true });
+    setEditingImage(null);
+  };
+
+  const handleEdit = (image: any) => {
+    setEditingImage(image);
+    setFormData({
+      url: image.url,
+      caption: image.caption || '',
+      displayOrder: image.displayOrder,
+      isActive: image.isActive,
+    });
+    setIsDialogOpen(true);
+  };
+
+  const handleSubmit = () => {
+    if (!formData.url) {
+      toast.error('La URL de la imagen es obligatoria');
+      return;
+    }
+    if (editingImage) {
+      updateMutation.mutate({ id: editingImage.id, ...formData });
+    } else {
+      createMutation.mutate(formData);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold">Galería</h1>
+          <p className="text-muted-foreground">Gestiona las fotos que se muestran en el sitio</p>
+        </div>
+        <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) resetForm(); }}>
+          <DialogTrigger asChild>
+            <Button>
+              <Plus className="mr-2 h-4 w-4" />
+              Añadir Imagen
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>{editingImage ? 'Editar' : 'Nueva'} Imagen</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="url">URL de la imagen</Label>
+                <Input
+                  id="url"
+                  value={formData.url}
+                  onChange={(e) => setFormData({ ...formData, url: e.target.value })}
+                  placeholder="https://ejemplo.com/foto.jpg"
+                />
+              </div>
+              <div>
+                <Label htmlFor="caption">Pie de foto (opcional)</Label>
+                <Input
+                  id="caption"
+                  value={formData.caption}
+                  onChange={(e) => setFormData({ ...formData, caption: e.target.value })}
+                  placeholder="Ej: Entrega de certificados 2023"
+                />
+              </div>
+              <div>
+                <Label htmlFor="order">Orden de visualización</Label>
+                <Input
+                  id="order"
+                  type="number"
+                  value={formData.displayOrder}
+                  onChange={(e) => setFormData({ ...formData, displayOrder: parseInt(e.target.value) })}
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <Switch
+                  checked={formData.isActive}
+                  onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
+                />
+                <Label>Activa</Label>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancelar</Button>
+              <Button onClick={handleSubmit} disabled={createMutation.isPending || updateMutation.isPending}>
+                {editingImage ? 'Guardar' : 'Añadir'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {images?.map((image) => (
+          <Card key={image.id} className={cn(!image.isActive && 'opacity-50')}>
+            <div className="aspect-video relative overflow-hidden rounded-t-xl">
+              <img src={image.url} alt={image.caption || ''} className="object-cover w-full h-full" />
+            </div>
+            <CardContent className="p-3">
+              <p className="text-sm font-medium truncate">{image.caption || 'Sin pie de foto'}</p>
+              <div className="flex justify-between items-center mt-2">
+                <span className="text-xs text-muted-foreground">Orden: {image.displayOrder}</span>
+                <div className="flex gap-1">
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleEdit(image)}>
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => {
+                    if (confirm('¿Eliminar imagen?')) deleteMutation.mutate({ id: image.id });
+                  }}>
+                    <Trash2 className="h-4 w-4 text-destructive" />
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // Audit Logs Management
 function AuditLogsManagement() {
   const { data: logs, isLoading } = trpc.metrics.getAuditLogs.useQuery({ limit: 50 });
@@ -1092,6 +1319,7 @@ export default function Admin() {
     if (path === '/admin/testimonials') return <TestimonialsManagement />;
     if (path === '/admin/chatbot') return <ChatbotManagement />;
     if (path === '/admin/audit') return <AuditLogsManagement />;
+    if (path === '/admin/gallery') return <GalleryManagement />;
     return <DashboardOverview />;
   };
 

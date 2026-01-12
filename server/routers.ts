@@ -334,6 +334,76 @@ export const appRouter = router({
       }),
   }),
 
+  // ==================== GALLERY ROUTES ====================
+  gallery: router({
+    // Public: List active images
+    listActive: publicProcedure.query(async () => {
+      return await db.getActiveGalleryImages();
+    }),
+
+    // Admin: List all images
+    listAll: adminProcedure.query(async () => {
+      return await db.getAllGalleryImages();
+    }),
+
+    // Admin: Create image
+    create: adminProcedure
+      .input(z.object({
+        url: z.string().url(),
+        caption: z.string().optional(),
+        displayOrder: z.number().default(0),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        const image = await db.createGalleryImage(input);
+        await db.createAuditLog({
+          userId: ctx.user.id,
+          action: 'CREATE_GALLERY_IMAGE',
+          entityType: 'gallery',
+          entityId: image.id,
+          details: `Image added: ${input.url}`,
+          ipAddress: ctx.req.ip,
+        });
+        return image;
+      }),
+
+    // Admin: Update image
+    update: adminProcedure
+      .input(z.object({
+        id: z.number(),
+        caption: z.string().optional(),
+        displayOrder: z.number().optional(),
+        isActive: z.boolean().optional(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        const { id, ...data } = input;
+        await db.updateGalleryImage(id, data);
+        await db.createAuditLog({
+          userId: ctx.user.id,
+          action: 'UPDATE_GALLERY_IMAGE',
+          entityType: 'gallery',
+          entityId: id,
+          details: JSON.stringify(data),
+          ipAddress: ctx.req.ip,
+        });
+        return { success: true };
+      }),
+
+    // Admin: Delete image
+    delete: adminProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input, ctx }) => {
+        await db.deleteGalleryImage(input.id);
+        await db.createAuditLog({
+          userId: ctx.user.id,
+          action: 'DELETE_GALLERY_IMAGE',
+          entityType: 'gallery',
+          entityId: input.id,
+          ipAddress: ctx.req.ip,
+        });
+        return { success: true };
+      }),
+  }),
+
   // ==================== METRICS ROUTES ====================
   metrics: router({
     // Admin: Get recent metrics

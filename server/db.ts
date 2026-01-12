@@ -7,7 +7,8 @@ import {
   chatbotFaqs, InsertChatbotFaq, ChatbotFaq,
   appointments, InsertAppointment, Appointment,
   dailyMetrics, InsertDailyMetric, DailyMetric,
-  auditLogs, InsertAuditLog, AuditLog
+  auditLogs, InsertAuditLog, AuditLog,
+  gallery, InsertGalleryImage, GalleryImage
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -350,4 +351,47 @@ export async function getRecentAuditLogs(limit: number = 50): Promise<AuditLog[]
   if (!db) return [];
 
   return await db.select().from(auditLogs).orderBy(desc(auditLogs.createdAt)).limit(limit);
+}
+
+// ==================== GALLERY FUNCTIONS ====================
+
+export async function createGalleryImage(data: InsertGalleryImage): Promise<GalleryImage> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const result = await db.insert(gallery).values(data);
+  const insertedId = Number(result[0].insertId);
+  
+  const inserted = await db.select().from(gallery).where(eq(gallery.id, insertedId)).limit(1);
+  return inserted[0]!;
+}
+
+export async function getAllGalleryImages(): Promise<GalleryImage[]> {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db.select().from(gallery).orderBy(desc(gallery.displayOrder), desc(gallery.createdAt));
+}
+
+export async function getActiveGalleryImages(): Promise<GalleryImage[]> {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db.select().from(gallery)
+    .where(eq(gallery.isActive, true))
+    .orderBy(desc(gallery.displayOrder), desc(gallery.createdAt));
+}
+
+export async function updateGalleryImage(id: number, data: Partial<InsertGalleryImage>): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.update(gallery).set(data).where(eq(gallery.id, id));
+}
+
+export async function deleteGalleryImage(id: number): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.delete(gallery).where(eq(gallery.id, id));
 }

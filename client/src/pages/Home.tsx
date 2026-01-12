@@ -38,6 +38,7 @@ import { cn } from '@/lib/utils';
 import { useScrollAnimation, useCounterAnimation } from '@/hooks/useScrollAnimation';
 import { TestimonialsCarousel } from '@/components/TestimonialsCarousel';
 import { ContactForm } from '@/components/ContactForm';
+import { GallerySection } from '@/components/GallerySection';
 import { motion } from 'framer-motion';
 
 // Hero Section
@@ -776,6 +777,7 @@ export default function Home() {
       <AboutSection />
       <CoursesSection />
       <BenefitsSection />
+      <GallerySection />
       <TestimonialsCarousel />
       <EmpresasCTA />
       <ContactSection />

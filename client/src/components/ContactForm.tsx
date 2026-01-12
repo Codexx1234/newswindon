@@ -18,6 +18,7 @@ import { cn } from '@/lib/utils';
 import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
+import { useTracking } from '@/hooks/useTracking';
 
 const contactSchema = z.object({
   fullName: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
@@ -42,6 +43,7 @@ interface ContactFormProps {
 export function ContactForm({ contactType = 'individual', showCompanyField = false }: ContactFormProps) {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { ref, isVisible } = useScrollAnimation<HTMLFormElement>();
+  const tracking = useTracking();
   
   const submitMutation = trpc.contacts.submit.useMutation({
     onSuccess: () => {
@@ -70,6 +72,7 @@ export function ContactForm({ contactType = 'individual', showCompanyField = fal
     submitMutation.mutate({
       ...data,
       contactType,
+      ...tracking,
     });
   };
 

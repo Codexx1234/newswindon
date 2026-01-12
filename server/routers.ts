@@ -42,13 +42,16 @@ export const appRouter = router({
         currentLevel: z.string().optional(),
         courseInterest: z.string().optional(),
         message: z.string().optional(),
-        contactType: z.enum(["individual", "empresa"]).default("individual"),
-        companyName: z.string().optional(),
+        contactType: z.enum(["individual", "empresa"]).default("individual"),        companyName: z.string().optional(),
         employeeCount: z.string().optional(),
         honeypot: z.string().optional(),
+        source: z.string().optional(),
+        utmSource: z.string().optional(),
+        utmMedium: z.string().optional(),
+        utmCampaign: z.string().optional(),
+        referrer: z.string().optional(),
       }))
-      .mutation(async ({ input }) => {
-        if (input.honeypot) {
+      .mutation(async ({ input, ctx }) => {     if (input.honeypot) {
           throw new TRPCError({ code: 'BAD_REQUEST', message: SPAM_DETECTED_ERR_MSG });
         }
         const { honeypot, ...cleanInput } = input;

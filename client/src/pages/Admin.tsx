@@ -325,6 +325,7 @@ function ContactsManagement() {
                 <TableHead>Email</TableHead>
                 <TableHead>Teléfono</TableHead>
                 <TableHead>Tipo</TableHead>
+                <TableHead>Origen</TableHead>
                 <TableHead>Estado</TableHead>
                 <TableHead>Fecha</TableHead>
                 <TableHead className="text-right">Acciones</TableHead>
@@ -350,6 +351,14 @@ function ContactsManagement() {
                       )}>
                         {contact.contactType === 'empresa' ? 'Empresa' : 'Individual'}
                       </span>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex flex-col gap-1">
+                        <span className="text-xs font-medium capitalize">{contact.source || 'Directo'}</span>
+                        {contact.utmCampaign && (
+                          <span className="text-[10px] text-muted-foreground">Camp: {contact.utmCampaign}</span>
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell>
                       <Select

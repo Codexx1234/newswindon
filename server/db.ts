@@ -450,7 +450,11 @@ export async function runMigrations(): Promise<void> {
         details TEXT,
         ipAddress VARCHAR(45),
         createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      )`
+      )`,
+      `ALTER TABLE contacts ADD COLUMN IF NOT EXISTS utmSource VARCHAR(100)`,
+      `ALTER TABLE contacts ADD COLUMN IF NOT EXISTS utmMedium VARCHAR(100)`,
+      `ALTER TABLE contacts ADD COLUMN IF NOT EXISTS utmCampaign VARCHAR(100)`,
+      `ALTER TABLE contacts ADD COLUMN IF NOT EXISTS referrer TEXT`
     ];
 
     for (const sqlQuery of tables) {

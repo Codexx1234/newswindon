@@ -171,7 +171,13 @@ function DashboardOverview() {
 
 // Contacts Management
 function ContactsManagement() {
-  const { data: contacts, isLoading, refetch } = trpc.contacts.list.useQuery();
+  const [filters, setFilters] = useState<{
+    status?: "nuevo" | "contactado" | "en_proceso" | "cerrado" | "no_interesado";
+    contactType?: "individual" | "empresa";
+    search?: string;
+  }>({});
+
+  const { data: contacts, isLoading, refetch } = trpc.contacts.list.useQuery(filters);
   const updateStatusMutation = trpc.contacts.update.useMutation({
     onSuccess: () => {
       toast.success('Estado actualizado');
@@ -205,6 +211,43 @@ function ContactsManagement() {
       <div>
         <h1 className="text-3xl font-bold">Contactos</h1>
         <p className="text-muted-foreground">Gestiona los mensajes recibidos del formulario de contacto</p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Input 
+          placeholder="Buscar por nombre o email..." 
+          value={filters.search || ''}
+          onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+          className="bg-card"
+        />
+        <Select 
+          value={filters.status || 'all'} 
+          onValueChange={(v) => setFilters({ ...filters, status: v === 'all' ? undefined : v as any })}
+        >
+          <SelectTrigger className="bg-card">
+            <SelectValue placeholder="Filtrar por estado" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos los estados</SelectItem>
+            <SelectItem value="nuevo">Nuevo</SelectItem>
+            <SelectItem value="contactado">Contactado</SelectItem>
+            <SelectItem value="en_proceso">En proceso</SelectItem>
+            <SelectItem value="cerrado">Cerrado</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select 
+          value={filters.contactType || 'all'} 
+          onValueChange={(v) => setFilters({ ...filters, contactType: v === 'all' ? undefined : v as any })}
+        >
+          <SelectTrigger className="bg-card">
+            <SelectValue placeholder="Filtrar por tipo" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos los tipos</SelectItem>
+            <SelectItem value="individual">Individual</SelectItem>
+            <SelectItem value="empresa">Empresa</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <Card>

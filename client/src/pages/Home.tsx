@@ -763,9 +763,15 @@ function AppointmentBookingForm() {
   );
 }
 
+import { Helmet } from "@/components/Helmet";
+
 export default function Home() {
   return (
     <>
+      <Helmet 
+        title="Inicio" 
+        description="Academia de inglés en Carapachay con 35 años de experiencia. Clases para niños, adolescentes y adultos. Preparación para exámenes Cambridge." 
+      />
       <HeroSection />
       <AboutSection />
       <CoursesSection />

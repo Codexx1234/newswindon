@@ -669,9 +669,15 @@ function AppointmentBookingForm({ defaultType = 'entrevista_nivel' }: { defaultT
   );
 }
 
+import { Helmet } from "@/components/Helmet";
+
 export default function Empresas() {
   return (
     <>
+      <Helmet 
+        title="Empresas" 
+        description="Capacitación en inglés para empresas con más de 30 años de experiencia. Programas personalizados de Business English e inglés técnico." 
+      />
       <EmpresasHero />
       <StatsSection />
       <ServicesSection />

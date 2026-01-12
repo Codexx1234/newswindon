@@ -431,10 +431,10 @@ function ContactSection() {
     <section id="contacto" className="py-20">
       <div className="container">
         <div className="grid lg:grid-cols-2 gap-12 items-start">
-          {/* Contact Form */}
+          {/* Contact Info */}
           <div 
             ref={ref}
-            className={cn('slide-in-left', isVisible && 'visible')}
+            className={cn('slide-in-left space-y-6', isVisible && 'visible')}
           >
             <span className="badge-primary mb-4">Contacto</span>
             <h2 className="text-3xl md:text-4xl font-bold mt-4 mb-6">
@@ -442,17 +442,9 @@ function ContactSection() {
             </h2>
             <p className="text-muted-foreground mb-8">
               Completá el formulario y nos pondremos en contacto a la brevedad para 
-              brindarte toda la información que necesitás.
+              brindarte toda la información que necesitás. También podés contactarnos 
+              directamente por estos medios.
             </p>
-            <ContactForm />
-          </div>
-
-          {/* Contact Info */}
-          <div className={cn('slide-in-right space-y-6 lg:mt-24', isVisible && 'visible')}>
-            <div className="text-center lg:text-left mb-8">
-              <h3 className="text-2xl font-bold mb-2">Información de contacto</h3>
-              <p className="text-muted-foreground">También podés contactarnos directamente por estos medios.</p>
-            </div>
 
             <div className="grid gap-4">
               <a 
@@ -491,6 +483,11 @@ function ContactSection() {
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Contact Form */}
+          <div className={cn('slide-in-right lg:mt-24', isVisible && 'visible')}>
+            <ContactForm />
           </div>
         </div>
       </div>

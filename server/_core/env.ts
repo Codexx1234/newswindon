@@ -3,10 +3,10 @@ import { fromError } from "zod-validation-error";
 
 const envSchema = z.object({
   VITE_APP_ID: z.string().min(1),
-  JWT_SECRET: z.string().min(32, "JWT_SECRET should be at least 32 characters"),
-  DATABASE_URL: z.string().url(),
-  OAUTH_SERVER_URL: z.string().url(),
-  OWNER_OPEN_ID: z.string().min(1),
+  JWT_SECRET: z.string().min(16, "JWT_SECRET should be at least 16 characters"),
+  DATABASE_URL: z.string().min(1),
+  OAUTH_SERVER_URL: z.string().min(1),
+  OWNER_OPEN_ID: z.string().optional().default("newswindon-owner"),
   EMAIL_HOST: z.string().optional(),
   EMAIL_PORT: z.string().default("587").transform(Number),
   EMAIL_SECURE: z.string().default("false").transform(v => v === "true"),

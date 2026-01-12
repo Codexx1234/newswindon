@@ -95,14 +95,15 @@ export const appointments = mysqlTable("appointments", {
   phone: varchar("phone", { length: 50 }).notNull(),
   appointmentDate: timestamp("appointmentDate").notNull(),
   appointmentType: mysqlEnum("appointmentType", ["entrevista_nivel", "consulta_general", "empresa"]).default("entrevista_nivel").notNull(),
-  status: mysqlEnum("status", ["pendiente", "confirmada", "cancelada", "completada"]).default("pendiente").notNull(  notes: text("notes"),
+  status: mysqlEnum("status", ["pendiente", "confirmada", "cancelada", "completada"]).default("pendiente").notNull(),
+  notes: text("notes"),
   source: varchar("source", { length: 100 }), // e.g., 'google', 'facebook', 'instagram', 'direct'
   utmSource: varchar("utmSource", { length: 100 }),
   utmMedium: varchar("utmMedium", { length: 100 }),
   utmCampaign: varchar("utmCampaign", { length: 100 }),
   referrer: text("referrer"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-});  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
 
 export type Appointment = typeof appointments.$inferSelect;

@@ -19,12 +19,11 @@ export class CalendarService {
     }
 
     try {
-      this.auth = new google.auth.JWT(
-        ENV.GOOGLE_CLIENT_EMAIL,
-        undefined,
-        ENV.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
-        ['https://www.googleapis.com/auth/calendar']
-      );
+      this.auth = new google.auth.JWT({
+        email: ENV.GOOGLE_CLIENT_EMAIL,
+        key: ENV.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+        scopes: ['https://www.googleapis.com/auth/calendar']
+      });
       return this.auth;
     } catch (error) {
       console.error('[Calendar] Failed to initialize Google Auth:', error);

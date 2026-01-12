@@ -10,7 +10,8 @@ import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import { runMigrations } from "../db";
 
-async function isPortAvailable(port: number): Promise<boolean> {urn new Promise(resolve => {
+async function isPortAvailable(port: number): Promise<boolean> {
+  return new Promise(resolve => {
     const server = net.createServer();
     server.listen(port, () => {
       server.close(() => resolve(true));

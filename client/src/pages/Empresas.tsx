@@ -558,7 +558,7 @@ function AppointmentBookingForm({ defaultType = 'entrevista_nivel' }: { defaultT
                   {hours.map((hour) => (
                     <Button
                       key={hour}
-                      variant={selectedHour === hour ? "primary" : "outline"}
+                      variant={selectedHour === hour ? "default" : "outline"}
                       className={cn(
                         "h-10 text-sm font-medium",
                         selectedHour === hour && "bg-primary text-white"

@@ -199,7 +199,7 @@ function AboutSection() {
           <div className={cn('slide-in-right', isVisible && 'visible')}>
             <div className="relative">
               {/* Main Card */}
-              <div className="bg-gradient-to-br from-primary to-primary/80 rounded-3xl p-8 text-white" loading="lazy">
+              <div className="bg-gradient-to-br from-primary to-primary/80 rounded-3xl p-8 text-white">
                 <div className="grid grid-cols-2 gap-6">
                   <div className="text-center p-4 bg-white/10 rounded-2xl">
                     <GraduationCap className="w-10 h-10 mx-auto mb-2" />
@@ -653,7 +653,7 @@ function AppointmentBookingForm() {
                   {hours.map((hour) => (
                     <Button
                       key={hour}
-                      variant={selectedHour === hour ? "primary" : "outline"}
+                      variant={selectedHour === hour ? "default" : "outline"}
                       className={cn(
                         "h-10 text-sm font-medium",
                         selectedHour === hour && "bg-primary text-white"

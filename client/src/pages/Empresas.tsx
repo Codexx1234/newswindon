@@ -25,14 +25,14 @@ function EmpresasHero() {
 
   return (
     <section className="relative min-h-[70vh] flex items-center overflow-hidden">
-      <div className="absolute inset-0 gradient-hero" />
-      <div className="absolute inset-0 hero-pattern" />
+      <div className="absolute inset-0 bg-primary/5" />
+      <div className="absolute inset-0 hero-pattern opacity-30" />
 
       <div className="container relative z-10">
         <div 
           ref={ref}
           className={cn(
-            'max-w-3xl fade-in-up text-white',
+            'max-w-3xl fade-in-up text-foreground',
             isVisible && 'visible'
           )}
         >
@@ -55,7 +55,7 @@ function EmpresasHero() {
             <Button 
               asChild 
               size="lg" 
-              className="bg-white text-primary hover:bg-white/90 btn-shine text-base"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 btn-shine text-base"
             >
               <a href="#contacto-empresas">
                 Solicitar información
@@ -66,7 +66,7 @@ function EmpresasHero() {
               asChild 
               size="lg" 
               variant="outline" 
-              className="border-white/30 text-white hover:bg-white/10 text-base bg-transparent"
+              className="border-primary/30 text-primary hover:bg-primary/5 text-base bg-transparent"
             >
               <a href="tel:+5491130707350">
                 <Phone className="w-4 h-4 mr-2" />

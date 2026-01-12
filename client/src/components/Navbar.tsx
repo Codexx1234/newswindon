@@ -38,7 +38,18 @@ export function Navbar() {
         if (element) {
           element.scrollIntoView({ behavior: 'smooth' });
         }
+      } else {
+        // If not on home, let the Link navigate first, then scroll
+        setTimeout(() => {
+          const element = document.getElementById(elementId);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+          }
+        }, 100);
       }
+    } else {
+      // For regular links like /empresas, scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 

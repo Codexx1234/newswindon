@@ -196,7 +196,7 @@ function AboutSection() {
               </div>
 
               {/* Floating Badge */}
-              <div className="absolute -bottom-6 -right-6 bg-card rounded-2xl shadow-xl p-4 border">
+              <div className="absolute -bottom-10 -right-2 bg-card rounded-2xl shadow-xl p-4 border">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
                     <Star className="w-6 h-6 text-yellow-500 fill-yellow-500" />

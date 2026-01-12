@@ -91,6 +91,7 @@
 ## Corrección de Contraste
 - [x] Corregir contraste en sección Hero (letras blancas sobre fondo blanco)
 - [x] Corregir contraste en sección Capacitación para Empresas (letras blancas sobre fondo blanco)
+- [x] Ajustar posición de badge de calificación en Sobre Nosotros para no tapar texto
 - [x] Restaurar funcionalidad de navegación por secciones en navbar (scroll suave a #cursos, #nosotros, etc.)
 - [x] Agregar IDs faltantes a secciones (inicio, empresas)
 - [x] Mejorar contraste en estadísticas del hero (texto pequeño debajo de números)

@@ -224,13 +224,22 @@ export function ContactForm({ contactType = 'individual', showCompanyField = fal
               <SelectValue placeholder="Seleccioná una opción" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="general">Inglés general</SelectItem>
-              <SelectItem value="ninos">Inglés para niños</SelectItem>
-              <SelectItem value="cambridge">Preparación Cambridge</SelectItem>
-              <SelectItem value="conversacion">Taller de conversación</SelectItem>
-              <SelectItem value="profesorado">Ingreso a profesorado</SelectItem>
-              {contactType === 'empresa' && (
-                <SelectItem value="corporativo">Capacitación corporativa</SelectItem>
+              {contactType === 'individual' ? (
+                <>
+                  <SelectItem value="general">Inglés general</SelectItem>
+                  <SelectItem value="ninos">Inglés para niños</SelectItem>
+                  <SelectItem value="cambridge">Preparación Cambridge</SelectItem>
+                  <SelectItem value="conversacion">Taller de conversación</SelectItem>
+                  <SelectItem value="profesorado">Ingreso a profesorado</SelectItem>
+                </>
+              ) : (
+                <>
+                  <SelectItem value="corporativo">Capacitación corporativa general</SelectItem>
+                  <SelectItem value="tecnico">Inglés técnico especializado</SelectItem>
+                  <SelectItem value="negocios">Inglés de negocios (Business English)</SelectItem>
+                  <SelectItem value="conversacion_corp">Talleres de conversación para empleados</SelectItem>
+                  <SelectItem value="evaluaciones">Evaluaciones de nivel para personal</SelectItem>
+                </>
               )}
             </SelectContent>
           </Select>

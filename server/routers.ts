@@ -7,7 +7,8 @@ import { TRPCError } from "@trpc/server";
 import * as db from "./db";
 import { notifyOwner } from "./_core/notification";
 import { invokeLLM } from "./_core/llm";
-import { sendEmail } from "./_core/email";
+import { sendEmail } from './_core/email';
+import { CalendarService } from './_core/calendar';
 
 // Admin-only procedure
 const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
@@ -286,6 +287,16 @@ export const appRouter = router({
           },
         });
 
+        // Create Google Calendar event
+        await CalendarService.createEvent({
+          fullName: input.fullName,
+          email: input.email,
+          phone: input.phone,
+          appointmentType: input.appointmentType,
+          date: input.appointmentDate,
+          hour: `${input.appointmentDate.getHours()}:00`,
+        });
+
         return { success: true, appointment };
       }),
 
@@ -398,6 +409,30 @@ export const appRouter = router({
           action: 'DELETE_GALLERY_IMAGE',
           entityType: 'gallery',
           entityId: input.id,
+          ipAddress: ctx.req.ip,
+        });
+        return { success: true };
+      }),
+  }),
+
+  // ==================== SETTINGS ROUTES ====================
+  settings: router({
+    // Admin: Get a setting
+    get: adminProcedure
+      .input(z.object({ key: z.string() }))
+      .query(async ({ input }) => {
+        return await db.getSetting(input.key);
+      }),
+
+    // Admin: Set a setting
+    set: adminProcedure
+      .input(z.object({ key: z.string(), value: z.string() }))
+      .mutation(async ({ input, ctx }) => {
+        await db.setSetting(input.key, input.value);
+        await db.createAuditLog({
+          userId: ctx.user.id,
+          action: 'UPDATE_SETTING',
+          details: `Setting ${input.key} updated to ${input.value}`,
           ipAddress: ctx.req.ip,
         });
         return { success: true };

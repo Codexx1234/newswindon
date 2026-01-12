@@ -53,7 +53,9 @@ import {
   Loader2,
   LogIn,
   Image as ImageIcon,
-  Pencil
+  Pencil,
+  Settings as SettingsIcon,
+  Calendar as CalendarIcon
 } from 'lucide-react';
 import { 
   LineChart, 
@@ -79,6 +81,7 @@ const navItems = [
   { href: '/admin/chatbot', icon: HelpCircle, label: 'Chatbot FAQs' },
   { href: '/admin/gallery', icon: ImageIcon, label: 'Galería' },
   { href: '/admin/audit', icon: Users, label: 'Auditoría' },
+  { href: '/admin/settings', icon: SettingsIcon, label: 'Ajustes' },
 ];
 
 // Dashboard Overview
@@ -1068,6 +1071,83 @@ function GalleryManagement() {
   );
 }
 
+// Settings Management
+function SettingsManagement() {
+  const { data: adminEmail, refetch: refetchEmail } = trpc.settings.get.useQuery({ key: 'google_admin_email' });
+  const [email, setEmail] = useState('');
+
+  useEffect(() => {
+    if (adminEmail) setEmail(adminEmail);
+  }, [adminEmail]);
+
+  const setSettingMutation = trpc.settings.set.useMutation({
+    onSuccess: () => {
+      toast.success('Configuración guardada');
+      refetchEmail();
+    },
+  });
+
+  const handleSave = () => {
+    if (!email || !email.includes('@')) {
+      toast.error('Por favor ingresa un correo válido');
+      return;
+    }
+    setSettingMutation.mutate({ key: 'google_admin_email', value: email });
+  };
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold">Ajustes del Sistema</h1>
+        <p className="text-muted-foreground">Configura las integraciones y parámetros globales</p>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <CalendarIcon className="w-5 h-5 text-primary" />
+            <CardTitle>Integración con Google Calendar</CardTitle>
+          </div>
+          <CardDescription>
+            Define qué cuenta de Google recibirá las notificaciones y eventos de las reservas.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="admin-email">Correo Administrativo de Google</Label>
+            <Input 
+              id="admin-email" 
+              type="email" 
+              value={email} 
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="ejemplo@gmail.com"
+            />
+            <p className="text-xs text-muted-foreground">
+              Este es el correo donde se agendarán las entrevistas de nivelación.
+            </p>
+          </div>
+          <Button onClick={handleSave} disabled={setSettingMutation.isPending}>
+            {setSettingMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Guardar Configuración
+          </Button>
+        </CardContent>
+      </Card>
+
+      <Card className="bg-muted/50 border-dashed">
+        <CardHeader>
+          <CardTitle className="text-sm">Estado de la API</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center gap-2 text-sm">
+            <div className="w-2 h-2 rounded-full bg-yellow-500" />
+            <span>Pendiente de configuración de credenciales en el servidor (.env)</span>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 // Audit Logs Management
 function AuditLogsManagement() {
   const { data: logs, isLoading } = trpc.metrics.getAuditLogs.useQuery({ limit: 50 });
@@ -1320,6 +1400,7 @@ export default function Admin() {
     if (path === '/admin/chatbot') return <ChatbotManagement />;
     if (path === '/admin/audit') return <AuditLogsManagement />;
     if (path === '/admin/gallery') return <GalleryManagement />;
+    if (path === '/admin/settings') return <SettingsManagement />;
     return <DashboardOverview />;
   };
 

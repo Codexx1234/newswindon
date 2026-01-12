@@ -8,9 +8,9 @@ import { authRateLimiter } from "./rateLimit";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
+import { runMigrations } from "../db";
 
-function isPortAvailable(port: number): Promise<boolean> {
-  return new Promise(resolve => {
+async function isPortAvailable(port: number): Promise<boolean> {urn new Promise(resolve => {
     const server = net.createServer();
     server.listen(port, () => {
       server.close(() => resolve(true));
@@ -29,6 +29,9 @@ async function findAvailablePort(startPort: number = 3000): Promise<number> {
 }
 
 async function startServer() {
+  // Run database migrations before starting the server
+  await runMigrations().catch(err => console.error("Migration failed:", err));
+
   const app = express();
   const server = createServer(app);
   // Configure body parser with larger size limit for file uploads

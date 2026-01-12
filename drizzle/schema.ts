@@ -147,3 +147,16 @@ export const gallery = mysqlTable("gallery", {
 
 export type GalleryImage = typeof gallery.$inferSelect;
 export type InsertGalleryImage = typeof gallery.$inferInsert;
+
+/**
+ * System settings
+ */
+export const settings = mysqlTable("settings", {
+  id: int("id").autoincrement().primaryKey(),
+  key: varchar("key", { length: 100 }).notNull().unique(),
+  value: text("value").notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Setting = typeof settings.$inferSelect;
+export type InsertSetting = typeof settings.$inferInsert;

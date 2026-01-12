@@ -1,5 +1,6 @@
 import { eq, desc, and } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
+import { eq, desc, sql, and, gte, lte } from "drizzle-orm";
 import { 
   InsertUser, users, 
   contacts, InsertContact, Contact, 
@@ -8,7 +9,8 @@ import {
   appointments, InsertAppointment, Appointment,
   dailyMetrics, InsertDailyMetric, DailyMetric,
   auditLogs, InsertAuditLog, AuditLog,
-  gallery, InsertGalleryImage, GalleryImage
+  gallery, InsertGalleryImage, GalleryImage,
+  settings, InsertSetting, Setting
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -394,4 +396,69 @@ export async function deleteGalleryImage(id: number): Promise<void> {
   if (!db) throw new Error("Database not available");
 
   await db.delete(gallery).where(eq(gallery.id, id));
+}
+
+// ==================== SETTINGS FUNCTIONS ====================
+
+export async function getSetting(key: string): Promise<string | undefined> {
+  const db = await getDb();
+  if (!db) return undefined;
+
+  const result = await db.select().from(settings).where(eq(settings.key, key)).limit(1);
+  return result.length > 0 ? result[0].value : undefined;
+}
+
+export async function setSetting(key: string, value: string): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.insert(settings).values({ key, value }).onDuplicateKeyUpdate({
+    set: { value, updatedAt: new Date() }
+  });
+}
+
+// ==================== MIGRATION FUNCTIONS ====================
+
+export async function runMigrations(): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available for migrations");
+
+  console.log("[Database] Running auto-migrations (ensuring tables exist)...");
+  
+  try {
+    const tables = [
+      `CREATE TABLE IF NOT EXISTS settings (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        \`key\` VARCHAR(100) NOT NULL UNIQUE,
+        value TEXT NOT NULL,
+        updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      )`,
+      `CREATE TABLE IF NOT EXISTS gallery (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        url TEXT NOT NULL,
+        caption VARCHAR(255),
+        displayOrder INT DEFAULT 0,
+        isActive BOOLEAN DEFAULT TRUE,
+        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )`,
+      `CREATE TABLE IF NOT EXISTS audit_logs (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        userId VARCHAR(255),
+        action VARCHAR(100) NOT NULL,
+        entityType VARCHAR(50),
+        entityId INT,
+        details TEXT,
+        ipAddress VARCHAR(45),
+        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )`
+    ];
+
+    for (const sqlQuery of tables) {
+      await db.execute(sql.raw(sqlQuery));
+    }
+    
+    console.log("[Database] Auto-migrations completed successfully.");
+  } catch (error) {
+    console.error("[Database] Migration error:", error);
+  }
 }

@@ -14,6 +14,8 @@ const envSchema = z.object({
   EMAIL_PASSWORD: z.string().optional(),
   EMAIL_FROM: z.string().optional(),
   ADMIN_EMAIL: z.string().email().optional(),
+  GOOGLE_CLIENT_EMAIL: z.string().email().optional(),
+  GOOGLE_PRIVATE_KEY: z.string().optional(),
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
   BUILT_IN_FORGE_API_URL: z.string().optional(),
   BUILT_IN_FORGE_API_KEY: z.string().optional(),
@@ -43,4 +45,6 @@ export const ENV = {
   isProduction: _env.data.NODE_ENV === "production",
   forgeApiUrl: _env.data.BUILT_IN_FORGE_API_URL ?? "",
   forgeApiKey: _env.data.BUILT_IN_FORGE_API_KEY ?? "",
+  GOOGLE_CLIENT_EMAIL: _env.data.GOOGLE_CLIENT_EMAIL,
+  GOOGLE_PRIVATE_KEY: _env.data.GOOGLE_PRIVATE_KEY,
 };

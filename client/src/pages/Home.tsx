@@ -430,57 +430,67 @@ function ContactSection() {
   return (
     <section id="contacto" className="py-20">
       <div className="container">
-        <div className="max-w-4xl mx-auto">
+        <div className="grid lg:grid-cols-2 gap-12 items-start">
+          {/* Contact Form */}
           <div 
             ref={ref}
-            className={cn('text-center mb-12 fade-in-up', isVisible && 'visible')}
+            className={cn('slide-in-left', isVisible && 'visible')}
           >
             <span className="badge-primary mb-4">Contacto</span>
             <h2 className="text-3xl md:text-4xl font-bold mt-4 mb-6">
               ¿Listo para empezar?
             </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto mb-12">
+            <p className="text-muted-foreground mb-8">
               Completá el formulario y nos pondremos en contacto a la brevedad para 
-              brindarte toda la información que necesitás. También podés contactarnos 
-              directamente por teléfono o WhatsApp.
+              brindarte toda la información que necesitás.
             </p>
+            <ContactForm />
+          </div>
 
-            <div className="grid sm:grid-cols-3 gap-6 mb-16">
+          {/* Contact Info */}
+          <div className={cn('slide-in-right space-y-6 lg:mt-24', isVisible && 'visible')}>
+            <div className="text-center lg:text-left mb-8">
+              <h3 className="text-2xl font-bold mb-2">Información de contacto</h3>
+              <p className="text-muted-foreground">También podés contactarnos directamente por estos medios.</p>
+            </div>
+
+            <div className="grid gap-4">
               <a 
                 href="tel:+5491130707350" 
-                className="flex flex-col items-center gap-3 p-6 rounded-2xl bg-muted/50 border border-transparent hover:border-primary/20 transition-all"
+                className="flex items-center gap-4 p-6 rounded-2xl bg-muted/50 hover:bg-muted transition-colors border border-transparent hover:border-primary/20"
               >
-                <div className="icon-container mb-2">
+                <div className="icon-container">
                   <Phone className="w-5 h-5" />
                 </div>
-                <p className="font-bold">Teléfono / WhatsApp</p>
-                <p className="text-sm text-muted-foreground">15 3070-7350</p>
+                <div>
+                  <p className="font-bold">Teléfono / WhatsApp</p>
+                  <p className="text-muted-foreground">15 3070-7350</p>
+                </div>
               </a>
 
               <a 
                 href="mailto:swindoncollege2@gmail.com" 
-                className="flex flex-col items-center gap-3 p-6 rounded-2xl bg-muted/50 border border-transparent hover:border-primary/20 transition-all"
+                className="flex items-center gap-4 p-6 rounded-2xl bg-muted/50 hover:bg-muted transition-colors border border-transparent hover:border-primary/20"
               >
-                <div className="icon-container mb-2">
+                <div className="icon-container">
                   <Mail className="w-5 h-5" />
                 </div>
-                <p className="font-bold">Email</p>
-                <p className="text-sm text-muted-foreground">swindoncollege2@gmail.com</p>
+                <div>
+                  <p className="font-bold">Email</p>
+                  <p className="text-muted-foreground">swindoncollege2@gmail.com</p>
+                </div>
               </a>
 
-              <div className="flex flex-col items-center gap-3 p-6 rounded-2xl bg-muted/50 border border-transparent hover:border-primary/20 transition-all">
-                <div className="icon-container mb-2">
+              <div className="flex items-center gap-4 p-6 rounded-2xl bg-muted/50 border border-transparent hover:border-primary/20">
+                <div className="icon-container">
                   <MapPin className="w-5 h-5" />
                 </div>
-                <p className="font-bold">Ubicación</p>
-                <p className="text-sm text-muted-foreground">Carapachay, Buenos Aires</p>
+                <div>
+                  <p className="font-bold">Ubicación</p>
+                  <p className="text-muted-foreground">Carapachay, Buenos Aires, Argentina</p>
+                </div>
               </div>
             </div>
-          </div>
-
-          {/* Contact Form */}
-          <div className={cn('fade-in-up max-w-2xl mx-auto', isVisible && 'visible')}>
-            <ContactForm />
           </div>
         </div>
       </div>

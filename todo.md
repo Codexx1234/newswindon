@@ -1,101 +1,34 @@
-# NewSwindon - Lista de Tareas
+# NewSwindon - Lista de Tareas 🚀
 
-## Estructura y Base de Datos
-- [x] Configurar esquema de base de datos (contactos, testimonios, FAQs del chatbot)
-- [x] Crear procedimientos tRPC para todas las operaciones CRUD
+## ✅ Mejoras Implementadas
+- [x] **UI/UX:** Cambio a tipografía Inter, ajuste de espaciado y colores suaves.
+- [x] **Navbar:** Corregida superposición, eliminado "Portal Estudiantes" y arreglada navegación por anclas.
+- [x] **Sección Empresas:** Landing completa (/empresas), formulario específico y diseño corporativo.
+- [x] **Diseño Global:** Centrado de todos los elementos (Sobre Nosotros, Cursos, Beneficios).
+- [x] **Contacto:** Reorganización (Datos a la izquierda, Formulario a la derecha) y eliminación de horarios.
+- [x] **Chatbot:** Ventana emergente mejorada con botón de cierre accesible.
+- [x] **Admin:** Gestión completa de FAQs y Testimonios.
+- [x] **SEO:** Optimización de meta tags y datos estructurados.
 
-## Página Principal
-- [x] Hero section con nombre, trayectoria (35 años) y CTA principal
-- [x] Sección "Sobre Nosotros" con historia y enfoque pedagógico
-- [x] Sección de cursos (niños desde 3 años, jóvenes, adultos, Cambridge)
-- [x] Sección de beneficios (grupos reducidos, sin matrícula, multimedios)
-- [x] Carrusel de testimonios
-- [x] Formulario de contacto integrado
-- [x] Footer con datos de contacto y redes sociales
+## 🚀 Próximas Mejoras Avanzadas (Plan de Acción)
 
-## Landing Empresas
-- [x] Página exclusiva para empresas
-- [x] Propuesta de valor corporativa
-- [x] Destacar 30 años de experiencia
-- [x] Formulario específico para empresas
-- [x] Sección de proceso y beneficios corporativos
+### 🛠 Backend e Infraestructura
+- [ ] **Sistema de Reservas:** Implementar lógica para agendar entrevistas de nivelación (Tabla `appointments`).
+- [ ] **Métricas de Admin:** Sistema de tracking diario para visitas, contactos y reservas (Tabla `daily_metrics`).
+- [ ] **Validación de Datos:** Mejorar la validación de teléfonos para permitir contacto directo vía WhatsApp desde el panel.
 
-## Funcionalidades Avanzadas
-- [x] Botón flotante de WhatsApp (15 3070-7350)
-- [x] Chatbot interactivo para preguntas frecuentes
-- [x] Sistema de notificación al owner al completar formulario
+### 🎨 Frontend y UX (Experiencia de Usuario)
+- [ ] **Micro-interacciones:** Integrar *Framer Motion* para animaciones fluidas en botones, tarjetas y transiciones de página.
+- [ ] **Optimización de Imágenes:** Migrar assets a formato WebP y aplicar carga perezosa (lazy loading) para mejorar la velocidad.
+- [ ] **Página de Éxito:** Crear una página de "Gracias" personalizada tras el envío de formularios con acceso directo a WhatsApp.
 
-## Panel de Administración
-- [x] Dashboard principal con estadísticas
-- [x] Gestión de contactos (listar, actualizar estado, eliminar)
-- [x] Gestión de testimonios (agregar, editar, eliminar)
-- [x] Configuración del chatbot (preguntas y respuestas)
-- [x] Autenticación con Manus OAuth
-- [x] Control de acceso por rol (admin)
+### 📊 Panel de Control (Admin)
+- [ ] **Dashboard Visual:** Añadir gráficas de rendimiento semanal basadas en las nuevas métricas.
+- [ ] **Gestión de Reservas:** Crear una interfaz para que el administrador vea y gestione las citas agendadas.
 
-## Estilo y Diseño
-- [x] Paleta de colores profesional (teal/azul educativo)
-- [x] Tipografía elegante y legible (Geist)
-- [x] Diseño responsive para móviles
-- [x] Animaciones sutiles y transiciones
-- [x] Animaciones de entrada al hacer scroll (fade-in, slide-up)
-- [x] Efecto parallax en hero section
-- [x] Contador animado para años de experiencia
-- [x] Hover effects en tarjetas y botones
-- [x] Botón "volver arriba" animado
-- [x] Barra de progreso de lectura
-- [x] Gradientes dinámicos en hero
-- [x] Efecto typing en chatbot
-- [x] Validación en tiempo real del formulario con feedback visual
+### 📈 Marketing y SEO
+- [ ] **SEO Local:** Optimizar metatags para palabras clave locales (Carapachay, Zona Norte, Cursos de Inglés).
+- [ ] **Automatización de Email:** Lógica para envío automático de correos de bienvenida (Simulada/Backend).
 
-## SEO y Posicionamiento
-- [x] Meta tags optimizados (title, description, keywords)
-- [x] Open Graph tags para redes sociales
-- [x] Twitter Cards
-- [x] Schema.org markup (LocalBusiness, EducationalOrganization)
-- [x] Robots.txt optimizado
-- [x] Canonical URLs
-- [x] Headings jerárquicos
-- [x] Datos estructurados de negocio local
-
-## Pruebas
-- [x] Pruebas unitarias para routers de contactos
-- [x] Pruebas unitarias para autenticación
-
-## Ajustes según Feedback del Usuario
-- [x] Eliminar toda la sección de Portal Estudiantes
--- [x] Ajustar estadísticas (1000 alumnos, 1 empresa por 30+ años)0+ años)
-- [x] Mejorar tipografía y espaciado para mejor legibilidad
-- [x] Corregir superposición del navbar en la parte superior
-- [x] Eliminar footer duplicado
-- [x] Crear landing page completa para empresas (/empresas) con diseño corporativo
-- [x] Agregar botón en navbar que lleve a /empresas
-- [x] Botón "Solicitar información" redirige a formulario en /empresas
-- [x] Formulario específico para empresas con campos de empresa y empleados
-- [ ] Configurar envío de correos con formato profesional al admin
-- [x] Mejorar panel admin con gestión completa de FAQs
-- [x] Mejorar panel admin con gestión completa de testimonios
-- [x] Configurar chatbot para responder solo con información de la página
-
-## Correcciones de UI y UX
-- [x] Cambiar tipografía a Inter (más legible)
-- [x] Ajustar colores a tonos más suaves (gris oscuro en lugar de negro)
-- [x] Aumentar espaciado entre líneas)
-- [x] Eliminar botón "Portal Estudiantes" del navbar
-- [x] Centrar logo de "volver arriba"
-- [x] Arreglar logo de WhatsApp (eliminar fondo verde duplicado)
-- [x] Corregir posición del tooltip de WhatsApp
-- [x] Eliminar botones duplicados (chatbot y scroll-to-top)
-- [x] Corregir superposición de elementos al hacer scroll arriba
-
-## Corrección de Contraste
-- [x] Corregir contraste en sección Hero (letras blancas sobre fondo blanco)
-- [x] Corregir contraste en sección Capacitación para Empresas (letras blancas sobre fondo blanco)
-- [x] Ajustar posición de badge de calificación en Sobre Nosotros para no tapar texto
-- [x] Restaurar funcionalidad de navegación por secciones en navbar (scroll suave a #cursos, #nosotros, etc.)
-- [x] Agregar IDs faltantes a secciones (inicio, empresas)
-- [x] Mejorar contraste en estadísticas del hero (texto pequeño debajo de números)
-- [x] Rediseñar sección "Sobre Nosotros" más corta y atractiva
-- [x] Corregir chatbot para que aparezca como ventana emergente al hacer clic, no al final de la página
-- [x] Corregir visibilidad del texto debajo de las estadísticas (cortado por la ola blanca)
-- [x] Eliminar badge "35 años de excelencia educativa" del hero
+---
+*Nota: Este plan fue diseñado para escalar la presencia digital de NewSwindon y automatizar procesos administrativos.*

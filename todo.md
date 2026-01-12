@@ -40,3 +40,11 @@
 - [x] Integrar Google Calendar para crear eventos
 - [x] Sincronizar eliminación de eventos en Google Calendar al cancelar reserva
 - [x] Agregar funcionalidad de edición de contactos en admin
+
+## Tareas Actuales (Sesión)
+- [x] Corregir error de PageTransition con key prop
+- [x] Validar configuración de emails SMTP desde GitHub
+- [x] Sincronizar cambios desde GitHub
+- [x] Probar envío de emails
+- [x] Corregir errores de TypeScript en Admin.tsx, Navbar.tsx y GallerySection.tsx
+- [x] Agregar procedimiento getAuditLogs al router de metrics

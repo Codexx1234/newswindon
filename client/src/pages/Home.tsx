@@ -454,17 +454,11 @@ function EmpresasCTA() {
 
 // Contact Section
 function ContactSection() {
-  const { ref, isVisible } = function ContactSection() {
-  const { data: phone } = trpc.settings.get.useQuery({ key: 'site_phone' });
-  const { data: email } = trpc.settings.get.useQuery({ key: 'site_email' });
-  const { data: address } = trpc.settings.get.useQuery({ key: 'site_address' });
-  const { data: featureInscriptions } = trpc.settings.get.useQuery({ key: 'feature_inscriptions' });
-  
-  const displayPhone = phone || '15 3070-7350';
-  const displayEmail = email || 'swindoncollege2@gmail.com';
-  const displayAddress = address || 'Carapachay, Buenos Aires';
+  const { ref, isVisible } = useScrollAnimation<HTMLDivElement>();
 
-  const { ref, isVisible } = useScrollAnimation<HTMLDivElement>({ threshold: 0.1 });<div className="container">
+  return (
+    <section id="contacto" className="py-20">
+      <div className="container">
         <div className="grid lg:grid-cols-2 gap-12 items-start">
           {/* Contact Info */}
           <div 
@@ -483,7 +477,7 @@ function ContactSection() {
 
             <div className="grid gap-4">
               <a 
-                href={`tel:${displayPhone.replace(/\s/g, '')}`} 
+                href="tel:+5491130707350" 
                 className="flex items-center gap-4 p-6 rounded-2xl bg-muted/50 hover:bg-muted transition-colors border border-transparent hover:border-primary/20"
               >
                 <div className="icon-container">
@@ -491,12 +485,12 @@ function ContactSection() {
                 </div>
                 <div>
                   <p className="font-bold">Teléfono / WhatsApp</p>
-                  <p className="text-muted-foreground">{displayPhone}</p>
+                  <p className="text-muted-foreground">15 3070-7350</p>
                 </div>
               </a>
 
               <a 
-                href={`mailto:${displayEmail}`} 
+                href="mailto:swindoncollege2@gmail.com" 
                 className="flex items-center gap-4 p-6 rounded-2xl bg-muted/50 hover:bg-muted transition-colors border border-transparent hover:border-primary/20"
               >
                 <div className="icon-container">
@@ -504,7 +498,7 @@ function ContactSection() {
                 </div>
                 <div>
                   <p className="font-bold">Email</p>
-                  <p className="text-muted-foreground">{displayEmail}</p>
+                  <p className="text-muted-foreground">swindoncollege2@gmail.com</p>
                 </div>
               </a>
 
@@ -514,7 +508,7 @@ function ContactSection() {
                 </div>
                 <div>
                   <p className="font-bold">Ubicación</p>
-                  <p className="text-muted-foreground">{displayAddress}</p>
+                  <p className="text-muted-foreground">Carapachay, Buenos Aires, Argentina</p>
                 </div>
               </div>
             </div>
@@ -522,50 +516,9 @@ function ContactSection() {
 
           {/* Contact Form */}
           <div className={cn('slide-in-right lg:mt-24 space-y-6', isVisible && 'visible')}>
-            {featureInscriptions === 'true' ? (
-              <>
-                <ContactForm />
-                
-                <div className="bg-primary/5 rounded-2xl p-6 border border-primary/10 shadow-sm">
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center text-white">
-                      <CalendarIcon className="w-6 h-6" />
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-lg">¿Preferís una entrevista?</h4>
-                      <p className="text-sm text-muted-foreground">Agendá tu nivelación sin cargo en segundos</p>
-                    </div>
-                  </div>
-                  
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button className="w-full btn-shine bg-primary hover:bg-primary/90">
-                        Agendar Entrevista de Nivel
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden border-none">
-                      <AppointmentBookingForm />
-                    </DialogContent>
-                  </Dialog>
-                </div>
-              </>
-            ) : (
-              <div className="bg-card rounded-2xl border shadow-lg p-8 text-center space-y-4">
-                <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto">
-                  <Clock className="w-8 h-8 text-amber-600" />
-                </div>
-                <h3 className="text-2xl font-bold">Inscripciones Cerradas</h3>
-                <p className="text-muted-foreground">
-                  Actualmente no estamos recibiendo nuevas inscripciones por este medio. 
-                  Por favor, consultanos por WhatsApp para conocer las próximas fechas de apertura.
-                </p>
-                <Button asChild className="w-full bg-[#25D366] hover:bg-[#128C7E]">
-                  <a href={`https://wa.me/${displayPhone.replace(/\s/g, '')}`} target="_blank" rel="noopener noreferrer">
-                    Consultar por WhatsApp
-                  </a>
-                </Button>
-              </div>
-            )}
+            <ContactForm />
+            
+            <div className="bg-primary/5 rounded-2xl p-6 border border-primary/10 shadow-sm">
               <div className="flex items-center gap-4 mb-4">
                 <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center text-white">
                   <CalendarIcon className="w-6 h-6" />
@@ -595,11 +548,6 @@ function ContactSection() {
 }
 
 function AppointmentBookingForm() {
-  const { data: phone } = trpc.settings.get.useQuery({ key: 'site_phone' });
-  const displayPhone = phone || '15 3070-7350';
-  const whatsappPhone = displayPhone.replace(/\s/g, '').replace(/^\+/, '');
-  const finalWhatsappPhone = whatsappPhone.startsWith('54') ? whatsappPhone : `549${whatsappPhone}`;
-
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [step, setStep] = useState(1);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
@@ -661,7 +609,7 @@ function AppointmentBookingForm() {
         </p>
         <Button asChild className="bg-[#25D366] hover:bg-[#128C7E] text-white w-full">
           <a 
-            href={`https://wa.me/${finalWhatsappPhone}?text=Hola!%20Acabo%20de%20agendar%20una%20entrevista%20de%20nivelación%20para%20el%20día%20${selectedDate?.toLocaleDateString()}%20a%20las%20${selectedHour}.`} 
+            href={`https://wa.me/5491130707350?text=Hola!%20Acabo%20de%20agendar%20una%20entrevista%20de%20nivelación%20para%20el%20día%20${selectedDate?.toLocaleDateString()}%20a%20las%20${selectedHour}.`} 
             target="_blank" 
             rel="noopener noreferrer"
           >

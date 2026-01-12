@@ -437,6 +437,11 @@ export const appRouter = router({
       await db.trackMetric('whatsappClicks' as any);
       return { success: true };
     }),
+    getAuditLogs: adminProcedure
+      .input(z.object({ limit: z.number().default(50) }))
+      .query(async ({ input }) => {
+        return await db.getAuditLogs(input.limit);
+      }),
   }),
 
   // ==================== CHATBOT ROUTES ====================

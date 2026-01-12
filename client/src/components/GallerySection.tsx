@@ -1,10 +1,10 @@
-import { trpc } from '@/lib/trpc';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
+import { trpc } from '@/lib/trpc';
 
 export function GallerySection() {
-  const { data: images, isLoading } = trpc.gallery.listActive.useQuery();
+  const { data: images, isLoading } = trpc.gallery.list.useQuery();
   const { ref, isVisible } = useScrollAnimation<HTMLDivElement>();
 
   if (isLoading || !images || images.length === 0) return null;
@@ -26,7 +26,7 @@ export function GallerySection() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {images.map((image, index) => (
+          {images.map((image: any, index: number) => (
             <motion.div
               key={image.id}
               initial={{ opacity: 0, scale: 0.9 }}

@@ -368,6 +368,9 @@ export async function getRecentAuditLogs(limit: number = 50): Promise<AuditLog[]
   return await db.select().from(auditLogs).orderBy(desc(auditLogs.createdAt)).limit(limit);
 }
 
+// Alias para compatibilidad con routers
+export const getAuditLogs = getRecentAuditLogs;
+
 // ==================== GALLERY FUNCTIONS ====================
 
 export async function createGalleryImage(data: InsertGalleryImage): Promise<GalleryImage> {

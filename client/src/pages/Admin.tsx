@@ -41,6 +41,7 @@ import {
 import {
   LayoutDashboard,
   MessageSquare,
+  MessageCircle,
   Star,
   HelpCircle,
   Users,
@@ -107,13 +108,6 @@ function DashboardOverview() {
   const { data: appointments } = trpc.appointments.list.useQuery();
   const { data: metrics } = trpc.metrics.getRecent.useQuery({ days: 7 });
   
-  const stats = {
-    total: contacts?.length || 0,
-    nuevos: contacts?.filter(c => c.status === 'nuevo').length || 0,
-    reservas: appointments?.length || 0,
-    vistas: metrics?.reduce((acc, m) => acc + m.pageViews, 0) || 0,
-  };
-
   const stats = {
     total: contacts?.length || 0,
     nuevos: contacts?.filter(c => c.status === 'nuevo').length || 0,

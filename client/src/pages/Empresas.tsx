@@ -25,8 +25,8 @@ function EmpresasHero() {
 
   return (
     <section className="relative min-h-[70vh] flex items-center overflow-hidden">
-      <div className="absolute inset-0 bg-primary/5" />
-      <div className="absolute inset-0 hero-pattern opacity-30" />
+      <div className="absolute inset-0 bg-[#e0f2f1]" />
+      <div className="absolute inset-0 hero-pattern opacity-20" />
 
       <div className="container relative z-10">
         <div 

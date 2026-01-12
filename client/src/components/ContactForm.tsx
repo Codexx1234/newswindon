@@ -83,9 +83,20 @@ export function ContactForm({ contactType = 'individual', showCompanyField = fal
           Recibimos tu mensaje correctamente. Te enviaremos un email de confirmación 
           y nos pondremos en contacto a la brevedad.
         </p>
-        <Button onClick={() => setIsSubmitted(false)} variant="outline">
-          Enviar otro mensaje
-        </Button>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Button asChild className="bg-[#25D366] hover:bg-[#128C7E] text-white">
+            <a 
+              href="https://wa.me/5491130707350?text=Hola!%20Acabo%20de%20enviar%20un%20formulario%20en%20la%20web%20y%20me%20gustaría%20más%20información." 
+              target="_blank" 
+              rel="noopener noreferrer"
+            >
+              Contactar por WhatsApp
+            </a>
+          </Button>
+          <Button onClick={() => setIsSubmitted(false)} variant="outline">
+            Enviar otro mensaje
+          </Button>
+        </div>
       </div>
     );
   }

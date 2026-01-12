@@ -61,6 +61,7 @@ import { cn } from '@/lib/utils';
 const navItems = [
   { href: '/admin', icon: LayoutDashboard, label: 'Dashboard' },
   { href: '/admin/contacts', icon: MessageSquare, label: 'Contactos' },
+  { href: '/admin/appointments', icon: Clock, label: 'Reservas' },
   { href: '/admin/testimonials', icon: Star, label: 'Testimonios' },
   { href: '/admin/chatbot', icon: HelpCircle, label: 'Chatbot FAQs' },
 ];
@@ -68,17 +69,21 @@ const navItems = [
 // Dashboard Overview
 function DashboardOverview() {
   const { data: contacts } = trpc.contacts.list.useQuery();
+  const { data: appointments } = trpc.appointments.list.useQuery();
+  const { data: metrics } = trpc.metrics.getRecent.useQuery({ days: 7 });
   
   const stats = {
     total: contacts?.length || 0,
     nuevos: contacts?.filter(c => c.status === 'nuevo').length || 0,
-    empresas: contacts?.filter(c => c.contactType === 'empresa').length || 0,
+    reservas: appointments?.length || 0,
+    vistas: metrics?.reduce((acc, m) => acc + m.pageViews, 0) || 0,
   };
 
   const statCards = [
     { label: 'Total Contactos', value: stats.total, icon: Users, color: 'bg-blue-500' },
-    { label: 'Nuevos', value: stats.nuevos, icon: Clock, color: 'bg-yellow-500' },
-    { label: 'Empresas', value: stats.empresas, icon: TrendingUp, color: 'bg-green-500' },
+    { label: 'Nuevos Contactos', value: stats.nuevos, icon: MessageSquare, color: 'bg-yellow-500' },
+    { label: 'Reservas Totales', value: stats.reservas, icon: Clock, color: 'bg-purple-500' },
+    { label: 'Vistas (7d)', value: stats.vistas, icon: TrendingUp, color: 'bg-green-500' },
   ];
 
   return (
@@ -121,6 +126,12 @@ function DashboardOverview() {
               <a href="/admin/testimonials">
                 <Star className="mr-2 h-4 w-4" />
                 Gestionar testimonios
+              </a>
+            </Button>
+            <Button variant="outline" className="w-full justify-start" asChild>
+              <a href="/admin/appointments">
+                <Clock className="mr-2 h-4 w-4" />
+                Gestionar reservas
               </a>
             </Button>
             <Button variant="outline" className="w-full justify-start" asChild>
@@ -786,6 +797,115 @@ function AdminSidebar({ currentPath }: { currentPath: string }) {
   );
 }
 
+// Appointments Management
+function AppointmentsManagement() {
+  const { data: appointments, isLoading, refetch } = trpc.appointments.list.useQuery();
+  const updateStatusMutation = trpc.appointments.updateStatus.useMutation({
+    onSuccess: () => {
+      toast.success('Estado de reserva actualizado');
+      refetch();
+    },
+  });
+
+  const statusColors: Record<string, string> = {
+    pendiente: 'bg-yellow-100 text-yellow-800',
+    confirmada: 'bg-blue-100 text-blue-800',
+    cancelada: 'bg-red-100 text-red-800',
+    completada: 'bg-green-100 text-green-800',
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold">Reservas</h1>
+        <p className="text-muted-foreground">Gestiona las entrevistas de nivelación y consultas agendadas</p>
+      </div>
+
+      <Card>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Nombre</TableHead>
+                <TableHead>Fecha y Hora</TableHead>
+                <TableHead>Tipo</TableHead>
+                <TableHead>Contacto</TableHead>
+                <TableHead>Estado</TableHead>
+                <TableHead className="text-right">Acciones</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {appointments?.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                    No hay reservas registradas
+                  </TableCell>
+                </TableRow>
+              ) : (
+                appointments?.map((appointment) => (
+                  <TableRow key={appointment.id}>
+                    <TableCell className="font-medium">{appointment.fullName}</TableCell>
+                    <TableCell>
+                      {new Date(appointment.appointmentDate).toLocaleString('es-AR')}
+                    </TableCell>
+                    <TableCell className="capitalize">
+                      {appointment.appointmentType.replace('_', ' ')}
+                    </TableCell>
+                    <TableCell>
+                      <div className="text-sm">
+                        <p>{appointment.email}</p>
+                        <p className="text-muted-foreground">{appointment.phone}</p>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Select
+                        value={appointment.status}
+                        onValueChange={(value) => updateStatusMutation.mutate({ 
+                          id: appointment.id, 
+                          status: value as any 
+                        })}
+                      >
+                        <SelectTrigger className={cn('w-32', statusColors[appointment.status])}>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="pendiente">Pendiente</SelectItem>
+                          <SelectItem value="confirmada">Confirmada</SelectItem>
+                          <SelectItem value="cancelada">Cancelada</SelectItem>
+                          <SelectItem value="completada">Completada</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button variant="outline" size="sm" asChild>
+                        <a 
+                          href={`https://wa.me/${appointment.phone.replace(/\D/g, '')}`} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                        >
+                          WhatsApp
+                        </a>
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 // Main Admin Page
 export default function Admin() {
   const { user, loading, isAuthenticated } = useAuth();
@@ -843,6 +963,7 @@ export default function Admin() {
 
   const renderContent = () => {
     if (path === '/admin/contacts') return <ContactsManagement />;
+    if (path === '/admin/appointments') return <AppointmentsManagement />;
     if (path === '/admin/testimonials') return <TestimonialsManagement />;
     if (path === '/admin/chatbot') return <ChatbotManagement />;
     return <DashboardOverview />;

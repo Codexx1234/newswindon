@@ -1,4 +1,6 @@
 import { Link } from 'wouter';
+import { useState } from 'react';
+import { trpc } from '@/lib/trpc';
 import { Button } from '@/components/ui/button';
 import { 
   Building2, 
@@ -13,8 +15,21 @@ import {
   Globe,
   Handshake,
   Phone,
-  Mail
+  Mail,
+  Calendar,
+  Loader2
 } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { useScrollAnimation, useCounterAnimation } from '@/hooks/useScrollAnimation';
 import { ContactForm } from '@/components/ContactForm';
@@ -403,8 +418,31 @@ function ContactSection() {
             </div>
           </div>
 
-          <div className={cn('slide-in-right', isVisible && 'visible')}>
+          <div className={cn('slide-in-right space-y-6', isVisible && 'visible')}>
             <ContactForm contactType="empresa" />
+            
+            <div className="bg-primary/5 rounded-2xl p-6 border border-primary/10 shadow-sm">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center text-white">
+                  <CalendarIcon className="w-6 h-6" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-lg">¿Preferís una reunión?</h4>
+                  <p className="text-sm text-muted-foreground">Agendá una consulta corporativa en segundos</p>
+                </div>
+              </div>
+              
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button className="w-full btn-shine bg-primary hover:bg-primary/90">
+                    Agendar Reunión Informativa
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden border-none">
+                  <AppointmentBookingForm defaultType="empresa" />
+                </DialogContent>
+              </Dialog>
+            </div>
           </div>
         </div>
       </div>
@@ -413,6 +451,223 @@ function ContactSection() {
 }
 
 // Main Empresas Page
+function AppointmentBookingForm({ defaultType = 'entrevista_nivel' }: { defaultType?: 'entrevista_nivel' | 'consulta_general' | 'empresa' }) {
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [step, setStep] = useState(1);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [selectedHour, setSelectedHour] = useState<string | undefined>(undefined);
+
+  const bookMutation = trpc.appointments.book.useMutation({
+    onSuccess: () => {
+      setIsSubmitted(true);
+      toast.success('¡Reserva enviada!', {
+        description: 'Te confirmaremos la cita a la brevedad.',
+      });
+    },
+    onError: (error) => {
+      toast.error('Error al reservar', {
+        description: error.message || 'Por favor, intentá de nuevo.',
+      });
+    },
+  });
+
+  const [formData, setFormData] = useState({
+    fullName: '',
+    email: '',
+    phone: '',
+    appointmentType: defaultType,
+    notes: '',
+  });
+
+  const hours = Array.from({ length: 10 }, (_, i) => `${i + 10}:00`);
+
+  const isDayDisabled = (date: Date) => {
+    const day = date.getDay();
+    return day === 0 || day === 5 || day === 6 || date < new Date(new Date().setHours(0,0,0,0));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedDate || !selectedHour) return;
+
+    const [hour] = selectedHour.split(':');
+    const appointmentDate = new Date(selectedDate);
+    appointmentDate.setHours(parseInt(hour), 0, 0, 0);
+    
+    bookMutation.mutate({
+      ...formData,
+      appointmentDate,
+    });
+  };
+
+  if (isSubmitted) {
+    return (
+      <div className="text-center py-8 px-6 bg-card">
+        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <CheckCircle className="w-8 h-8 text-green-600" />
+        </div>
+        <h3 className="text-xl font-bold mb-2">¡Cita Agendada!</h3>
+        <p className="text-muted-foreground mb-6">
+          Recibimos tu solicitud correctamente. 
+          Nos pondremos en contacto con vos para confirmar el horario.
+        </p>
+        <Button asChild className="bg-[#25D366] hover:bg-[#128C7E] text-white w-full">
+          <a 
+            href={`https://wa.me/5491130707350?text=Hola!%20Acabo%20de%20agendar%20una%20reunión%20informativa%20para%20el%20día%20${selectedDate?.toLocaleDateString()}%20a%20las%20${selectedHour}.`} 
+            target="_blank" 
+            rel="noopener noreferrer"
+          >
+            Avisar por WhatsApp
+          </a>
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col max-h-[90vh] overflow-y-auto">
+      <div className="bg-primary p-6 text-white sticky top-0 z-10">
+        <DialogHeader>
+          <DialogTitle className="text-2xl font-bold text-white">Agendar Reunión</DialogTitle>
+          <p className="text-primary-foreground/80 text-sm mt-1">
+            {step === 1 ? 'Paso 1: Elegí día y hora' : 'Paso 2: Completá tus datos'}
+          </p>
+        </DialogHeader>
+      </div>
+      
+      <div className="p-6 bg-card">
+        {step === 1 ? (
+          <div className="space-y-6">
+            <div className="flex justify-center">
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={setSelectedDate}
+                disabled={isDayDisabled}
+                className="rounded-md border shadow-sm"
+              />
+            </div>
+            
+            {selectedDate && (
+              <div className="space-y-3 animate-in fade-in slide-in-from-bottom-2">
+                <Label className="text-sm font-bold flex items-center gap-2">
+                  <Clock className="w-4 h-4" /> Horarios disponibles (Lun-Jue)
+                </Label>
+                <div className="grid grid-cols-3 gap-2">
+                  {hours.map((hour) => (
+                    <Button
+                      key={hour}
+                      variant={selectedHour === hour ? "primary" : "outline"}
+                      className={cn(
+                        "h-10 text-sm font-medium",
+                        selectedHour === hour && "bg-primary text-white"
+                      )}
+                      onClick={() => setSelectedHour(hour)}
+                    >
+                      {hour}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <Button 
+              className="w-full h-12 mt-4" 
+              disabled={!selectedDate || !selectedHour}
+              onClick={() => setStep(2)}
+            >
+              Continuar <ChevronRight className="w-4 h-4 ml-2" />
+            </Button>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="bg-muted/50 p-3 rounded-lg text-sm mb-4 flex justify-between items-center">
+              <div>
+                <p className="font-bold text-primary">Horario seleccionado:</p>
+                <p>{selectedDate?.toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' })} a las {selectedHour}hs</p>
+              </div>
+              <Button variant="ghost" size="sm" onClick={() => setStep(1)} className="text-xs">Cambiar</Button>
+            </div>
+
+            <div className="grid gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="book-name" className="text-sm font-semibold">Nombre completo *</Label>
+                <Input 
+                  id="book-name" 
+                  placeholder="Tu nombre"
+                  required 
+                  className="input-focus"
+                  value={formData.fullName}
+                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                />
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="book-email" className="text-sm font-semibold">Email *</Label>
+                  <Input 
+                    id="book-email" 
+                    type="email" 
+                    placeholder="tu@email.com"
+                    required 
+                    className="input-focus"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="book-phone" className="text-sm font-semibold">Teléfono *</Label>
+                  <Input 
+                    id="book-phone" 
+                    type="tel" 
+                    placeholder="Tu teléfono"
+                    required 
+                    className="input-focus"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  />
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="book-type" className="text-sm font-semibold">Motivo de la cita</Label>
+                <Select 
+                  value={formData.appointmentType}
+                  onValueChange={(value) => setFormData({ ...formData, appointmentType: value as any })}
+                >
+                  <SelectTrigger className="input-focus">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="entrevista_nivel">Entrevista de Nivelación</SelectItem>
+                    <SelectItem value="consulta_general">Consulta General</SelectItem>
+                    <SelectItem value="empresa">Consulta para Empresas</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            
+            <Button 
+              type="submit" 
+              className="w-full btn-shine h-12 text-base font-bold" 
+              disabled={bookMutation.isPending}
+            >
+              {bookMutation.isPending ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Procesando...
+                </>
+              ) : (
+                'Confirmar Reserva'
+              )}
+            </Button>
+          </form>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function Empresas() {
   return (
     <>

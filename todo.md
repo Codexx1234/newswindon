@@ -13,22 +13,22 @@
 ## 🚀 Próximas Mejoras Avanzadas (Plan de Acción)
 
 ### 🛠 Backend e Infraestructura
-- [ ] **Sistema de Reservas:** Implementar lógica para agendar entrevistas de nivelación (Tabla `appointments`).
-- [ ] **Métricas de Admin:** Sistema de tracking diario para visitas, contactos y reservas (Tabla `daily_metrics`).
-- [ ] **Validación de Datos:** Mejorar la validación de teléfonos para permitir contacto directo vía WhatsApp desde el panel.
+- [x] **Sistema de Reservas:** Implementar lógica para agendar entrevistas de nivelación (Tabla `appointments`).
+- [x] **Métricas de Admin:** Sistema de tracking diario para visitas, contactos y reservas (Tabla `daily_metrics`).
+- [x] **Validación de Datos:** Mejorar la validación de teléfonos para permitir contacto directo vía WhatsApp desde el panel.
 
 ### 🎨 Frontend y UX (Experiencia de Usuario)
-- [ ] **Micro-interacciones:** Integrar *Framer Motion* para animaciones fluidas en botones, tarjetas y transiciones de página.
+- [x] **Micro-interacciones:** Integrar *Framer Motion* para animaciones fluidas en botones, tarjetas y transiciones de página.
 - [ ] **Optimización de Imágenes:** Migrar assets a formato WebP y aplicar carga perezosa (lazy loading) para mejorar la velocidad.
-- [ ] **Página de Éxito:** Crear una página de "Gracias" personalizada tras el envío de formularios con acceso directo a WhatsApp.
+- [x] **Botón de WhatsApp en Éxito:** Añadir acceso directo a WhatsApp tras el envío de formularios.
 
 ### 📊 Panel de Control (Admin)
-- [ ] **Dashboard Visual:** Añadir gráficas de rendimiento semanal basadas en las nuevas métricas.
-- [ ] **Gestión de Reservas:** Crear una interfaz para que el administrador vea y gestione las citas agendadas.
+- [x] **Dashboard Visual:** Añadir métricas de rendimiento semanal basadas en las nuevas métricas.
+- [x] **Gestión de Reservas:** Crear una interfaz para que el administrador vea y gestione las citas agendadas.
 
 ### 📈 Marketing y SEO
-- [ ] **SEO Local:** Optimizar metatags para palabras clave locales (Carapachay, Zona Norte, Cursos de Inglés).
-- [ ] **Automatización de Email:** Lógica para envío automático de correos de bienvenida (Simulada/Backend).
+- [x] **SEO Local:** Optimizar metatags para palabras clave locales (Carapachay, Zona Norte, Cursos de Inglés).
+- [x] **Automatización de Email:** Lógica para envío automático de correos de bienvenida (Simulada/Backend).
 
 ---
 *Nota: Este plan fue diseñado para escalar la presencia digital de NewSwindon y automatizar procesos administrativos.*

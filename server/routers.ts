@@ -51,6 +51,7 @@ export const appRouter = router({
         });
 
         if (contact) {
+          await db.trackMetric('contactSubmissions');
           const isEmpresa = input.contactType === "empresa";
           await notifyOwner({
             title: `Nuevo contacto ${isEmpresa ? "EMPRESARIAL" : ""}: ${input.fullName}`,
@@ -177,6 +178,106 @@ Contactar a la brevedad.
   }),
 
   // ==================== CHATBOT ROUTES ====================
+  // ==================== APPOINTMENT ROUTES ====================
+  appointments: router({
+    // Public: Book an appointment
+    book: publicProcedure
+      .input(z.object({
+        fullName: z.string().min(2),
+        email: z.string().email(),
+        phone: z.string().min(8),
+        appointmentDate: z.date(),
+        appointmentType: z.enum(["entrevista_nivel", "consulta_general", "empresa"]).default("entrevista_nivel"),
+        notes: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        // Validar horario laboral (Lunes a Viernes 9-21, Sábados 9-13)
+        const date = new Date(input.appointmentDate);
+        const day = date.getDay(); // 0=Domingo, 1=Lunes, ..., 6=Sábado
+        const hour = date.getHours();
+        
+        let isWorkingHour = false;
+        if (day >= 1 && day <= 4) { // Lunes a Jueves
+          if (hour >= 10 && hour < 20) isWorkingHour = true;
+        }
+
+        if (!isWorkingHour) {
+          throw new TRPCError({ 
+            code: 'BAD_REQUEST', 
+            message: 'El horario seleccionado está fuera de la jornada laboral (Lunes a Jueves de 10 a 20hs).' 
+          });
+        }
+
+        // Validar intervalos de 1 hora (minutos deben ser 00)
+        if (date.getMinutes() !== 0) {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: 'Las citas solo pueden agendarse en intervalos de 1 hora (ej: 10:00, 11:00).'
+          });
+        }
+
+        // Verificar disponibilidad
+        const isAvailable = await db.checkAppointmentAvailability(date);
+        if (!isAvailable) {
+          throw new TRPCError({
+            code: 'CONFLICT',
+            message: 'El horario seleccionado ya está ocupado. Por favor, elegí otro horario disponible.'
+          });
+        }
+
+        const appointment = await db.createAppointment(input);
+        await db.trackMetric('appointmentBookings');
+        
+        await notifyOwner({
+          title: `Nueva Reserva: ${input.fullName}`,
+          content: `
+📅 **Nueva Cita Agendada**
+
+**Tipo:** ${input.appointmentType}
+**Fecha:** ${input.appointmentDate.toLocaleString()}
+**Nombre:** ${input.fullName}
+**Email:** ${input.email}
+**Teléfono:** ${input.phone}
+**Notas:** ${input.notes || "Sin notas"}
+          `,
+        });
+
+        return { success: true, appointment };
+      }),
+
+    // Admin: List all appointments
+    list: adminProcedure.query(async () => {
+      return await db.getAllAppointments();
+    }),
+
+    // Admin: Update appointment status
+    updateStatus: adminProcedure
+      .input(z.object({
+        id: z.number(),
+        status: z.enum(["pendiente", "confirmada", "cancelada", "completada"]),
+      }))
+      .mutation(async ({ input }) => {
+        await db.updateAppointment(input.id, { status: input.status });
+        return { success: true };
+      }),
+  }),
+
+  // ==================== METRICS ROUTES ====================
+  metrics: router({
+    // Admin: Get recent metrics
+    getRecent: adminProcedure
+      .input(z.object({ days: z.number().default(7) }))
+      .query(async ({ input }) => {
+        return await db.getRecentMetrics(input.days);
+      }),
+    
+    // Public: Track page view (simple)
+    trackPageView: publicProcedure.mutation(async () => {
+      await db.trackMetric('pageViews');
+      return { success: true };
+    }),
+  }),
+
   chatbot: router({
     // Public: Get active FAQs
     faqs: publicProcedure.query(async () => {
@@ -187,6 +288,7 @@ Contactar a la brevedad.
     chat: publicProcedure
       .input(z.object({ message: z.string().min(1) }))
       .mutation(async ({ input }) => {
+        await db.trackMetric('chatbotInteractions');
         const faqs = await db.getActiveFaqs();
         
         const faqContext = faqs.map(faq => 

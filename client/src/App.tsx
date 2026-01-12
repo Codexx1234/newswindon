@@ -8,6 +8,8 @@ import Home from "./pages/Home";
 import Empresas from "./pages/Empresas";
 import Admin from "./pages/Admin";
 import { Navbar } from "./components/Navbar";
+import { useEffect } from "react";
+import { trpc } from "./lib/trpc";
 import { Footer } from "./components/Footer";
 import { WhatsAppButton } from "./components/WhatsAppButton";
 import { ScrollToTop } from "./components/ScrollToTop";
@@ -31,6 +33,12 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
 }
 
 function Router() {
+  const trackPageView = trpc.metrics.trackPageView.useMutation();
+
+  useEffect(() => {
+    trackPageView.mutate();
+  }, []);
+
   return (
     <Switch>
       <Route path="/">

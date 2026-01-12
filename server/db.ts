@@ -271,6 +271,25 @@ export async function updateAppointment(id: number, data: Partial<InsertAppointm
   await db.update(appointments).set(data).where(eq(appointments.id, id));
 }
 
+export async function checkAppointmentAvailability(date: Date): Promise<boolean> {
+  const db = await getDb();
+  if (!db) return false;
+
+  const result = await db.select().from(appointments)
+    .where(and(
+      eq(appointments.appointmentDate, date),
+      eq(appointments.status, 'pendiente')
+    )).limit(1);
+  
+  const confirmed = await db.select().from(appointments)
+    .where(and(
+      eq(appointments.appointmentDate, date),
+      eq(appointments.status, 'confirmada')
+    )).limit(1);
+
+  return result.length === 0 && confirmed.length === 0;
+}
+
 // ==================== METRICS FUNCTIONS ====================
 
 export async function trackMetric(type: 'pageViews' | 'contactSubmissions' | 'appointmentBookings' | 'chatbotInteractions'): Promise<void> {

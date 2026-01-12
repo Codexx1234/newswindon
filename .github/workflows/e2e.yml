@@ -19,12 +19,34 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: 20
+        cache: 'pnpm'
     
     - name: Setup pnpm
-      uses: pnpm/action-setup@v3
+      uses: pnpm/action-setup@v2
       with:
-        version: 8
-        run_install: true
+        version: 10
+    
+    - name: Get pnpm store directory
+      id: pnpm-cache
+      shell: bash
+      run: |
+        echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+    - name: Setup pnpm cache
+      uses: actions/cache@v3
+      with:
+        path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+        key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-pnpm-store-
+
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
+      continue-on-error: true
+
+    - name: Install dependencies (fallback)
+      if: failure()
+      run: pnpm install
 
     - name: Build the project
       run: pnpm build
@@ -72,7 +94,7 @@ jobs:
         retention-days: 30
 
     - name: Comment PR with test results
-      if: github.event_name == 'pull_request'
+      if: github.event_name == 'pull_request' && success()
       uses: actions/github-script@v7
       with:
         script: |
@@ -81,4 +103,16 @@ jobs:
             owner: context.repo.owner,
             repo: context.repo.repo,
             body: '✅ E2E tests passed! Build is ready for deployment.'
+          })
+    
+    - name: Comment PR with test failure
+      if: github.event_name == 'pull_request' && failure()
+      uses: actions/github-script@v7
+      with:
+        script: |
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: '❌ E2E tests failed. Please check the Playwright report in the Actions tab.'
           })

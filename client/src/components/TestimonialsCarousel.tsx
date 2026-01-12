@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { trpc } from '@/lib/trpc';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
+import { Skeleton } from './ui/skeleton';
 
 interface Testimonial {
   id: number;
@@ -57,7 +58,7 @@ export function TestimonialsCarousel() {
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const { ref, isVisible } = useScrollAnimation<HTMLDivElement>();
 
-  const { data: dbTestimonials } = trpc.testimonials.list.useQuery();
+  const { data: dbTestimonials, isLoading } = trpc.testimonials.list.useQuery();
   
   const testimonials = dbTestimonials && dbTestimonials.length > 0 
     ? dbTestimonials 
@@ -103,6 +104,21 @@ export function TestimonialsCarousel() {
         </div>
 
         <div className="relative max-w-4xl mx-auto">
+          {isLoading ? (
+            <div className="bg-card rounded-2xl p-12 border shadow-sm text-center space-y-6">
+              <Skeleton className="h-12 w-12 rounded-full mx-auto" />
+              <Skeleton className="h-6 w-3/4 mx-auto" />
+              <Skeleton className="h-6 w-1/2 mx-auto" />
+              <div className="flex justify-center gap-2">
+                {[1, 2, 3, 4, 5].map(i => <Skeleton key={i} className="h-5 w-5 rounded-full" />)}
+              </div>
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-32 mx-auto" />
+                <Skeleton className="h-3 w-48 mx-auto" />
+              </div>
+            </div>
+          ) : (
+            <>
           {/* Main Carousel */}
           <div className="overflow-hidden">
             <div
@@ -188,6 +204,8 @@ export function TestimonialsCarousel() {
               />
             ))}
           </div>
+          </>
+          )}
         </div>
       </div>
     </section>

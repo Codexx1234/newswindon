@@ -17,7 +17,8 @@ import {
   Phone,
   Mail,
   Calendar,
-  Loader2
+  Loader2,
+  ChevronRight
 } from 'lucide-react';
 import {
   Dialog,
@@ -424,7 +425,7 @@ function ContactSection() {
             <div className="bg-primary/5 rounded-2xl p-6 border border-primary/10 shadow-sm">
               <div className="flex items-center gap-4 mb-4">
                 <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center text-white">
-                  <CalendarIcon className="w-6 h-6" />
+                  <Calendar className="w-6 h-6" />
                 </div>
                 <div>
                   <h4 className="font-bold text-lg">¿Preferís una reunión?</h4>

@@ -291,38 +291,44 @@ Contactar a la brevedad.
         await db.trackMetric('chatbotInteractions');
         const faqs = await db.getActiveFaqs();
         
-        const faqContext = faqs.map(faq => 
-          `P: ${faq.question}\nR: ${faq.answer}`
-        ).join('\n\n');
+        const faqContext = faqs.length > 0 
+          ? faqs.map(faq => `P: ${faq.question}\nR: ${faq.answer}`).join('\n\n')
+          : "No hay preguntas frecuentes cargadas actualmente.";
 
         const systemPrompt = `Sos el asistente virtual de NewSwindon, un instituto de inglés con 35 años de trayectoria en Carapachay, Buenos Aires.
 
 INFORMACIÓN DE LA ACADEMIA:
-- 35 años de experiencia formando estudiantes
-- Cursos para todas las edades (desde 3 años)
-- Grupos reducidos con atención personalizada
-- No se cobra matrícula ni derecho de examen
-- Preparación para exámenes Cambridge (First Certificate, Proficiency)
-- Material multimedia incluido (revistas, DVDs, videos, CDs)
-- Profesores especializados
-- Taller de conversación
-- Preparación para ingreso a profesorado y traductorado
-- 30+ años brindando capacitación a empresas
-- Ubicación: Carapachay, Buenos Aires
+- 35 años de experiencia formando estudiantes.
+- Cursos para todas las edades (desde 3 años).
+- Grupos reducidos con atención personalizada.
+- Beneficio exclusivo: NO se cobra matrícula ni derecho de examen.
+- Preparación para exámenes Cambridge (First Certificate, Proficiency).
+- Material multimedia incluido (revistas, DVDs, videos, CDs).
+- Profesores especializados y taller de conversación.
+- Preparación para ingreso a profesorado y traductorado.
+- 30+ años brindando capacitación a empresas líderes.
+- Ubicación: Carapachay, Buenos Aires.
 - Contacto: 15 3070-7350 | swindoncollege2@gmail.com
 
-PREGUNTAS FRECUENTES:
+PREGUNTAS FRECUENTES DEL ADMIN:
 ${faqContext}
 
 INSTRUCCIONES:
-- Responde siempre en español de Argentina (vos, tenés, etc.)
-- Sé amable, profesional y conciso
-- Si no conocés la respuesta exacta, sugiere contactar por WhatsApp (15 3070-7350) o email
-- Promociona los beneficios de la academia
-- Máximo 3-4 oraciones por respuesta
-- SOLO usa la información proporcionada arriba, no inventes datos`;
+- Responde siempre en español de Argentina (usá el "voseo": vos, tenés, vení).
+- Sé amable, profesional y muy conciso.
+- Si el usuario pregunta algo que está en las PREGUNTAS FRECUENTES, usá esa información.
+- Si no conocés la respuesta exacta, sugerí contactar por WhatsApp (15 3070-7350).
+- Máximo 3 oraciones por respuesta.`;
 
         try {
+          // Fallback local si la pregunta es muy simple y coincide con una FAQ
+          const lowerMsg = input.message.toLowerCase();
+          const quickMatch = faqs.find(f => lowerMsg.includes(f.question.toLowerCase()) || f.question.toLowerCase().includes(lowerMsg));
+          
+          if (quickMatch) {
+            return { response: quickMatch.answer };
+          }
+
           const response = await invokeLLM({
             messages: [
               { role: "system", content: systemPrompt },
@@ -331,15 +337,13 @@ INSTRUCCIONES:
           });
 
           const messageContent = response.choices[0]?.message?.content;
-          const aiResponse = typeof messageContent === 'string' 
-            ? messageContent 
-            : "Disculpá, no pude procesar tu consulta. Por favor contactanos por WhatsApp al 15 3070-7350.";
-
-          return { response: aiResponse };
+          return { 
+            response: typeof messageContent === 'string' ? messageContent : "¡Hola! Para darte una respuesta precisa sobre ese tema, te sugiero consultarnos directamente por WhatsApp al 15 3070-7350. ¡Te esperamos!" 
+          };
         } catch (error) {
           console.error("Chatbot error:", error);
           return { 
-            response: "Disculpá, hubo un error. Por favor contactanos por WhatsApp al 15 3070-7350 o por email a swindoncollege2@gmail.com." 
+            response: "¡Hola! Justo ahora tengo mucha gente consultando. Para no hacerte esperar, ¿podrías escribirnos al WhatsApp 15 3070-7350? Te respondemos al toque." 
           };
         }
       }),

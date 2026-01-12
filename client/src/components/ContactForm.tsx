@@ -29,6 +29,7 @@ const contactSchema = z.object({
   message: z.string().optional(),
   companyName: z.string().optional(),
   employeeCount: z.string().optional(),
+  honeypot: z.string().max(0).optional(),
 });
 
 type ContactFormData = z.infer<typeof contactSchema>;
@@ -117,6 +118,16 @@ export function ContactForm({ contactType = 'individual', showCompanyField = fal
         <p className="text-muted-foreground">
           Completá el formulario y te contactaremos a la brevedad
         </p>
+      </div>
+
+      {/* Honeypot field to prevent spam */}
+      <div className="hidden" aria-hidden="true">
+        <Input
+          id="honeypot"
+          tabIndex={-1}
+          autoComplete="off"
+          {...register('honeypot')}
+        />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

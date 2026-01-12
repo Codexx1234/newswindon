@@ -80,3 +80,38 @@ export const chatbotFaqs = mysqlTable("chatbot_faqs", {
 
 export type ChatbotFaq = typeof chatbotFaqs.$inferSelect;
 export type InsertChatbotFaq = typeof chatbotFaqs.$inferInsert;
+
+/**
+ * Appointments for level interviews or consultations
+ */
+export const appointments = mysqlTable("appointments", {
+  id: int("id").autoincrement().primaryKey(),
+  fullName: varchar("fullName", { length: 255 }).notNull(),
+  email: varchar("email", { length: 320 }).notNull(),
+  phone: varchar("phone", { length: 50 }).notNull(),
+  appointmentDate: timestamp("appointmentDate").notNull(),
+  appointmentType: mysqlEnum("appointmentType", ["entrevista_nivel", "consulta_general", "empresa"]).default("entrevista_nivel").notNull(),
+  status: mysqlEnum("status", ["pendiente", "confirmada", "cancelada", "completada"]).default("pendiente").notNull(),
+  notes: text("notes"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Appointment = typeof appointments.$inferSelect;
+export type InsertAppointment = typeof appointments.$inferInsert;
+
+/**
+ * Daily metrics for the admin dashboard
+ */
+export const dailyMetrics = mysqlTable("daily_metrics", {
+  id: int("id").autoincrement().primaryKey(),
+  date: timestamp("date").notNull().unique(),
+  pageViews: int("pageViews").default(0).notNull(),
+  contactSubmissions: int("contactSubmissions").default(0).notNull(),
+  appointmentBookings: int("appointmentBookings").default(0).notNull(),
+  chatbotInteractions: int("chatbotInteractions").default(0).notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type DailyMetric = typeof dailyMetrics.$inferSelect;
+export type InsertDailyMetric = typeof dailyMetrics.$inferInsert;

@@ -21,6 +21,7 @@ import { cn } from '@/lib/utils';
 import { useScrollAnimation, useCounterAnimation } from '@/hooks/useScrollAnimation';
 import { TestimonialsCarousel } from '@/components/TestimonialsCarousel';
 import { ContactForm } from '@/components/ContactForm';
+import { motion } from 'framer-motion';
 
 // Hero Section
 function HeroSection() {
@@ -36,18 +37,28 @@ function HeroSection() {
       <div className="absolute inset-0 hero-pattern" />
       
       {/* Floating Elements */}
-      <div className="absolute top-20 left-10 w-20 h-20 bg-white/10 rounded-full blur-xl float" />
-      <div className="absolute bottom-20 right-20 w-32 h-32 bg-white/10 rounded-full blur-xl float" style={{ animationDelay: '2s' }} />
-      <div className="absolute top-1/2 right-1/4 w-16 h-16 bg-white/10 rounded-full blur-xl float" style={{ animationDelay: '4s' }} />
+      <motion.div 
+        animate={{ y: [0, -20, 0], opacity: [0.1, 0.2, 0.1] }}
+        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-20 left-10 w-20 h-20 bg-white/10 rounded-full blur-xl" 
+      />
+      <motion.div 
+        animate={{ y: [0, 30, 0], opacity: [0.1, 0.3, 0.1] }}
+        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+        className="absolute bottom-20 right-20 w-32 h-32 bg-white/10 rounded-full blur-xl" 
+      />
+      <motion.div 
+        animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
+        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+        className="absolute top-1/2 right-1/4 w-16 h-16 bg-white/10 rounded-full blur-xl" 
+      />
 
       <div className="container relative z-10">
-        <div 
-          ref={ref}
-          className={cn(
-            'max-w-4xl mx-auto text-center text-white',
-            'fade-in-up',
-            isVisible && 'visible'
-          )}
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={isVisible ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="max-w-4xl mx-auto text-center text-white"
         >
           {/* Main Heading */}
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
@@ -277,14 +288,14 @@ function CoursesSection() {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {courses.map((course, index) => (
-            <div
+            <motion.div
               key={course.title}
-              className={cn(
-                'bg-card rounded-2xl p-8 border shadow-sm card-hover flex flex-col items-center text-center',
-                'fade-in-up',
-                isVisible && 'visible'
-              )}
-              style={{ transitionDelay: `${index * 100}ms` }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1 }}
+              whileHover={{ y: -10, transition: { duration: 0.2 } }}
+              className="bg-card rounded-2xl p-8 border shadow-sm hover:shadow-xl transition-shadow flex flex-col items-center text-center"
             >
               <div className="icon-container mb-6">
                 <course.icon className="w-8 h-8" />
@@ -298,7 +309,7 @@ function CoursesSection() {
                   </span>
                 ))}
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
@@ -362,21 +373,21 @@ function BenefitsSection() {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {benefits.map((benefit, index) => (
-            <div
+            <motion.div
               key={benefit.title}
-              className={cn(
-                'flex flex-col items-center text-center p-8 rounded-2xl bg-card border shadow-sm card-hover',
-                'fade-in-up',
-                isVisible && 'visible'
-              )}
-              style={{ transitionDelay: `${index * 100}ms` }}
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1 }}
+              whileHover={{ scale: 1.05 }}
+              className="flex flex-col items-center text-center p-8 rounded-2xl bg-card border shadow-sm hover:shadow-lg transition-all"
             >
               <div className="icon-container mb-6">
                 <benefit.icon className="w-8 h-8" />
               </div>
               <h3 className="text-xl font-bold mb-3">{benefit.title}</h3>
               <p className="text-muted-foreground leading-relaxed">{benefit.description}</p>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>

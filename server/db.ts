@@ -4,7 +4,9 @@ import {
   InsertUser, users, 
   contacts, InsertContact, Contact, 
   testimonials, InsertTestimonial, Testimonial, 
-  chatbotFaqs, InsertChatbotFaq, ChatbotFaq
+  chatbotFaqs, InsertChatbotFaq, ChatbotFaq,
+  appointments, InsertAppointment, Appointment,
+  dailyMetrics, InsertDailyMetric, DailyMetric
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -240,4 +242,64 @@ export async function deleteFaq(id: number): Promise<void> {
   if (!db) throw new Error("Database not available");
 
   await db.delete(chatbotFaqs).where(eq(chatbotFaqs.id, id));
+}
+
+// ==================== APPOINTMENT FUNCTIONS ====================
+
+export async function createAppointment(data: InsertAppointment): Promise<Appointment> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const result = await db.insert(appointments).values(data);
+  const insertedId = Number(result[0].insertId);
+  
+  const inserted = await db.select().from(appointments).where(eq(appointments.id, insertedId)).limit(1);
+  return inserted[0]!;
+}
+
+export async function getAllAppointments(): Promise<Appointment[]> {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db.select().from(appointments).orderBy(desc(appointments.appointmentDate));
+}
+
+export async function updateAppointment(id: number, data: Partial<InsertAppointment>): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.update(appointments).set(data).where(eq(appointments.id, id));
+}
+
+// ==================== METRICS FUNCTIONS ====================
+
+export async function trackMetric(type: 'pageViews' | 'contactSubmissions' | 'appointmentBookings' | 'chatbotInteractions'): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  try {
+    const existing = await db.select().from(dailyMetrics).where(eq(dailyMetrics.date, today)).limit(1);
+    
+    if (existing.length > 0) {
+      const updateData: any = {};
+      updateData[type] = existing[0][type] + 1;
+      await db.update(dailyMetrics).set(updateData).where(eq(dailyMetrics.id, existing[0].id));
+    } else {
+      const newData: any = { date: today };
+      newData[type] = 1;
+      await db.insert(dailyMetrics).values(newData);
+    }
+  } catch (error) {
+    console.error("[Database] Failed to track metric:", error);
+  }
+}
+
+export async function getRecentMetrics(days: number = 7): Promise<DailyMetric[]> {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db.select().from(dailyMetrics).orderBy(desc(dailyMetrics.date)).limit(days);
 }

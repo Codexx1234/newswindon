@@ -1,4 +1,4 @@
-name: E2E Tests
+name: E2E Tests & Build
 
 on:
   push:
@@ -7,28 +7,78 @@ on:
     branches: [ main ]
 
 jobs:
-  playwright:
-    name: Run Playwright tests
+  build-and-test:
+    name: Build and Run E2E Tests
     runs-on: ubuntu-latest
+    
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
       with:
         node-version: 20
-    - uses: pnpm/action-setup@v3
+    
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v3
       with:
         version: 8
         run_install: true
 
+    - name: Build the project
+      run: pnpm build
+      env:
+        VITE_APP_ID: ${{ secrets.VITE_APP_ID || 'newswindon-app' }}
+        VITE_ANALYTICS_ENDPOINT: ${{ secrets.VITE_ANALYTICS_ENDPOINT || 'https://analytics.example.com' }}
+        VITE_ANALYTICS_WEBSITE_ID: ${{ secrets.VITE_ANALYTICS_WEBSITE_ID || 'test-id' }}
+
     - name: Install Playwright browsers
       run: pnpm exec playwright install --with-deps
 
-    - name: Run Playwright tests
+    - name: Run E2E Tests
       run: pnpm test:e2e
       env:
-        # These should ideally be set as GitHub Secrets
-        VITE_APP_ID: ${{ secrets.VITE_APP_ID || 'test-app' }}
-        JWT_SECRET: ${{ secrets.JWT_SECRET || 'test-secret' }}
+        # Core Application Variables
+        VITE_APP_ID: ${{ secrets.VITE_APP_ID || 'newswindon-app' }}
+        JWT_SECRET: ${{ secrets.JWT_SECRET || 'test-secret-key-for-ci' }}
+        
+        # Database Configuration (Optional for E2E tests)
         DATABASE_URL: ${{ secrets.DATABASE_URL || 'mysql://root:password@localhost:3306/newswindon' }}
+        
+        # OAuth Configuration
         OAUTH_SERVER_URL: ${{ secrets.OAUTH_SERVER_URL || 'http://localhost:3000' }}
-        OWNER_OPEN_ID: ${{ secrets.OWNER_OPEN_ID || 'test-owner' }}
+        OWNER_OPEN_ID: ${{ secrets.OWNER_OPEN_ID || 'test-owner-id' }}
+        
+        # Email Configuration (Optional - only needed if testing email features)
+        EMAIL_HOST: ${{ secrets.EMAIL_HOST || 'smtp.gmail.com' }}
+        EMAIL_PORT: ${{ secrets.EMAIL_PORT || '587' }}
+        EMAIL_SECURE: ${{ secrets.EMAIL_SECURE || 'false' }}
+        EMAIL_USER: ${{ secrets.EMAIL_USER || 'test@example.com' }}
+        EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD || 'test-password' }}
+        EMAIL_FROM: ${{ secrets.EMAIL_FROM || 'noreply@newswindon.com' }}
+        ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL || 'admin@newswindon.com' }}
+        
+        # Analytics (Optional)
+        VITE_ANALYTICS_ENDPOINT: ${{ secrets.VITE_ANALYTICS_ENDPOINT || 'https://analytics.example.com' }}
+        VITE_ANALYTICS_WEBSITE_ID: ${{ secrets.VITE_ANALYTICS_WEBSITE_ID || 'test-id' }}
+
+    - name: Upload Playwright Report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 30
+
+    - name: Comment PR with test results
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: '✅ E2E tests passed! Build is ready for deployment.'
+          })

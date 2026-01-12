@@ -21,15 +21,34 @@ import {
 } from "@/components/ui/sidebar";
 import { getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
-import { LayoutDashboard, LogOut, PanelLeft, Users } from "lucide-react";
+import { 
+  LayoutDashboard, 
+  LogOut, 
+  PanelLeft, 
+  Users, 
+  MessageSquare, 
+  Clock, 
+  Star, 
+  HelpCircle, 
+  Image as ImageIcon, 
+  Settings as SettingsIcon,
+  ShieldCheck,
+  GraduationCap
+} from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
 import { Button } from "./ui/button";
 
 const menuItems = [
-  { icon: LayoutDashboard, label: "Page 1", path: "/" },
-  { icon: Users, label: "Page 2", path: "/some-path" },
+  { icon: LayoutDashboard, label: "Dashboard", path: "/admin" },
+  { icon: MessageSquare, label: "Contactos", path: "/admin/contacts" },
+  { icon: Clock, label: "Reservas", path: "/admin/appointments" },
+  { icon: Star, label: "Testimonios", path: "/admin/testimonials" },
+  { icon: HelpCircle, label: "Chatbot FAQs", path: "/admin/chatbot" },
+  { icon: ImageIcon, label: "Galería", path: "/admin/gallery" },
+  { icon: ShieldCheck, label: "Auditoría", path: "/admin/audit" },
+  { icon: SettingsIcon, label: "Ajustes", path: "/admin/settings" },
 ];
 
 const SIDEBAR_WIDTH_KEY = "sidebar-width";
@@ -170,8 +189,9 @@ function DashboardLayoutContent({
               </button>
               {!isCollapsed ? (
                 <div className="flex items-center gap-2 min-w-0">
-                  <span className="font-semibold tracking-tight truncate">
-                    Navigation
+                  <GraduationCap className="h-5 w-5 text-primary" />
+                  <span className="font-bold tracking-tight truncate text-primary">
+                    NewSwindon
                   </span>
                 </div>
               ) : null}
@@ -188,10 +208,10 @@ function DashboardLayoutContent({
                       isActive={isActive}
                       onClick={() => setLocation(item.path)}
                       tooltip={item.label}
-                      className={`h-10 transition-all font-normal`}
+                      className={`h-10 transition-all font-medium ${isActive ? "bg-primary/10 text-primary hover:bg-primary/15" : "hover:bg-accent/50"}`}
                     >
                       <item.icon
-                        className={`h-4 w-4 ${isActive ? "text-primary" : ""}`}
+                        className={`h-4 w-4 ${isActive ? "text-primary" : "text-muted-foreground"}`}
                       />
                       <span>{item.label}</span>
                     </SidebarMenuButton>

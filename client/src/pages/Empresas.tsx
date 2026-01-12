@@ -30,10 +30,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { useScrollAnimation, useCounterAnimation } from '@/hooks/useScrollAnimation';
 import { ContactForm } from '@/components/ContactForm';
+import { motion } from 'framer-motion';
 
 // Hero Section for Empresas
 function EmpresasHero() {
@@ -196,8 +198,11 @@ function ServicesSection() {
 
         <div className={cn('grid md:grid-cols-2 lg:grid-cols-3 gap-6 stagger-children', isVisible && 'visible')}>
           {services.map((service, index) => (
-            <div
+            <motion.div
               key={index}
+              initial={{ opacity: 0, y: 20 }}
+              animate={isVisible ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
               className="bg-card rounded-2xl p-6 border shadow-sm card-hover"
             >
               <div className="icon-container mb-4">
@@ -205,7 +210,7 @@ function ServicesSection() {
               </div>
               <h3 className="text-xl font-semibold mb-3">{service.title}</h3>
               <p className="text-muted-foreground text-sm">{service.description}</p>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
@@ -362,6 +367,13 @@ function ProcessSection() {
 // Contact Section for Empresas
 function ContactSection() {
   const { ref, isVisible } = useScrollAnimation<HTMLDivElement>();
+  const { data: phone } = trpc.settings.get.useQuery({ key: 'site_phone' });
+  const { data: email } = trpc.settings.get.useQuery({ key: 'site_email' });
+  const { data: hours } = trpc.settings.get.useQuery({ key: 'site_hours' });
+  
+  const displayPhone = phone || '15 3070-7350';
+  const displayEmail = email || 'swindoncollege2@gmail.com';
+  const displayHours = hours || 'Lunes a Viernes: 9:00 - 18:00';
 
   return (
     <section id="contacto-empresas" className="py-20 bg-muted/30">
@@ -382,7 +394,7 @@ function ContactSection() {
 
             <div className="space-y-6">
               <a 
-                href="tel:+5491130707350" 
+                href={`tel:${displayPhone.replace(/\s/g, '')}`} 
                 className="flex items-center gap-4 p-4 rounded-xl bg-card border hover:border-primary transition-colors"
               >
                 <div className="icon-container">
@@ -390,12 +402,12 @@ function ContactSection() {
                 </div>
                 <div>
                   <p className="font-medium">Teléfono directo</p>
-                  <p className="text-muted-foreground">15 3070-7350</p>
+                  <p className="text-muted-foreground">{displayPhone}</p>
                 </div>
               </a>
 
               <a 
-                href="mailto:swindoncollege2@gmail.com" 
+                href={`mailto:${displayEmail}`} 
                 className="flex items-center gap-4 p-4 rounded-xl bg-card border hover:border-primary transition-colors"
               >
                 <div className="icon-container">
@@ -403,7 +415,7 @@ function ContactSection() {
                 </div>
                 <div>
                   <p className="font-medium">Email corporativo</p>
-                  <p className="text-muted-foreground">swindoncollege2@gmail.com</p>
+                  <p className="text-muted-foreground">{displayEmail}</p>
                 </div>
               </a>
 
@@ -413,7 +425,7 @@ function ContactSection() {
                 </div>
                 <div>
                   <p className="font-medium">Horario de atención</p>
-                  <p className="text-muted-foreground">Lunes a Viernes: 9:00 - 18:00</p>
+                  <p className="text-muted-foreground">{displayHours}</p>
                 </div>
               </div>
             </div>
@@ -540,7 +552,7 @@ function AppointmentBookingForm({ defaultType = 'entrevista_nivel' }: { defaultT
         {step === 1 ? (
           <div className="space-y-6">
             <div className="flex justify-center">
-              <Calendar
+              <CalendarComponent
                 mode="single"
                 selected={selectedDate}
                 onSelect={setSelectedDate}

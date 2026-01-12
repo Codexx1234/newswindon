@@ -1,48 +1,68 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { AlertCircle, Home } from "lucide-react";
+import { AlertCircle, Home, MessageCircle } from "lucide-react";
 import { useLocation } from "wouter";
+import { trpc } from "@/lib/trpc";
 
 export default function NotFound() {
   const [, setLocation] = useLocation();
+  const { data: phone } = trpc.settings.get.useQuery({ key: 'site_phone' });
+  const displayPhone = phone || '15 3070-7350';
+  const whatsappPhone = displayPhone.replace(/\s/g, '').replace(/^\+/, '');
+  const finalWhatsappPhone = whatsappPhone.startsWith('54') ? whatsappPhone : `549${whatsappPhone}`;
 
   const handleGoHome = () => {
     setLocation("/");
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
-      <Card className="w-full max-w-lg mx-4 shadow-lg border-0 bg-white/80 backdrop-blur-sm">
-        <CardContent className="pt-8 pb-8 text-center">
-          <div className="flex justify-center mb-6">
+    <div className="min-h-[70vh] w-full flex items-center justify-center p-4">
+      <Card className="w-full max-w-lg shadow-2xl border-none bg-card/50 backdrop-blur-md overflow-hidden">
+        <div className="h-2 bg-primary w-full" />
+        <CardContent className="pt-12 pb-12 text-center">
+          <div className="flex justify-center mb-8">
             <div className="relative">
-              <div className="absolute inset-0 bg-red-100 rounded-full animate-pulse" />
-              <AlertCircle className="relative h-16 w-16 text-red-500" />
+              <div className="absolute inset-0 bg-primary/10 rounded-full animate-ping" />
+              <div className="relative bg-primary/10 p-6 rounded-full">
+                <AlertCircle className="h-12 w-12 text-primary" />
+              </div>
             </div>
           </div>
 
-          <h1 className="text-4xl font-bold text-slate-900 mb-2">404</h1>
+          <h1 className="text-6xl font-black text-primary mb-2">404</h1>
 
-          <h2 className="text-xl font-semibold text-slate-700 mb-4">
-            Page Not Found
+          <h2 className="text-2xl font-bold text-foreground mb-4">
+            ¡Ups! Página no encontrada
           </h2>
 
-          <p className="text-slate-600 mb-8 leading-relaxed">
-            Sorry, the page you are looking for doesn't exist.
-            <br />
-            It may have been moved or deleted.
+          <p className="text-muted-foreground mb-10 leading-relaxed max-w-sm mx-auto">
+            Parece que la página que buscás no existe o fue movida. 
+            No te preocupes, podés volver al inicio o consultarnos por WhatsApp.
           </p>
 
-          <div
-            id="not-found-button-group"
-            className="flex flex-col sm:flex-row gap-3 justify-center"
-          >
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
               onClick={handleGoHome}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
+              size="lg"
+              className="rounded-xl px-8 shadow-lg hover:shadow-primary/20 transition-all"
             >
               <Home className="w-4 h-4 mr-2" />
-              Go Home
+              Volver al Inicio
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              asChild
+              className="rounded-xl px-8 border-primary/20 hover:bg-primary/5"
+            >
+              <a 
+                href={`https://wa.me/${finalWhatsappPhone}?text=Hola!%20Me%20perdí%20en%20la%20web%20y%20necesito%20ayuda.`} 
+                target="_blank" 
+                rel="noopener noreferrer"
+              >
+                <MessageCircle className="w-4 h-4 mr-2 text-[#25D366]" />
+                Consultar WhatsApp
+              </a>
             </Button>
           </div>
         </CardContent>

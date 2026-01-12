@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Confirmación de Cita - NewSwindon</title>
+    <title>Cita - NewSwindon</title>
     <style>
         body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }
         .container { max-width: 600px; margin: 20px auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
@@ -19,11 +19,18 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>¡Cita Agendada con Éxito!</h1>
+            <h1>{{#if isReminder}}Recordatorio de Cita{{else}}¡Cita Agendada con Éxito!{{/if}}</h1>
         </div>
         <div class="content">
             <p>Hola {{fullName}},</p>
-            <p>Tu cita en NewSwindon ha sido agendada correctamente. Aquí están los detalles:</p>
+            <p>
+                {{#if isReminder}}
+                Te escribimos para recordarte tu cita programada para mañana en NewSwindon.
+                {{else}}
+                Tu cita en NewSwindon ha sido agendada correctamente.
+                {{/if}}
+                Aquí están los detalles:
+            </p>
             <table class="data-table">
                 <tr>
                     <th>Detalle</th>

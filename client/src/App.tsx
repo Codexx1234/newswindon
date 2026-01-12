@@ -21,6 +21,8 @@ import { Chatbot } from "./components/Chatbot";
 import { ThemeTransition } from "./components/ThemeTransition";
 
 function PublicLayout({ children }: { children: React.ReactNode }) {
+  const { data: featureChatbot } = trpc.settings.get.useQuery({ key: 'feature_chatbot' });
+
   return (
     <div className="min-h-screen flex flex-col">
       <ReadingProgress />
@@ -36,7 +38,7 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
       </main>
       <Footer />
       <WhatsAppButton />
-      <Chatbot />
+      {featureChatbot === 'true' && <Chatbot />}
       <ScrollToTop />
     </div>
   );

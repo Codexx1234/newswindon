@@ -9,6 +9,7 @@ import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import { runMigrations } from "../db";
+import { sendAppointmentReminders } from "../reminders";
 
 async function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -65,6 +66,14 @@ async function startServer() {
 
   server.listen(port, () => {
     console.log(`Server running on http://localhost:${port}/`);
+    
+    // Run reminders check every hour
+    setInterval(() => {
+      sendAppointmentReminders().catch(err => console.error("Reminder task failed:", err));
+    }, 60 * 60 * 1000);
+    
+    // Run once on start
+    sendAppointmentReminders().catch(err => console.error("Initial reminder task failed:", err));
   });
 }
 

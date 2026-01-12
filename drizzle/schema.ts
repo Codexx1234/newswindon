@@ -103,6 +103,7 @@ export const appointments = mysqlTable("appointments", {
   utmMedium: varchar("utmMedium", { length: 100 }),
   utmCampaign: varchar("utmCampaign", { length: 100 }),
   referrer: text("referrer"),
+  reminderSent: boolean("reminderSent").default(false).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
@@ -120,6 +121,7 @@ export const dailyMetrics = mysqlTable("daily_metrics", {
   contactSubmissions: int("contactSubmissions").default(0).notNull(),
   appointmentBookings: int("appointmentBookings").default(0).notNull(),
   chatbotInteractions: int("chatbotInteractions").default(0).notNull(),
+  whatsappClicks: int("whatsappClicks").default(0).notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
 

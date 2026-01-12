@@ -1,16 +1,37 @@
 import { MessageCircle } from 'lucide-react';
 import { useState } from 'react';
+import { useLocation } from 'wouter';
 import { cn } from '@/lib/utils';
+import { trpc } from '@/lib/trpc';
 
-const WHATSAPP_NUMBER = '5491130707350';
-const DEFAULT_MESSAGE = '¡Hola! Me interesa obtener información sobre los cursos de inglés en NewSwindon.';
+const getContextualMessage = (pathname: string) => {
+  if (pathname === '/empresas') {
+    return '¡Hola! Me interesa obtener información sobre la capacitación de inglés para empresas.';
+  }
+  if (pathname.includes('ninos')) {
+    return '¡Hola! Me interesa obtener información sobre los cursos de inglés para niños.';
+  }
+  if (pathname.includes('adultos')) {
+    return '¡Hola! Me interesa obtener información sobre los cursos de inglés para adultos.';
+  }
+  return '¡Hola! Me interesa obtener información sobre los cursos de inglés en NewSwindon.';
+};
 
 export function WhatsAppButton() {
+  const [location] = useLocation();
+  const { data: phone } = trpc.settings.get.useQuery({ key: 'site_phone' });
+  const displayPhone = phone || '15 3070-7350';
+  const whatsappPhone = displayPhone.replace(/\s/g, '').replace(/^\+/, '');
+  const finalWhatsappPhone = whatsappPhone.startsWith('54') ? whatsappPhone : `549${whatsappPhone}`;
+
   const [isHovered, setIsHovered] = useState(false);
+  const trackClick = trpc.metrics.trackWhatsAppClick.useMutation();
 
   const handleClick = () => {
-    const encodedMessage = encodeURIComponent(DEFAULT_MESSAGE);
-    const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
+    trackClick.mutate();
+    const message = getContextualMessage(location);
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappUrl = `https://wa.me/${finalWhatsappPhone}?text=${encodedMessage}`;
     window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
   };
 

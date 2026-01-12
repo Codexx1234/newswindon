@@ -41,9 +41,15 @@ interface ContactFormProps {
 }
 
 export function ContactForm({ contactType = 'individual', showCompanyField = false }: ContactFormProps) {
+  const { data: phone } = trpc.settings.get.useQuery({ key: 'site_phone' });
+  const displayPhone = phone || '15 3070-7350';
+  const whatsappPhone = displayPhone.replace(/\s/g, '').replace(/^\+/, '');
+  const finalWhatsappPhone = whatsappPhone.startsWith('54') ? whatsappPhone : `549${whatsappPhone}`;
+
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { ref, isVisible } = useScrollAnimation<HTMLFormElement>();
   const tracking = useTracking();
+  const trackInteraction = trpc.metrics.trackWhatsAppClick.useMutation(); // Reusing for general interaction tracking
   
   const submitMutation = trpc.contacts.submit.useMutation({
     onSuccess: () => {
@@ -90,7 +96,7 @@ export function ContactForm({ contactType = 'individual', showCompanyField = fal
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button asChild className="bg-[#25D366] hover:bg-[#128C7E] text-white">
             <a 
-              href="https://wa.me/5491130707350?text=Hola!%20Acabo%20de%20enviar%20un%20formulario%20en%20la%20web%20y%20me%20gustaría%20más%20información." 
+              href={`https://wa.me/${finalWhatsappPhone}?text=Hola!%20Acabo%20de%20enviar%20un%20formulario%20en%20la%20web%20y%20me%20gustaría%20más%20información.`} 
               target="_blank" 
               rel="noopener noreferrer"
             >
@@ -109,6 +115,7 @@ export function ContactForm({ contactType = 'individual', showCompanyField = fal
     <form
       ref={ref}
       onSubmit={handleSubmit(onSubmit)}
+      onFocus={() => trackInteraction.mutate()}
       className={cn(
         'bg-card rounded-2xl border shadow-lg p-6 md:p-8 space-y-6 fade-in-up',
         isVisible && 'visible'
@@ -123,7 +130,6 @@ export function ContactForm({ contactType = 'individual', showCompanyField = fal
         </p>
       </div>
 
-      {/* Honeypot field to prevent spam */}
       <div className="hidden" aria-hidden="true">
         <Input
           id="honeypot"
@@ -134,7 +140,6 @@ export function ContactForm({ contactType = 'individual', showCompanyField = fal
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Full Name */}
         <div className="space-y-2">
           <Label htmlFor="fullName">Nombre completo *</Label>
           <Input
@@ -148,7 +153,6 @@ export function ContactForm({ contactType = 'individual', showCompanyField = fal
           )}
         </div>
 
-        {/* Email */}
         <div className="space-y-2">
           <Label htmlFor="email">Email *</Label>
           <Input
@@ -163,7 +167,6 @@ export function ContactForm({ contactType = 'individual', showCompanyField = fal
           )}
         </div>
 
-        {/* Phone */}
         <div className="space-y-2">
           <Label htmlFor="phone">Teléfono</Label>
           <Input
@@ -175,7 +178,6 @@ export function ContactForm({ contactType = 'individual', showCompanyField = fal
           />
         </div>
 
-        {/* Company Name */}
         {contactType === 'empresa' && (
           <div className="space-y-2">
             <Label htmlFor="companyName">Nombre de la empresa</Label>
@@ -188,7 +190,6 @@ export function ContactForm({ contactType = 'individual', showCompanyField = fal
           </div>
         )}
 
-        {/* Employee Count */}
         {contactType === 'empresa' && (
           <div className="space-y-2">
             <Label htmlFor="employeeCount">Cantidad de empleados a capacitar</Label>
@@ -206,7 +207,6 @@ export function ContactForm({ contactType = 'individual', showCompanyField = fal
           </div>
         )}
 
-        {/* Age */}
         {contactType === 'individual' && (
           <div className="space-y-2">
             <Label htmlFor="age">Edad del estudiante</Label>
@@ -225,7 +225,6 @@ export function ContactForm({ contactType = 'individual', showCompanyField = fal
           </div>
         )}
 
-        {/* Current Level */}
         <div className="space-y-2">
           <Label htmlFor="currentLevel">Nivel actual de inglés</Label>
           <Select onValueChange={(value) => setValue('currentLevel', value)}>
@@ -241,7 +240,6 @@ export function ContactForm({ contactType = 'individual', showCompanyField = fal
           </Select>
         </div>
 
-        {/* Course Interest */}
         <div className="space-y-2">
           <Label htmlFor="courseInterest">¿Qué te interesa?</Label>
           <Select onValueChange={(value) => setValue('courseInterest', value)}>
@@ -271,7 +269,6 @@ export function ContactForm({ contactType = 'individual', showCompanyField = fal
         </div>
       </div>
 
-      {/* Message */}
       <div className="space-y-2">
         <Label htmlFor="message">Mensaje (opcional)</Label>
         <Textarea
@@ -283,7 +280,6 @@ export function ContactForm({ contactType = 'individual', showCompanyField = fal
         />
       </div>
 
-      {/* Submit Button */}
       <Button
         type="submit"
         size="lg"

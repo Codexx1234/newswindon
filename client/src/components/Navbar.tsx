@@ -15,6 +15,11 @@ const navLinks = [
 ];
 
 export function Navbar() {
+  const { data: phone } = trpc.settings.get.useQuery({ key: 'site_phone' });
+  const { data: email } = trpc.settings.get.useQuery({ key: 'site_email' });
+  const displayPhone = phone || '15 3070-7350';
+  const displayEmail = email || 'swindoncollege2@gmail.com';
+
   const [isScrolled, setIsScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [location] = useLocation();
@@ -59,13 +64,13 @@ export function Navbar() {
       <div className="hidden md:block bg-primary text-primary-foreground py-2">
         <div className="container flex justify-between items-center text-sm">
           <div className="flex items-center gap-6">
-            <a href="tel:+5491130707350" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+            <a href={`tel:${displayPhone.replace(/\s/g, '')}`} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
               <Phone className="w-4 h-4" />
-              <span>15 3070-7350</span>
+              <span>{displayPhone}</span>
             </a>
-            <a href="mailto:swindoncollege2@gmail.com" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+            <a href={`mailto:${displayEmail}`} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
               <Mail className="w-4 h-4" />
-              <span>swindoncollege2@gmail.com</span>
+              <span>{displayEmail}</span>
             </a>
           </div>
           <div className="flex items-center gap-2">
@@ -167,13 +172,13 @@ export function Navbar() {
 
                   <div className="mt-auto pt-8 border-t">
                     <div className="flex flex-col gap-3 mb-6">
-                      <a href="tel:+5491130707350" className="flex items-center gap-3 text-muted-foreground hover:text-foreground">
+                      <a href={`tel:${displayPhone.replace(/\s/g, '')}`} className="flex items-center gap-3 text-muted-foreground hover:text-foreground">
                         <Phone className="w-5 h-5" />
-                        <span>15 3070-7350</span>
+                        <span>{displayPhone}</span>
                       </a>
-                      <a href="mailto:swindoncollege2@gmail.com" className="flex items-center gap-3 text-muted-foreground hover:text-foreground">
+                      <a href={`mailto:${displayEmail}`} className="flex items-center gap-3 text-muted-foreground hover:text-foreground">
                         <Mail className="w-5 h-5" />
-                        <span>swindoncollege2@gmail.com</span>
+                        <span>{displayEmail}</span>
                       </a>
                     </div>
                     <Button 

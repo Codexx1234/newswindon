@@ -35,15 +35,16 @@ export const appRouter = router({
     // Public: Submit contact form
     submit: publicProcedure
       .input(z.object({
-        fullName: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
+        fullName: z.string().min(2, "El nombre debe tener al menos 2 caracteres").max(100),
         email: z.string().email("Email inválido"),
-        phone: z.string().optional(),
-        age: z.string().optional(),
-        currentLevel: z.string().optional(),
-        courseInterest: z.string().optional(),
-        message: z.string().optional(),
-        contactType: z.enum(["individual", "empresa"]).default("individual"),        companyName: z.string().optional(),
-        employeeCount: z.string().optional(),
+        phone: z.string().max(20).optional(),
+        age: z.string().max(50).optional(),
+        currentLevel: z.string().max(100).optional(),
+        courseInterest: z.string().max(255).optional(),
+        message: z.string().max(1000).optional(),
+        contactType: z.enum(["individual", "empresa"]).default("individual"),
+        companyName: z.string().max(255).optional(),
+        employeeCount: z.string().max(50).optional(),
         honeypot: z.string().optional(),
         source: z.string().optional(),
         utmSource: z.string().optional(),
@@ -51,18 +52,18 @@ export const appRouter = router({
         utmCampaign: z.string().optional(),
         referrer: z.string().optional(),
       }))
-      .mutation(async ({ input, ctx }) => {     if (input.honeypot) {
+      .mutation(async ({ input, ctx }) => {
+        if (input.honeypot) {
           throw new TRPCError({ code: 'BAD_REQUEST', message: SPAM_DETECTED_ERR_MSG });
         }
         const { honeypot, ...cleanInput } = input;
 
         const contact = await db.createContact({
           ...cleanInput,
-          emailSent: false, // Set to false initially, update after sending emails
+          emailSent: false,
         });
 
         if (contact) {
-          // Send email to student
           await sendEmail({
             to: input.email,
             subject: "¡Gracias por tu interés en NewSwindon!",
@@ -72,10 +73,9 @@ export const appRouter = router({
             },
           });
 
-          // Send email to admin
           const isEmpresa = input.contactType === "empresa";
           await sendEmail({
-            to: process.env.ADMIN_EMAIL || "admin@newswindon.com", // Replace with actual admin email or env var
+            to: process.env.ADMIN_EMAIL || "admin@newswindon.com",
             subject: `Nuevo Contacto ${isEmpresa ? "Empresarial" : "Individual"}: ${input.fullName}`,
             template: "admin-notification",
             context: {
@@ -92,16 +92,10 @@ export const appRouter = router({
             },
           });
 
-          // Update contact to mark email as sent
           await db.updateContact(contact.id, { emailSent: true });
         }
 
-        if (contact) {
-          await db.trackMetric('contactSubmissions');
-          const isEmpresa = input.contactType === "empresa";
-// await notifyOwner (removed, replaced by email notification)
-        }
-
+        await db.trackMetric('contactSubmissions');
         return { 
           success: true, 
           message: "¡Gracias por contactarnos! Te responderemos a la brevedad.",
@@ -109,7 +103,6 @@ export const appRouter = router({
         };
       }),
 
-    // Admin: Get all contacts with filters
     list: adminProcedure
       .input(z.object({
         status: z.enum(["nuevo", "contactado", "en_proceso", "cerrado", "no_interesado"]).optional(),
@@ -120,14 +113,12 @@ export const appRouter = router({
         return await db.getAllContacts(input);
       }),
 
-    // Admin: Get contact by ID
     getById: adminProcedure
       .input(z.object({ id: z.number() }))
       .query(async ({ input }) => {
         return await db.getContactById(input.id);
       }),
 
-    // Admin: Update contact
     update: adminProcedure
       .input(z.object({
         id: z.number(),
@@ -160,28 +151,33 @@ export const appRouter = router({
         return { success: true };
       }),
 
-    // Admin: Delete contact
     delete: adminProcedure
       .input(z.object({ id: z.number() }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ input, ctx }) => {
         await db.deleteContact(input.id);
+        
+        await db.createAuditLog({
+          userId: ctx.user.id,
+          action: 'DELETE_CONTACT',
+          entityType: 'contact',
+          entityId: input.id,
+          ipAddress: ctx.req.ip,
+        });
+
         return { success: true };
       }),
   }),
 
   // ==================== TESTIMONIAL ROUTES ====================
   testimonials: router({
-    // Public: Get active testimonials
     list: publicProcedure.query(async () => {
       return await db.getActiveTestimonials();
     }),
 
-    // Admin: Get all testimonials
     listAll: adminProcedure.query(async () => {
       return await db.getAllTestimonials();
     }),
 
-    // Admin: Create testimonial
     create: adminProcedure
       .input(z.object({
         authorName: z.string().min(2),
@@ -195,7 +191,6 @@ export const appRouter = router({
         return await db.createTestimonial(input);
       }),
 
-    // Admin: Update testimonial
     update: adminProcedure
       .input(z.object({
         id: z.number(),
@@ -212,7 +207,6 @@ export const appRouter = router({
         return { success: true };
       }),
 
-    // Admin: Delete testimonial
     delete: adminProcedure
       .input(z.object({ id: z.number() }))
       .mutation(async ({ input }) => {
@@ -221,27 +215,24 @@ export const appRouter = router({
       }),
   }),
 
-  // ==================== CHATBOT ROUTES ====================
   // ==================== APPOINTMENT ROUTES ====================
   appointments: router({
-    // Public: Book an appointment
     book: publicProcedure
       .input(z.object({
-        fullName: z.string().min(2),
-        email: z.string().email(),
-        phone: z.string().min(8),
+        fullName: z.string().min(2, "Nombre demasiado corto").max(100),
+        email: z.string().email("Email inválido"),
+        phone: z.string().min(8).max(20),
         appointmentDate: z.date(),
         appointmentType: z.enum(["entrevista_nivel", "consulta_general", "empresa"]).default("entrevista_nivel"),
-        notes: z.string().optional(),
+        notes: z.string().max(500).optional(),
       }))
       .mutation(async ({ input }) => {
-        // Validar horario laboral (Lunes a Viernes 9-21, Sábados 9-13)
         const date = new Date(input.appointmentDate);
-        const day = date.getDay(); // 0=Domingo, 1=Lunes, ..., 6=Sábado
+        const day = date.getDay();
         const hour = date.getHours();
         
         let isWorkingHour = false;
-        if (day >= 1 && day <= 4) { // Lunes a Jueves
+        if (day >= 1 && day <= 4) {
           if (hour >= 10 && hour < 20) isWorkingHour = true;
         }
 
@@ -252,31 +243,28 @@ export const appRouter = router({
           });
         }
 
-        // Validar intervalos de 1 hora (minutos deben ser 00)
         if (date.getMinutes() !== 0) {
           throw new TRPCError({
             code: 'BAD_REQUEST',
-            message: 'Las citas solo pueden agendarse en intervalos de 1 hora (ej: 10:00, 11:00).'
+            message: 'Las citas solo pueden agendarse en intervalos de 1 hora.'
           });
         }
 
-        // Verificar disponibilidad
         const isAvailable = await db.checkAppointmentAvailability(date);
         if (!isAvailable) {
           throw new TRPCError({
             code: 'CONFLICT',
-            message: 'El horario seleccionado ya está ocupado. Por favor, elegí otro horario disponible.'
+            message: 'El horario seleccionado ya está ocupado.'
           });
         }
 
         const appointment = await db.createAppointment(input);
         await db.trackMetric('appointmentBookings');
         
-        // Send email to student
         await sendEmail({
           to: input.email,
           subject: "Confirmación de tu cita en NewSwindon",
-          template: "appointment-confirmation" as any,
+          template: "appointment-confirmation",
           context: {
             fullName: input.fullName,
             appointmentDate: input.appointmentDate.toLocaleString('es-AR'),
@@ -285,11 +273,10 @@ export const appRouter = router({
           },
         });
 
-        // Send email to admin
         await sendEmail({
           to: process.env.ADMIN_EMAIL || "admin@newswindon.com",
           subject: `Nueva Cita Agendada: ${input.fullName}`,
-          template: "admin-notification" as any,
+          template: "admin-notification",
           context: {
             fullName: input.fullName,
             email: input.email,
@@ -299,7 +286,6 @@ export const appRouter = router({
           },
         });
 
-        // Create Google Calendar event
         await CalendarService.createEvent({
           fullName: input.fullName,
           email: input.email,
@@ -313,12 +299,10 @@ export const appRouter = router({
         return { success: true, appointment };
       }),
 
-    // Admin: List all appointments
     list: adminProcedure.query(async () => {
       return await db.getAllAppointments();
     }),
 
-    // Admin: Update appointment status
     updateStatus: adminProcedure
       .input(z.object({
         id: z.number(),
@@ -341,25 +325,39 @@ export const appRouter = router({
           ipAddress: ctx.req.ip,
         });
 
-        // If cancelled by admin, notify the user and delete from Google Calendar
         if (input.status === 'cancelada') {
-          // Delete from Google Calendar
           await CalendarService.deleteEvent(input.id, (appointment as any).googleCalendarEventId);
-          
-          // Delete the appointment record from database
-          await db.deleteAppointment(input.id);
-          
-          // Send cancellation email
           await sendEmail({
             to: appointment.email,
             subject: "Tu cita en NewSwindon ha sido cancelada",
-            template: "appointment-cancellation" as any,
+            template: "appointment-confirmation", // Fallback or specific cancellation template
             context: {
               fullName: appointment.fullName,
-              appointmentDate: appointment.appointmentDate.toLocaleString('es-AR'),
-            },
+              isCancellation: true
+            }
           });
         }
+
+        return { success: true };
+      }),
+
+    delete: adminProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input, ctx }) => {
+        const appointment = await db.getAppointmentById(input.id);
+        if (!appointment) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Cita no encontrada' });
+        }
+
+        await db.deleteAppointment(input.id);
+        
+        await db.createAuditLog({
+          userId: ctx.user.id,
+          action: 'DELETE_APPOINTMENT',
+          entityType: 'appointment',
+          entityId: input.id,
+          ipAddress: ctx.req.ip,
+        });
 
         return { success: true };
       }),
@@ -367,172 +365,100 @@ export const appRouter = router({
 
   // ==================== GALLERY ROUTES ====================
   gallery: router({
-    // Public: List active images
-    listActive: publicProcedure.query(async () => {
+    list: publicProcedure.query(async () => {
       return await db.getActiveGalleryImages();
     }),
 
-    // Admin: List all images
     listAll: adminProcedure.query(async () => {
       return await db.getAllGalleryImages();
     }),
 
-    // Admin: Create image
     create: adminProcedure
       .input(z.object({
         url: z.string().url(),
         caption: z.string().optional(),
         displayOrder: z.number().default(0),
+        isActive: z.boolean().default(true),
       }))
-      .mutation(async ({ input, ctx }) => {
-        const image = await db.createGalleryImage(input);
-        await db.createAuditLog({
-          userId: ctx.user.id,
-          action: 'CREATE_GALLERY_IMAGE',
-          entityType: 'gallery',
-          entityId: image.id,
-          details: `Image added: ${input.url}`,
-          ipAddress: ctx.req.ip,
-        });
-        return image;
+      .mutation(async ({ input }) => {
+        return await db.createGalleryImage(input);
       }),
 
-    // Admin: Update image
     update: adminProcedure
       .input(z.object({
         id: z.number(),
+        url: z.string().url().optional(),
         caption: z.string().optional(),
         displayOrder: z.number().optional(),
         isActive: z.boolean().optional(),
       }))
-      .mutation(async ({ input, ctx }) => {
+      .mutation(async ({ input }) => {
         const { id, ...data } = input;
         await db.updateGalleryImage(id, data);
-        await db.createAuditLog({
-          userId: ctx.user.id,
-          action: 'UPDATE_GALLERY_IMAGE',
-          entityType: 'gallery',
-          entityId: id,
-          details: JSON.stringify(data),
-          ipAddress: ctx.req.ip,
-        });
         return { success: true };
       }),
 
-    // Admin: Delete image
     delete: adminProcedure
       .input(z.object({ id: z.number() }))
-      .mutation(async ({ input, ctx }) => {
+      .mutation(async ({ input }) => {
         await db.deleteGalleryImage(input.id);
-        await db.createAuditLog({
-          userId: ctx.user.id,
-          action: 'DELETE_GALLERY_IMAGE',
-          entityType: 'gallery',
-          entityId: input.id,
-          ipAddress: ctx.req.ip,
-        });
         return { success: true };
       }),
   }),
 
   // ==================== SETTINGS ROUTES ====================
   settings: router({
-    // Admin: Get a setting
-    get: adminProcedure
+    get: publicProcedure
       .input(z.object({ key: z.string() }))
       .query(async ({ input }) => {
         return await db.getSetting(input.key);
       }),
 
-    // Admin: Set a setting
     set: adminProcedure
       .input(z.object({ key: z.string(), value: z.string() }))
-      .mutation(async ({ input, ctx }) => {
+      .mutation(async ({ input }) => {
         await db.setSetting(input.key, input.value);
-        await db.createAuditLog({
-          userId: ctx.user.id,
-          action: 'UPDATE_SETTING',
-          details: `Setting ${input.key} updated to ${input.value}`,
-          ipAddress: ctx.req.ip,
-        });
         return { success: true };
       }),
   }),
 
   // ==================== METRICS ROUTES ====================
   metrics: router({
-    // Admin: Get recent metrics
     getRecent: adminProcedure
       .input(z.object({ days: z.number().default(7) }))
       .query(async ({ input }) => {
         return await db.getRecentMetrics(input.days);
       }),
-    
-    // Admin: Get audit logs
-    getAuditLogs: adminProcedure
-      .input(z.object({ limit: z.number().default(50) }))
-      .query(async ({ input }) => {
-        return await db.getRecentAuditLogs(input.limit);
-      }),
-    
-    // Public: Track page view (simple)
     trackPageView: publicProcedure.mutation(async () => {
       await db.trackMetric('pageViews');
       return { success: true };
     }),
+    trackWhatsAppClick: publicProcedure.mutation(async () => {
+      await db.trackMetric('whatsappClicks' as any);
+      return { success: true };
+    }),
   }),
 
+  // ==================== CHATBOT ROUTES ====================
   chatbot: router({
-    // Public: Get active FAQs
-    faqs: publicProcedure.query(async () => {
-      return await db.getActiveFaqs();
-    }),
-
-    // Public: Chat with bot
-    chat: publicProcedure
-      .input(z.object({ message: z.string().min(1) }))
+    ask: publicProcedure
+      .input(z.object({ message: z.string().min(1).max(500) }))
       .mutation(async ({ input }) => {
-        await db.trackMetric('chatbotInteractions');
         const faqs = await db.getActiveFaqs();
-        
         const faqContext = faqs.length > 0 
-          ? faqs.map(faq => `P: ${faq.question}\nR: ${faq.answer}`).join('\n\n')
+          ? faqs.map(f => `P: ${f.question}\nR: ${f.answer}`).join("\n\n")
           : "No hay preguntas frecuentes cargadas actualmente.";
 
         const systemPrompt = `Sos el asistente virtual de NewSwindon, un instituto de inglés con 35 años de trayectoria en Carapachay, Buenos Aires.
-
-INFORMACIÓN DE LA ACADEMIA:
-- 35 años de experiencia formando estudiantes.
-- Cursos para todas las edades (desde 3 años).
-- Grupos reducidos con atención personalizada.
-- Beneficio exclusivo: NO se cobra matrícula ni derecho de examen.
-- Preparación para exámenes Cambridge (First Certificate, Proficiency).
-- Material multimedia incluido (revistas, DVDs, videos, CDs).
-- Profesores especializados y taller de conversación.
-- Preparación para ingreso a profesorado y traductorado.
-- 30+ años brindando capacitación a empresas líderes.
-- Ubicación: Carapachay, Buenos Aires.
-- Contacto: 15 3070-7350 | swindoncollege2@gmail.com
-
-PREGUNTAS FRECUENTES DEL ADMIN:
-${faqContext}
-
-INSTRUCCIONES:
-- Responde siempre en español de Argentina (usá el "voseo": vos, tenés, vení).
-- Sé amable, profesional y muy conciso.
-- Si el usuario pregunta algo que está en las PREGUNTAS FRECUENTES, usá esa información.
-- Si no conocés la respuesta exacta, sugerí contactar por WhatsApp (15 3070-7350).
-- Máximo 3 oraciones por respuesta.`;
+        
+        INSTRUCCIONES:
+        - Responde siempre en español de Argentina (usá el "voseo": vos, tenés, vení).
+        - Sé amable, profesional y muy conciso.
+        - Si el usuario pregunta algo que está en las PREGUNTAS FRECUENTES, usá esa información.
+        - Si no conocés la respuesta exacta, sugerí contactar por WhatsApp (15 3070-7350).
+        - Máximo 3 oraciones por respuesta.`;
 
         try {
-          // Fallback local si la pregunta es muy simple y coincide con una FAQ
-          const lowerMsg = input.message.toLowerCase();
-          const quickMatch = faqs.find(f => lowerMsg.includes(f.question.toLowerCase()) || f.question.toLowerCase().includes(lowerMsg));
-          
-          if (quickMatch) {
-            return { response: quickMatch.answer };
-          }
-
           const response = await invokeLLM({
             messages: [
               { role: "system", content: systemPrompt },
@@ -542,27 +468,21 @@ INSTRUCCIONES:
 
           const messageContent = response.choices[0]?.message?.content;
           return { 
-            response: typeof messageContent === 'string' ? messageContent : "¡Hola! Para darte una respuesta precisa sobre ese tema, te sugiero consultarnos directamente por WhatsApp al 15 3070-7350. ¡Te esperamos!" 
+            response: typeof messageContent === 'string' ? messageContent : "¡Hola! Consultanos por WhatsApp al 15 3070-7350." 
           };
         } catch (error) {
-          console.error("Chatbot error:", error);
-          return { 
-            response: "¡Hola! Justo ahora tengo mucha gente consultando. Para no hacerte esperar, ¿podrías escribirnos al WhatsApp 15 3070-7350? Te respondemos al toque." 
-          };
+          return { response: "¡Hola! Por favor escribinos al WhatsApp 15 3070-7350." };
         }
       }),
 
-    // Admin: Get all FAQs
     listAll: adminProcedure.query(async () => {
       return await db.getAllFaqs();
     }),
 
-    // Admin: Create FAQ
     createFaq: adminProcedure
       .input(z.object({
         question: z.string().min(5),
         answer: z.string().min(10),
-        keywords: z.string().optional(),
         category: z.string().optional(),
         isActive: z.boolean().optional(),
         displayOrder: z.number().optional(),
@@ -571,13 +491,11 @@ INSTRUCCIONES:
         return await db.createFaq(input);
       }),
 
-    // Admin: Update FAQ
     updateFaq: adminProcedure
       .input(z.object({
         id: z.number(),
         question: z.string().min(5).optional(),
         answer: z.string().min(10).optional(),
-        keywords: z.string().optional(),
         category: z.string().optional(),
         isActive: z.boolean().optional(),
         displayOrder: z.number().optional(),
@@ -588,7 +506,6 @@ INSTRUCCIONES:
         return { success: true };
       }),
 
-    // Admin: Delete FAQ
     deleteFaq: adminProcedure
       .input(z.object({ id: z.number() }))
       .mutation(async ({ input }) => {

@@ -1,7 +1,17 @@
 import { Link } from 'wouter';
 import { Phone, Mail, MapPin, Clock, Facebook, Instagram, Linkedin } from 'lucide-react';
+import { trpc } from '@/lib/trpc';
 
 export function Footer() {
+  const { data: phone } = trpc.settings.get.useQuery({ key: 'site_phone' });
+  const { data: email } = trpc.settings.get.useQuery({ key: 'site_email' });
+  const { data: address } = trpc.settings.get.useQuery({ key: 'site_address' });
+  const { data: hours } = trpc.settings.get.useQuery({ key: 'site_hours' });
+  
+  const displayPhone = phone || '15 3070-7350';
+  const displayEmail = email || 'swindoncollege2@gmail.com';
+  const displayAddress = address || 'Carapachay, Buenos Aires, Argentina';
+  const displayHours = hours || 'Lunes a Viernes: 9:00 - 21:00';
   const currentYear = new Date().getFullYear();
 
   const handleNavClick = (href: string) => {
@@ -109,29 +119,29 @@ export function Footer() {
             <ul className="space-y-4">
               <li>
                 <a 
-                  href="tel:+5491130707350" 
+                  href={`tel:${displayPhone.replace(/\s/g, '')}`} 
                   className="flex items-start gap-3 text-background/80 hover:text-primary transition-colors"
                 >
                   <Phone className="w-5 h-5 mt-0.5 flex-shrink-0" />
-                  <span className="text-sm">15 3070-7350</span>
+                  <span className="text-sm">{displayPhone}</span>
                 </a>
               </li>
               <li>
                 <a 
-                  href="mailto:swindoncollege2@gmail.com" 
+                  href={`mailto:${displayEmail}`} 
                   className="flex items-start gap-3 text-background/80 hover:text-primary transition-colors"
                 >
                   <Mail className="w-5 h-5 mt-0.5 flex-shrink-0" />
-                  <span className="text-sm">swindoncollege2@gmail.com</span>
+                  <span className="text-sm">{displayEmail}</span>
                 </a>
               </li>
               <li className="flex items-start gap-3 text-background/80">
                 <MapPin className="w-5 h-5 mt-0.5 flex-shrink-0" />
-                <span className="text-sm">Carapachay, Buenos Aires, Argentina</span>
+                <span className="text-sm">{displayAddress}</span>
               </li>
               <li className="flex items-start gap-3 text-background/80">
                 <Clock className="w-5 h-5 mt-0.5 flex-shrink-0" />
-                <span className="text-sm">Lunes a Viernes: 9:00 - 21:00<br />Sábados: 9:00 - 13:00</span>
+                <span className="text-sm">{displayHours}</span>
               </li>
             </ul>
           </div>

@@ -45,7 +45,7 @@ function EmpresasHero() {
             Capacitación en inglés para empresas
           </h1>
 
-          <p className="text-lg md:text-xl text-white/90 mb-8 leading-relaxed">
+          <p className="text-xl text-foreground/80 mb-8 max-w-2xl font-medium">
             Más de 30 años de experiencia brindando servicios de capacitación en inglés 
             a empresas. Programas personalizados que se adaptan a las necesidades 
             específicas de tu organización.

@@ -48,3 +48,7 @@
 - [x] Probar envío de emails
 - [x] Corregir errores de TypeScript en Admin.tsx, Navbar.tsx y GallerySection.tsx
 - [x] Agregar procedimiento getAuditLogs al router de metrics
+- [x] Corregir errores de settings.get retornando undefined
+- [x] Implementar valores por defecto para settings
+- [x] Mejorar setSetting con mejor manejo de errores
+- [x] Agregar importación de nodemailer en email.ts

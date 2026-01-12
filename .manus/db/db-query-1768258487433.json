@@ -1,0 +1,28 @@
+{
+  "query": "SELECT * FROM settings LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user KmNhxfwoFGUH8Gu.root --database 9ASarAHvVeNUN8mHetYctb --execute SELECT * FROM settings LIMIT 10;",
+  "rows": [
+    {
+      "id": "1",
+      "key": "google_admin_email",
+      "value": "gabinicogomez@gmail.com",
+      "updatedAt": "2026-01-12 19:30:10"
+    },
+    {
+      "id": "30001",
+      "key": "feature_chatbot",
+      "value": "true",
+      "updatedAt": "2026-01-12 22:53:31"
+    },
+    {
+      "id": "30004",
+      "key": "feature_inscriptions",
+      "value": "true",
+      "updatedAt": "2026-01-12 22:54:29"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tkey\tvalue\tupdatedAt\n1\tgoogle_admin_email\tgabinicogomez@gmail.com\t2026-01-12 19:30:10\n30001\tfeature_chatbot\ttrue\t2026-01-12 22:53:31\n30004\tfeature_inscriptions\ttrue\t2026-01-12 22:54:29\n",
+  "stderr": "",
+  "execution_time_ms": 704
+}

@@ -416,21 +416,42 @@ export async function deleteGalleryImage(id: number): Promise<void> {
 
 // ==================== SETTINGS FUNCTIONS ====================
 
-export async function getSetting(key: string): Promise<string | undefined> {
-  const db = await getDb();
-  if (!db) return undefined;
+// Default values for settings
+const DEFAULT_SETTINGS: Record<string, string> = {
+  site_phone: '15 3070-7350',
+  site_email: 'swindoncollege2@gmail.com',
+  site_address: 'Carapachay, Buenos Aires',
+  site_hours: 'Lunes a Viernes: 9:00 - 20:00',
+  feature_inscriptions: 'true',
+  feature_chatbot: 'true',
+};
 
-  const result = await db.select().from(settings).where(eq(settings.key, key)).limit(1);
-  return result.length > 0 ? result[0].value : undefined;
+export async function getSetting(key: string): Promise<string> {
+  const db = await getDb();
+  if (!db) return DEFAULT_SETTINGS[key] || '';
+
+  try {
+    const result = await db.select().from(settings).where(eq(settings.key, key)).limit(1);
+    return result.length > 0 ? result[0].value : (DEFAULT_SETTINGS[key] || '');
+  } catch (error) {
+    console.error(`[Database] Failed to get setting ${key}:`, error);
+    return DEFAULT_SETTINGS[key] || '';
+  }
 }
 
 export async function setSetting(key: string, value: string): Promise<void> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  await db.insert(settings).values({ key, value }).onDuplicateKeyUpdate({
-    set: { value, updatedAt: new Date() }
-  });
+  try {
+    await db.insert(settings).values({ key, value }).onDuplicateKeyUpdate({
+      set: { value, updatedAt: new Date() }
+    });
+    console.log(`[Settings] Updated ${key} = ${value}`);
+  } catch (error) {
+    console.error(`[Database] Failed to set setting ${key}:`, error);
+    throw error;
+  }
 }
 
 // ==================== MIGRATION FUNCTIONS ====================

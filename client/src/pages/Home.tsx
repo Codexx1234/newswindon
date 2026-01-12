@@ -137,7 +137,7 @@ function AboutSection() {
           {/* Content */}
           <div 
             ref={ref}
-            className={cn('slide-in-left', isVisible && 'visible')}
+            className={cn('slide-in-left flex flex-col items-center text-center lg:items-start lg:text-left', isVisible && 'visible')}
           >
             <span className="badge-primary mb-4">Sobre Nosotros</span>
             <h2 className="text-3xl md:text-4xl font-bold mt-4 mb-6">
@@ -149,7 +149,7 @@ function AboutSection() {
             </p>
 
             {/* Features List */}
-            <div className="grid sm:grid-cols-2 gap-4">
+            <div className="grid sm:grid-cols-2 gap-4 w-full">
               {[
                 'Profesores especializados',
                 'Grupos reducidos',
@@ -158,9 +158,9 @@ function AboutSection() {
                 'Seguimiento personalizado',
                 'Ambiente cálido y profesional',
               ].map((feature) => (
-                <div key={feature} className="flex items-center gap-2">
+                <div key={feature} className="flex items-center justify-center lg:justify-start gap-2">
                   <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
-                  <span className="text-sm">{feature}</span>
+                  <span className="text-sm font-medium">{feature}</span>
                 </div>
               ))}
             </div>
@@ -280,20 +280,20 @@ function CoursesSection() {
             <div
               key={course.title}
               className={cn(
-                'bg-card rounded-2xl p-6 border shadow-sm card-hover',
+                'bg-card rounded-2xl p-8 border shadow-sm card-hover flex flex-col items-center text-center',
                 'fade-in-up',
                 isVisible && 'visible'
               )}
               style={{ transitionDelay: `${index * 100}ms` }}
             >
-              <div className="icon-container mb-4">
-                <course.icon className="w-6 h-6" />
+              <div className="icon-container mb-6">
+                <course.icon className="w-8 h-8" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">{course.title}</h3>
-              <p className="text-muted-foreground text-sm mb-4">{course.description}</p>
-              <div className="flex flex-wrap gap-2">
+              <h3 className="text-xl font-bold mb-3">{course.title}</h3>
+              <p className="text-muted-foreground text-sm mb-6 leading-relaxed">{course.description}</p>
+              <div className="flex flex-wrap gap-2 justify-center">
                 {course.features.map((feature) => (
-                  <span key={feature} className="text-xs px-2 py-1 bg-muted rounded-full">
+                  <span key={feature} className="text-xs px-3 py-1 bg-primary/5 text-primary rounded-full font-medium">
                     {feature}
                   </span>
                 ))}
@@ -344,7 +344,7 @@ function BenefitsSection() {
   ];
 
   return (
-    <section className="py-20">
+    <section id="beneficios" className="py-20">
       <div className="container">
         <div 
           ref={ref}
@@ -360,24 +360,22 @@ function BenefitsSection() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {benefits.map((benefit, index) => (
             <div
               key={benefit.title}
               className={cn(
-                'flex gap-4 p-6 rounded-2xl bg-card border shadow-sm card-hover',
+                'flex flex-col items-center text-center p-8 rounded-2xl bg-card border shadow-sm card-hover',
                 'fade-in-up',
                 isVisible && 'visible'
               )}
               style={{ transitionDelay: `${index * 100}ms` }}
             >
-              <div className="icon-container flex-shrink-0">
-                <benefit.icon className="w-6 h-6" />
+              <div className="icon-container mb-6">
+                <benefit.icon className="w-8 h-8" />
               </div>
-              <div>
-                <h3 className="font-semibold mb-1">{benefit.title}</h3>
-                <p className="text-sm text-muted-foreground">{benefit.description}</p>
-              </div>
+              <h3 className="text-xl font-bold mb-3">{benefit.title}</h3>
+              <p className="text-muted-foreground leading-relaxed">{benefit.description}</p>
             </div>
           ))}
         </div>

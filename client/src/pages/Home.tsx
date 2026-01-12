@@ -26,11 +26,11 @@ import { ContactForm } from '@/components/ContactForm';
 function HeroSection() {
   const { ref, isVisible } = useScrollAnimation<HTMLDivElement>();
   const { count: yearsCount, ref: yearsRef } = useCounterAnimation(35, 2000);
-  const { count: studentsCount, ref: studentsRef } = useCounterAnimation(5000, 2500);
+  const { count: studentsCount, ref: studentsRef } = useCounterAnimation(1000, 2500);
   const { count: companiesCount, ref: companiesRef } = useCounterAnimation(30, 2000);
 
   return (
-    <section className="relative min-h-[90vh] flex items-center overflow-hidden">
+    <section id="inicio" className="relative min-h-[90vh] flex items-center overflow-hidden">
       {/* Animated Background */}
       <div className="absolute inset-0 animated-gradient" />
       <div className="absolute inset-0 hero-pattern" />
@@ -49,12 +49,6 @@ function HeroSection() {
             isVisible && 'visible'
           )}
         >
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-6">
-            <Sparkles className="w-4 h-4" />
-            <span className="text-sm font-medium">35 años de excelencia educativa</span>
-          </div>
-
           {/* Main Heading */}
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
             Aprendé inglés en{' '}
@@ -96,24 +90,24 @@ function HeroSection() {
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-3 gap-8 max-w-2xl mx-auto">
+          <div className="grid grid-cols-3 gap-8 max-w-2xl mx-auto pb-16">
             <div className="text-center">
               <span ref={yearsRef} className="text-4xl md:text-5xl font-bold counter-animate">
                 {yearsCount}+
               </span>
-              <p className="text-white/70 text-sm mt-1">Años de experiencia</p>
+              <p className="text-white text-sm mt-1 font-medium">Años de experiencia</p>
             </div>
             <div className="text-center">
               <span ref={studentsRef} className="text-4xl md:text-5xl font-bold counter-animate">
                 {studentsCount}+
               </span>
-              <p className="text-white/70 text-sm mt-1">Alumnos formados</p>
+              <p className="text-white text-sm mt-1 font-medium">Alumnos formados</p>
             </div>
             <div className="text-center">
               <span ref={companiesRef} className="text-4xl md:text-5xl font-bold counter-animate">
                 {companiesCount}+
               </span>
-              <p className="text-white/70 text-sm mt-1">Años con empresas</p>
+              <p className="text-white text-sm mt-1 font-medium">Años con empresas</p>
             </div>
           </div>
         </div>
@@ -149,17 +143,9 @@ function AboutSection() {
             <h2 className="text-3xl md:text-4xl font-bold mt-4 mb-6">
               Más de 35 años formando estudiantes de excelencia
             </h2>
-            <p className="text-muted-foreground mb-6 leading-relaxed">
-              NewSwindon (anteriormente Swindon College) es una academia de inglés ubicada en 
-              Carapachay, Buenos Aires, con una trayectoria de más de tres décadas en la enseñanza 
-              del idioma inglés. Nuestro compromiso con la excelencia educativa nos ha permitido 
-              formar miles de estudiantes y mantener relaciones de largo plazo con empresas líderes.
-            </p>
-            <p className="text-muted-foreground mb-8 leading-relaxed">
-              Nos especializamos en brindar una educación personalizada, con grupos reducidos que 
-              permiten un seguimiento individual de cada alumno. Nuestros profesores son especialistas 
-              certificados que utilizan metodologías modernas y recursos multimedios para hacer del 
-              aprendizaje una experiencia efectiva y placentera.
+            <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
+              Más de <strong className="text-foreground">35 años</strong> formando estudiantes en Carapachay, Buenos Aires. 
+              Grupos reducidos, profesores certificados y metodología moderna para un aprendizaje efectivo y personalizado.
             </p>
 
             {/* Features List */}
@@ -193,7 +179,7 @@ function AboutSection() {
                   </div>
                   <div className="text-center p-4 bg-white/10 rounded-2xl">
                     <Users className="w-10 h-10 mx-auto mb-2" />
-                    <p className="text-3xl font-bold">5000+</p>
+                    <p className="text-3xl font-bold">1000+</p>
                     <p className="text-sm text-white/80">Alumnos formados</p>
                   </div>
                   <div className="text-center p-4 bg-white/10 rounded-2xl">
@@ -267,8 +253,8 @@ function CoursesSection() {
     {
       icon: Building2,
       title: 'Inglés Corporativo',
-      description: '30 años capacitando empresas. Programas personalizados según las necesidades de cada organización.',
-      features: ['In-company', 'Programas a medida', '30 años de experiencia'],
+      description: 'Más de 30 años de relación con una empresa líder. Programas personalizados según las necesidades de cada organización.',
+      features: ['In-company', 'Programas a medida', '30+ años con 1 empresa'],
     },
   ];
 
@@ -405,7 +391,7 @@ function EmpresasCTA() {
   const { ref, isVisible } = useScrollAnimation<HTMLDivElement>();
 
   return (
-    <section className="py-20 bg-muted/30">
+    <section id="empresas" className="py-20 bg-muted/30">
       <div className="container">
         <div 
           ref={ref}
@@ -420,7 +406,7 @@ function EmpresasCTA() {
             Capacitación para Empresas
           </h2>
           <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-            30 años de experiencia brindando servicios de capacitación en inglés a empresas líderes. 
+            Más de 30 años de relación con una empresa líder, brindando servicios de capacitación en inglés de excelencia. 
             Programas personalizados, modalidad in-company y resultados comprobados.
           </p>
           <Button 

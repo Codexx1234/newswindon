@@ -67,21 +67,18 @@ const navItems = [
 
 // Dashboard Overview
 function DashboardOverview() {
-  const { data: stats, isLoading } = trpc.contacts.stats.useQuery();
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
-      </div>
-    );
-  }
+  const { data: contacts } = trpc.contacts.list.useQuery();
+  
+  const stats = {
+    total: contacts?.length || 0,
+    nuevos: contacts?.filter(c => c.status === 'nuevo').length || 0,
+    empresas: contacts?.filter(c => c.contactType === 'empresa').length || 0,
+  };
 
   const statCards = [
-    { label: 'Total Contactos', value: stats?.total || 0, icon: Users, color: 'bg-blue-500' },
-    { label: 'Nuevos', value: stats?.nuevo || 0, icon: Clock, color: 'bg-yellow-500' },
-    { label: 'Contactados', value: stats?.contactado || 0, icon: TrendingUp, color: 'bg-green-500' },
-    { label: 'Cerrados', value: stats?.cerrado || 0, icon: CheckCircle, color: 'bg-purple-500' },
+    { label: 'Total Contactos', value: stats.total, icon: Users, color: 'bg-blue-500' },
+    { label: 'Nuevos', value: stats.nuevos, icon: Clock, color: 'bg-yellow-500' },
+    { label: 'Empresas', value: stats.empresas, icon: TrendingUp, color: 'bg-green-500' },
   ];
 
   return (
@@ -163,7 +160,7 @@ function DashboardOverview() {
 // Contacts Management
 function ContactsManagement() {
   const { data: contacts, isLoading, refetch } = trpc.contacts.list.useQuery();
-  const updateStatusMutation = trpc.contacts.updateStatus.useMutation({
+  const updateStatusMutation = trpc.contacts.update.useMutation({
     onSuccess: () => {
       toast.success('Estado actualizado');
       refetch();
@@ -513,7 +510,7 @@ function ChatbotManagement() {
   });
 
   const { data: faqs, isLoading, refetch } = trpc.chatbot.listAll.useQuery();
-  const createMutation = trpc.chatbot.create.useMutation({
+  const createMutation = trpc.chatbot.createFaq.useMutation({
     onSuccess: () => {
       toast.success('FAQ creada');
       setIsDialogOpen(false);
@@ -521,7 +518,7 @@ function ChatbotManagement() {
       refetch();
     },
   });
-  const updateMutation = trpc.chatbot.update.useMutation({
+  const updateMutation = trpc.chatbot.updateFaq.useMutation({
     onSuccess: () => {
       toast.success('FAQ actualizada');
       setIsDialogOpen(false);
@@ -529,7 +526,7 @@ function ChatbotManagement() {
       refetch();
     },
   });
-  const deleteMutation = trpc.chatbot.delete.useMutation({
+  const deleteMutation = trpc.chatbot.deleteFaq.useMutation({
     onSuccess: () => {
       toast.success('FAQ eliminada');
       refetch();

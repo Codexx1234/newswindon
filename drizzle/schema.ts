@@ -1,4 +1,4 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, boolean, date } from "drizzle-orm/mysql-core";
+import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, boolean } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -19,116 +19,7 @@ export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
 /**
- * Student levels (Beginner, Elementary, Pre-Intermediate, etc.)
- */
-export const levels = mysqlTable("levels", {
-  id: int("id").autoincrement().primaryKey(),
-  name: varchar("name", { length: 100 }).notNull().unique(),
-  description: text("description"),
-  color: varchar("color", { length: 20 }).default("#1a6b6b"),
-  displayOrder: int("displayOrder").default(0),
-  isActive: boolean("isActive").default(true).notNull(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-});
-
-export type Level = typeof levels.$inferSelect;
-export type InsertLevel = typeof levels.$inferInsert;
-
-/**
- * Students with auto-generated credentials
- */
-export const students = mysqlTable("students", {
-  id: int("id").autoincrement().primaryKey(),
-  firstName: varchar("firstName", { length: 100 }).notNull(),
-  lastName: varchar("lastName", { length: 100 }).notNull(),
-  username: varchar("username", { length: 100 }).notNull().unique(),
-  passwordPlain: varchar("passwordPlain", { length: 100 }).notNull(), // Stored for admin recovery
-  passwordHash: varchar("passwordHash", { length: 255 }).notNull(),
-  email: varchar("email", { length: 320 }),
-  phone: varchar("phone", { length: 50 }),
-  levelId: int("levelId").notNull(),
-  isActive: boolean("isActive").default(true).notNull(),
-  lastLogin: timestamp("lastLogin"),
-  createdBy: int("createdBy"),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-});
-
-export type Student = typeof students.$inferSelect;
-export type InsertStudent = typeof students.$inferInsert;
-
-/**
- * Classes/Lessons uploaded by professors
- */
-export const classes = mysqlTable("classes", {
-  id: int("id").autoincrement().primaryKey(),
-  title: varchar("title", { length: 255 }).notNull(),
-  description: text("description"),
-  levelId: int("levelId").notNull(),
-  classDate: date("classDate").notNull(),
-  videoUrl: text("videoUrl"),
-  videoKey: varchar("videoKey", { length: 255 }),
-  homeworkPdfUrl: text("homeworkPdfUrl"),
-  homeworkPdfKey: varchar("homeworkPdfKey", { length: 255 }),
-  homeworkDescription: text("homeworkDescription"),
-  isPublished: boolean("isPublished").default(true).notNull(),
-  createdBy: int("createdBy"),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-});
-
-export type Class = typeof classes.$inferSelect;
-export type InsertClass = typeof classes.$inferInsert;
-
-/**
- * Standalone homework/tasks (not attached to a class)
- */
-export const homeworks = mysqlTable("homeworks", {
-  id: int("id").autoincrement().primaryKey(),
-  title: varchar("title", { length: 255 }).notNull(),
-  description: text("description"),
-  levelId: int("levelId").notNull(),
-  dueDate: date("dueDate"),
-  pdfUrl: text("pdfUrl"),
-  pdfKey: varchar("pdfKey", { length: 255 }),
-  isPublished: boolean("isPublished").default(true).notNull(),
-  createdBy: int("createdBy"),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-});
-
-export type Homework = typeof homeworks.$inferSelect;
-export type InsertHomework = typeof homeworks.$inferInsert;
-
-/**
- * Track which classes students have viewed
- */
-export const classViews = mysqlTable("class_views", {
-  id: int("id").autoincrement().primaryKey(),
-  studentId: int("studentId").notNull(),
-  classId: int("classId").notNull(),
-  viewedAt: timestamp("viewedAt").defaultNow().notNull(),
-});
-
-export type ClassView = typeof classViews.$inferSelect;
-export type InsertClassView = typeof classViews.$inferInsert;
-
-/**
- * Track homework completion by students
- */
-export const homeworkCompletions = mysqlTable("homework_completions", {
-  id: int("id").autoincrement().primaryKey(),
-  studentId: int("studentId").notNull(),
-  homeworkId: int("homeworkId"),
-  classId: int("classId"), // For class-attached homework
-  completedAt: timestamp("completedAt").defaultNow().notNull(),
-});
-
-export type HomeworkCompletion = typeof homeworkCompletions.$inferSelect;
-export type InsertHomeworkCompletion = typeof homeworkCompletions.$inferInsert;
-
-/**
- * Contact form submissions from potential students
+ * Contact form submissions from potential students and companies
  */
 export const contacts = mysqlTable("contacts", {
   id: int("id").autoincrement().primaryKey(),
@@ -189,16 +80,3 @@ export const chatbotFaqs = mysqlTable("chatbot_faqs", {
 
 export type ChatbotFaq = typeof chatbotFaqs.$inferSelect;
 export type InsertChatbotFaq = typeof chatbotFaqs.$inferInsert;
-
-/**
- * Site settings for dynamic content
- */
-export const siteSettings = mysqlTable("site_settings", {
-  id: int("id").autoincrement().primaryKey(),
-  settingKey: varchar("settingKey", { length: 100 }).notNull().unique(),
-  settingValue: text("settingValue"),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-});
-
-export type SiteSetting = typeof siteSettings.$inferSelect;
-export type InsertSiteSetting = typeof siteSettings.$inferInsert;

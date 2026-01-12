@@ -19,8 +19,8 @@ export function WhatsAppButton() {
       {/* Tooltip */}
       <div
         className={cn(
-          'bg-white text-foreground px-4 py-2 rounded-lg shadow-lg transition-all duration-300 text-sm font-medium',
-          isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4 pointer-events-none'
+          'bg-white text-foreground px-4 py-2 rounded-lg shadow-xl border border-border transition-all duration-300 text-sm font-medium whitespace-nowrap',
+          isHovered ? 'opacity-100 translate-x-0 scale-100' : 'opacity-0 translate-x-4 scale-95 pointer-events-none'
         )}
       >
         ¡Chateá con nosotros!
@@ -31,11 +31,9 @@ export function WhatsAppButton() {
         onClick={handleClick}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className="whatsapp-btn group"
+        className="relative w-14 h-14 bg-[#25D366] hover:bg-[#20BA5A] rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group"
         aria-label="Contactar por WhatsApp"
       >
-        {/* Pulse ring */}
-        <span className="absolute inset-0 rounded-full bg-[#25D366] animate-ping opacity-30" />
         
         {/* Icon */}
         <svg

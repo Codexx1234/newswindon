@@ -196,7 +196,7 @@ function AboutSection() {
               </div>
 
               {/* Floating Badge */}
-              <div className="absolute -bottom-10 -right-2 bg-card rounded-2xl shadow-xl p-4 border">
+              <div className="absolute -bottom-12 -right-12 bg-card rounded-2xl shadow-xl p-4 border hidden md:block">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
                     <Star className="w-6 h-6 text-yellow-500 fill-yellow-500" />
@@ -405,7 +405,7 @@ function EmpresasCTA() {
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
             Capacitación para Empresas
           </h2>
-          <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+          <p className="text-xl text-white mb-8 max-w-2xl mx-auto font-medium">
             Más de 30 años de relación con una empresa líder, brindando servicios de capacitación en inglés de excelencia. 
             Programas personalizados, modalidad in-company y resultados comprobados.
           </p>

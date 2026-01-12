@@ -6,7 +6,8 @@ import {
   testimonials, InsertTestimonial, Testimonial, 
   chatbotFaqs, InsertChatbotFaq, ChatbotFaq,
   appointments, InsertAppointment, Appointment,
-  dailyMetrics, InsertDailyMetric, DailyMetric
+  dailyMetrics, InsertDailyMetric, DailyMetric,
+  auditLogs, InsertAuditLog, AuditLog
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -264,6 +265,14 @@ export async function getAllAppointments(): Promise<Appointment[]> {
   return await db.select().from(appointments).orderBy(desc(appointments.appointmentDate));
 }
 
+export async function getAppointmentById(id: number): Promise<Appointment | undefined> {
+  const db = await getDb();
+  if (!db) return undefined;
+
+  const result = await db.select().from(appointments).where(eq(appointments.id, id)).limit(1);
+  return result[0];
+}
+
 export async function updateAppointment(id: number, data: Partial<InsertAppointment>): Promise<void> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -321,4 +330,24 @@ export async function getRecentMetrics(days: number = 7): Promise<DailyMetric[]>
   if (!db) return [];
 
   return await db.select().from(dailyMetrics).orderBy(desc(dailyMetrics.date)).limit(days);
+}
+
+// ==================== AUDIT LOG FUNCTIONS ====================
+
+export async function createAuditLog(data: InsertAuditLog): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+
+  try {
+    await db.insert(auditLogs).values(data);
+  } catch (error) {
+    console.error("[Database] Failed to create audit log:", error);
+  }
+}
+
+export async function getRecentAuditLogs(limit: number = 50): Promise<AuditLog[]> {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db.select().from(auditLogs).orderBy(desc(auditLogs.createdAt)).limit(limit);
 }

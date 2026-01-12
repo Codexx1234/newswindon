@@ -2,7 +2,7 @@ import nodemailer from 'nodemailer';
 import handlebars from 'handlebars';
 import fs from 'fs';
 import path from 'path';
-import { env } from './env';
+import { ENV as env } from './env';
 
 interface EmailOptions {
   to: string;

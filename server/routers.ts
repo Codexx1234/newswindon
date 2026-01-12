@@ -1,4 +1,4 @@
-import { COOKIE_NAME } from "@shared/const";
+import { COOKIE_NAME, SPAM_DETECTED_ERR_MSG } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
@@ -44,10 +44,16 @@ export const appRouter = router({
         contactType: z.enum(["individual", "empresa"]).default("individual"),
         companyName: z.string().optional(),
         employeeCount: z.string().optional(),
+        honeypot: z.string().optional(),
       }))
       .mutation(async ({ input }) => {
+        if (input.honeypot) {
+          throw new TRPCError({ code: 'BAD_REQUEST', message: SPAM_DETECTED_ERR_MSG });
+        }
+        const { honeypot, ...cleanInput } = input;
+
         const contact = await db.createContact({
-          ...input,
+          ...cleanInput,
           emailSent: false, // Set to false initially, update after sending emails
         });
 
@@ -125,9 +131,19 @@ export const appRouter = router({
         notes: z.string().optional(),
         lastContactedAt: z.date().optional(),
       }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ input, ctx }) => {
         const { id, ...data } = input;
         await db.updateContact(id, data);
+        
+        await db.createAuditLog({
+          userId: ctx.user.id,
+          action: 'UPDATE_CONTACT',
+          entityType: 'contact',
+          entityId: id,
+          details: JSON.stringify(data),
+          ipAddress: ctx.req.ip,
+        });
+
         return { success: true };
       }),
 
@@ -243,18 +259,31 @@ export const appRouter = router({
         const appointment = await db.createAppointment(input);
         await db.trackMetric('appointmentBookings');
         
-        await notifyOwner({
-          title: `Nueva Reserva: ${input.fullName}`,
-          content: `
-📅 **Nueva Cita Agendada**
+        // Send email to student
+        await sendEmail({
+          to: input.email,
+          subject: "Confirmación de tu cita en NewSwindon",
+          template: "appointment-confirmation" as any,
+          context: {
+            fullName: input.fullName,
+            appointmentDate: input.appointmentDate.toLocaleString('es-AR'),
+            appointmentType: input.appointmentType,
+            phone: input.phone,
+          },
+        });
 
-**Tipo:** ${input.appointmentType}
-**Fecha:** ${input.appointmentDate.toLocaleString()}
-**Nombre:** ${input.fullName}
-**Email:** ${input.email}
-**Teléfono:** ${input.phone}
-**Notas:** ${input.notes || "Sin notas"}
-          `,
+        // Send email to admin
+        await sendEmail({
+          to: process.env.ADMIN_EMAIL || "admin@newswindon.com",
+          subject: `Nueva Cita Agendada: ${input.fullName}`,
+          template: "admin-notification" as any,
+          context: {
+            fullName: input.fullName,
+            email: input.email,
+            phone: input.phone,
+            contactType: "Cita / Reserva",
+            message: `Tipo de cita: ${input.appointmentType}. Fecha: ${input.appointmentDate.toLocaleString('es-AR')}. Notas: ${input.notes || "Sin notas"}`,
+          },
         });
 
         return { success: true, appointment };
@@ -271,8 +300,36 @@ export const appRouter = router({
         id: z.number(),
         status: z.enum(["pendiente", "confirmada", "cancelada", "completada"]),
       }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ input, ctx }) => {
+        const appointment = await db.getAppointmentById(input.id);
+        if (!appointment) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Cita no encontrada' });
+        }
+
         await db.updateAppointment(input.id, { status: input.status });
+
+        await db.createAuditLog({
+          userId: ctx.user.id,
+          action: 'UPDATE_APPOINTMENT_STATUS',
+          entityType: 'appointment',
+          entityId: input.id,
+          details: `Status changed to ${input.status}`,
+          ipAddress: ctx.req.ip,
+        });
+
+        // If cancelled by admin, notify the user
+        if (input.status === 'cancelada') {
+          await sendEmail({
+            to: appointment.email,
+            subject: "Tu cita en NewSwindon ha sido cancelada",
+            template: "appointment-cancellation" as any,
+            context: {
+              fullName: appointment.fullName,
+              appointmentDate: appointment.appointmentDate.toLocaleString('es-AR'),
+            },
+          });
+        }
+
         return { success: true };
       }),
   }),
@@ -284,6 +341,13 @@ export const appRouter = router({
       .input(z.object({ days: z.number().default(7) }))
       .query(async ({ input }) => {
         return await db.getRecentMetrics(input.days);
+      }),
+    
+    // Admin: Get audit logs
+    getAuditLogs: adminProcedure
+      .input(z.object({ limit: z.number().default(50) }))
+      .query(async ({ input }) => {
+        return await db.getRecentAuditLogs(input.limit);
       }),
     
     // Public: Track page view (simple)

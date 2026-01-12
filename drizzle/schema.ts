@@ -115,3 +115,20 @@ export const dailyMetrics = mysqlTable("daily_metrics", {
 
 export type DailyMetric = typeof dailyMetrics.$inferSelect;
 export type InsertDailyMetric = typeof dailyMetrics.$inferInsert;
+
+/**
+ * Audit logs for admin actions
+ */
+export const auditLogs = mysqlTable("audit_logs", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").references(() => users.id),
+  action: varchar("action", { length: 255 }).notNull(),
+  entityType: varchar("entityType", { length: 100 }),
+  entityId: int("entityId"),
+  details: text("details"),
+  ipAddress: varchar("ipAddress", { length: 45 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type AuditLog = typeof auditLogs.$inferSelect;
+export type InsertAuditLog = typeof auditLogs.$inferInsert;

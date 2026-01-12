@@ -1,16 +1,46 @@
+import { z } from "zod";
+import { fromError } from "zod-validation-error";
+
+const envSchema = z.object({
+  VITE_APP_ID: z.string().min(1),
+  JWT_SECRET: z.string().min(32, "JWT_SECRET should be at least 32 characters"),
+  DATABASE_URL: z.string().url(),
+  OAUTH_SERVER_URL: z.string().url(),
+  OWNER_OPEN_ID: z.string().min(1),
+  EMAIL_HOST: z.string().optional(),
+  EMAIL_PORT: z.string().default("587").transform(Number),
+  EMAIL_SECURE: z.string().default("false").transform(v => v === "true"),
+  EMAIL_USER: z.string().optional(),
+  EMAIL_PASSWORD: z.string().optional(),
+  EMAIL_FROM: z.string().optional(),
+  ADMIN_EMAIL: z.string().email().optional(),
+  NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
+  BUILT_IN_FORGE_API_URL: z.string().optional(),
+  BUILT_IN_FORGE_API_KEY: z.string().optional(),
+});
+
+const _env = envSchema.safeParse(process.env);
+
+if (!_env.success) {
+  console.error("❌ Invalid environment variables:");
+  console.error(fromError(_env.error).toString());
+  process.exit(1);
+}
+
 export const ENV = {
-  appId: process.env.VITE_APP_ID ?? "",
-  cookieSecret: process.env.JWT_SECRET ?? "",
-  databaseUrl: process.env.DATABASE_URL ?? "",
-  oAuthServerUrl: process.env.OAUTH_SERVER_URL ?? "",
-  ownerOpenId: process.env.OWNER_OPEN_ID ?? "",
-  emailHost: process.env.EMAIL_HOST ?? "",
-  emailPort: process.env.EMAIL_PORT ? parseInt(process.env.EMAIL_PORT) : 587,
-  emailSecure: process.env.EMAIL_SECURE === "true",
-  emailUser: process.env.EMAIL_USER ?? "",
-  emailPassword: process.env.EMAIL_PASSWORD ?? "",
-  emailFrom: process.env.EMAIL_FROM ?? "",
-  isProduction: process.env.NODE_ENV === "production",
-  forgeApiUrl: process.env.BUILT_IN_FORGE_API_URL ?? "",
-  forgeApiKey: process.env.BUILT_IN_FORGE_API_KEY ?? "",
+  appId: _env.data.VITE_APP_ID,
+  cookieSecret: _env.data.JWT_SECRET,
+  databaseUrl: _env.data.DATABASE_URL,
+  oAuthServerUrl: _env.data.OAUTH_SERVER_URL,
+  ownerOpenId: _env.data.OWNER_OPEN_ID,
+  emailHost: _env.data.EMAIL_HOST ?? "",
+  emailPort: _env.data.EMAIL_PORT,
+  emailSecure: _env.data.EMAIL_SECURE,
+  emailUser: _env.data.EMAIL_USER ?? "",
+  emailPassword: _env.data.EMAIL_PASSWORD ?? "",
+  emailFrom: _env.data.EMAIL_FROM ?? "",
+  adminEmail: _env.data.ADMIN_EMAIL ?? "admin@newswindon.com",
+  isProduction: _env.data.NODE_ENV === "production",
+  forgeApiUrl: _env.data.BUILT_IN_FORGE_API_URL ?? "",
+  forgeApiKey: _env.data.BUILT_IN_FORGE_API_KEY ?? "",
 };

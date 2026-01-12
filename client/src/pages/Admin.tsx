@@ -64,6 +64,7 @@ const navItems = [
   { href: '/admin/appointments', icon: Clock, label: 'Reservas' },
   { href: '/admin/testimonials', icon: Star, label: 'Testimonios' },
   { href: '/admin/chatbot', icon: HelpCircle, label: 'Chatbot FAQs' },
+  { href: '/admin/audit', icon: Users, label: 'Auditoría' },
 ];
 
 // Dashboard Overview
@@ -797,6 +798,75 @@ function AdminSidebar({ currentPath }: { currentPath: string }) {
   );
 }
 
+// Audit Logs Management
+function AuditLogsManagement() {
+  const { data: logs, isLoading } = trpc.metrics.getAuditLogs.useQuery({ limit: 50 });
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold">Logs de Auditoría</h1>
+        <p className="text-muted-foreground">Historial de acciones realizadas por administradores</p>
+      </div>
+
+      <Card>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Fecha</TableHead>
+                <TableHead>Acción</TableHead>
+                <TableHead>Entidad</TableHead>
+                <TableHead>Detalles</TableHead>
+                <TableHead>IP</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {logs?.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                    No hay logs registrados
+                  </TableCell>
+                </TableRow>
+              ) : (
+                logs?.map((log) => (
+                  <TableRow key={log.id}>
+                    <TableCell className="text-xs">
+                      {new Date(log.createdAt).toLocaleString('es-AR')}
+                    </TableCell>
+                    <TableCell>
+                      <span className="font-mono text-xs bg-muted px-1.5 py-0.5 rounded">
+                        {log.action}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-xs">
+                      {log.entityType} ({log.entityId})
+                    </TableCell>
+                    <TableCell className="text-xs max-w-xs truncate">
+                      {log.details}
+                    </TableCell>
+                    <TableCell className="text-xs">
+                      {log.ipAddress}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 // Appointments Management
 function AppointmentsManagement() {
   const { data: appointments, isLoading, refetch } = trpc.appointments.list.useQuery();
@@ -884,7 +954,19 @@ function AppointmentsManagement() {
                         </SelectContent>
                       </Select>
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-right flex gap-2 justify-end">
+                      <Button 
+                        variant="destructive" 
+                        size="sm" 
+                        disabled={appointment.status === 'cancelada' || updateStatusMutation.isPending}
+                        onClick={() => {
+                          if (confirm('¿Estás seguro de cancelar esta cita? Se enviará un correo de notificación al usuario.')) {
+                            updateStatusMutation.mutate({ id: appointment.id, status: 'cancelada' });
+                          }
+                        }}
+                      >
+                        Cancelar
+                      </Button>
                       <Button variant="outline" size="sm" asChild>
                         <a 
                           href={`https://wa.me/${appointment.phone.replace(/\D/g, '')}`} 
@@ -966,6 +1048,7 @@ export default function Admin() {
     if (path === '/admin/appointments') return <AppointmentsManagement />;
     if (path === '/admin/testimonials') return <TestimonialsManagement />;
     if (path === '/admin/chatbot') return <ChatbotManagement />;
+    if (path === '/admin/audit') return <AuditLogsManagement />;
     return <DashboardOverview />;
   };
 

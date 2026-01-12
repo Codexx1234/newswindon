@@ -1,0 +1,34 @@
+name: E2E Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  playwright:
+    name: Run Playwright tests
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 20
+    - uses: pnpm/action-setup@v3
+      with:
+        version: 8
+        run_install: true
+
+    - name: Install Playwright browsers
+      run: pnpm exec playwright install --with-deps
+
+    - name: Run Playwright tests
+      run: pnpm test:e2e
+      env:
+        # These should ideally be set as GitHub Secrets
+        VITE_APP_ID: ${{ secrets.VITE_APP_ID || 'test-app' }}
+        JWT_SECRET: ${{ secrets.JWT_SECRET || 'test-secret' }}
+        DATABASE_URL: ${{ secrets.DATABASE_URL || 'mysql://root:password@localhost:3306/newswindon' }}
+        OAUTH_SERVER_URL: ${{ secrets.OAUTH_SERVER_URL || 'http://localhost:3000' }}
+        OWNER_OPEN_ID: ${{ secrets.OWNER_OPEN_ID || 'test-owner' }}

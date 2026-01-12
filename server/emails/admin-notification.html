@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuevo Contacto - NewSwindon</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 20px auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
+        .header { background-color: #007bff; color: #ffffff; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+        .header h1 { margin: 0; font-size: 24px; }
+        .content { padding: 20px 0; line-height: 1.6; color: #333333; }
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .data-table th, .data-table td { border: 1px solid #dddddd; text-align: left; padding: 8px; }
+        .data-table th { background-color: #f2f2f2; }
+        .footer { text-align: center; padding: 20px 0; font-size: 12px; color: #777777; border-top: 1px solid #eeeeee; margin-top: 20px; }
+        .logo { max-width: 150px; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="https://newswindon.com/logo.png" alt="NewSwindon Logo" class="logo">
+            <h1>¡Nuevo Contacto Recibido!</h1>
+        </div>
+        <div class="content">
+            <p>Se ha recibido un nuevo mensaje a través del formulario de contacto de NewSwindon. Aquí están los detalles:</p>
+            <table class="data-table">
+                <tr>
+                    <th>Campo</th>
+                    <th>Valor</th>
+                </tr>
+                <tr>
+                    <td>Nombre Completo</td>
+                    <td>{{fullName}}</td>
+                </tr>
+                <tr>
+                    <td>Email</td>
+                    <td>{{email}}</td>
+                </tr>
+                <tr>
+                    <td>Teléfono</td>
+                    <td>{{phone}}</td>
+                </tr>
+                <tr>
+                    <td>Tipo de Contacto</td>
+                    <td>{{contactType}}</td>
+                </tr>
+                {{#if companyName}}
+                <tr>
+                    <td>Nombre de la Empresa</td>
+                    <td>{{companyName}}</td>
+                </tr>
+                {{/if}}
+                {{#if employeeCount}}
+                <tr>
+                    <td>Cantidad de Empleados</td>
+                    <td>{{employeeCount}}</td>
+                </tr>
+                {{/if}}
+                {{#if age}}
+                <tr>
+                    <td>Edad del Estudiante</td>
+                    <td>{{age}}</td>
+                </tr>
+                {{/if}}
+                {{#if currentLevel}}
+                <tr>
+                    <td>Nivel Actual de Inglés</td>
+                    <td>{{currentLevel}}</td>
+                </tr>
+                {{/if}}
+                {{#if courseInterest}}
+                <tr>
+                    <td>Interés en Curso</td>
+                    <td>{{courseInterest}}</td>
+                </tr>
+                {{/if}}
+                <tr>
+                    <td>Mensaje</td>
+                    <td>{{message}}</td>
+                </tr>
+            </table>
+            <p>Por favor, contacta a esta persona a la brevedad.</p>
+            <p>Atentamente,</p>
+            <p>El sistema de NewSwindon</p>
+        </div>
+        <div class="footer">
+            <p>&copy; {{currentYear}} NewSwindon. Todos los derechos reservados.</p>
+            <p>Carapachay, Buenos Aires, Argentina</p>
+        </div>
+    </div>
+</body>
+</html>

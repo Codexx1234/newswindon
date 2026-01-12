@@ -198,7 +198,7 @@ function AboutSection() {
           <div className={cn('slide-in-right', isVisible && 'visible')}>
             <div className="relative">
               {/* Main Card */}
-              <div className="bg-gradient-to-br from-primary to-primary/80 rounded-3xl p-8 text-white">
+              <div className="bg-gradient-to-br from-primary to-primary/80 rounded-3xl p-8 text-white" loading="lazy">
                 <div className="grid grid-cols-2 gap-6">
                   <div className="text-center p-4 bg-white/10 rounded-2xl">
                     <GraduationCap className="w-10 h-10 mx-auto mb-2" />

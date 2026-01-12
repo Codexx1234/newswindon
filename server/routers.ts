@@ -7,6 +7,7 @@ import { TRPCError } from "@trpc/server";
 import * as db from "./db";
 import { notifyOwner } from "./_core/notification";
 import { invokeLLM } from "./_core/llm";
+import { sendEmail } from "./_core/email";
 
 // Admin-only procedure
 const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
@@ -47,34 +48,48 @@ export const appRouter = router({
       .mutation(async ({ input }) => {
         const contact = await db.createContact({
           ...input,
-          emailSent: true,
+          emailSent: false, // Set to false initially, update after sending emails
         });
+
+        if (contact) {
+          // Send email to student
+          await sendEmail({
+            to: input.email,
+            subject: "¡Gracias por tu interés en NewSwindon!",
+            template: "student-confirmation",
+            context: {
+              fullName: input.fullName,
+            },
+          });
+
+          // Send email to admin
+          const isEmpresa = input.contactType === "empresa";
+          await sendEmail({
+            to: process.env.ADMIN_EMAIL || "admin@newswindon.com", // Replace with actual admin email or env var
+            subject: `Nuevo Contacto ${isEmpresa ? "Empresarial" : "Individual"}: ${input.fullName}`,
+            template: "admin-notification",
+            context: {
+              fullName: input.fullName,
+              email: input.email,
+              phone: input.phone || "No proporcionado",
+              contactType: isEmpresa ? "Empresa" : "Individual",
+              companyName: input.companyName || "N/A",
+              employeeCount: input.employeeCount || "N/A",
+              age: input.age || "N/A",
+              currentLevel: input.currentLevel || "N/A",
+              courseInterest: input.courseInterest || "N/A",
+              message: input.message || "Sin mensaje adicional",
+            },
+          });
+
+          // Update contact to mark email as sent
+          await db.updateContact(contact.id, { emailSent: true });
+        }
 
         if (contact) {
           await db.trackMetric('contactSubmissions');
           const isEmpresa = input.contactType === "empresa";
-          await notifyOwner({
-            title: `Nuevo contacto ${isEmpresa ? "EMPRESARIAL" : ""}: ${input.fullName}`,
-            content: `
-📋 **Nuevo Formulario de Contacto**
-
-**Tipo:** ${isEmpresa ? "🏢 Empresa" : "👤 Individual"}
-${isEmpresa ? `**Empresa:** ${input.companyName || "No especificada"}\n**Empleados a capacitar:** ${input.employeeCount || "No especificado"}` : ""}
-
-**Nombre:** ${input.fullName}
-**Email:** ${input.email}
-**Teléfono:** ${input.phone || "No proporcionado"}
-${!isEmpresa ? `**Edad:** ${input.age || "No especificada"}` : ""}
-**Nivel actual:** ${input.currentLevel || "No especificado"}
-**Curso de interés:** ${input.courseInterest || "No especificado"}
-
-**Mensaje:**
-${input.message || "Sin mensaje adicional"}
-
----
-Contactar a la brevedad.
-            `,
-          });
+// await notifyOwner (removed, replaced by email notification)
         }
 
         return { 

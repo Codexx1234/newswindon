@@ -131,6 +131,15 @@ export const appRouter = router({
     update: adminProcedure
       .input(z.object({
         id: z.number(),
+        fullName: z.string().min(2).optional(),
+        email: z.string().email().optional(),
+        phone: z.string().optional(),
+        age: z.string().optional(),
+        currentLevel: z.string().optional(),
+        courseInterest: z.string().optional(),
+        message: z.string().optional(),
+        companyName: z.string().optional(),
+        employeeCount: z.string().optional(),
         status: z.enum(["nuevo", "contactado", "en_proceso", "cerrado", "no_interesado"]).optional(),
         notes: z.string().optional(),
         lastContactedAt: z.date().optional(),
@@ -298,6 +307,7 @@ export const appRouter = router({
           appointmentType: input.appointmentType,
           date: input.appointmentDate,
           hour: `${input.appointmentDate.getHours()}:00`,
+          appointmentId: appointment.id,
         });
 
         return { success: true, appointment };
@@ -331,8 +341,15 @@ export const appRouter = router({
           ipAddress: ctx.req.ip,
         });
 
-        // If cancelled by admin, notify the user
+        // If cancelled by admin, notify the user and delete from Google Calendar
         if (input.status === 'cancelada') {
+          // Delete from Google Calendar
+          await CalendarService.deleteEvent(input.id, (appointment as any).googleCalendarEventId);
+          
+          // Delete the appointment record from database
+          await db.deleteAppointment(input.id);
+          
+          // Send cancellation email
           await sendEmail({
             to: appointment.email,
             subject: "Tu cita en NewSwindon ha sido cancelada",

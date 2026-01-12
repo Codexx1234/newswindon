@@ -1,8 +1,8 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "84e98f38-d977-4fc2-91b8-cd6c00f97893",
-  "prevId": "e2baf50e-a352-4ab1-91c5-9e0c083459d8",
+  "id": "2a716957-4df2-435c-81ca-2388afd09fc4",
+  "prevId": "84e98f38-d977-4fc2-91b8-cd6c00f97893",
   "tables": {
     "appointments": {
       "name": "appointments",
@@ -61,6 +61,13 @@
         "notes": {
           "name": "notes",
           "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "googleCalendarEventId": {
+          "name": "googleCalendarEventId",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false

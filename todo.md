@@ -32,3 +32,11 @@
 
 ---
 *Nota: Este plan fue diseñado para escalar la presencia digital de NewSwindon y automatizar procesos administrativos.*
+
+## Correcciones Urgentes
+- [x] Corregir lógica de validación de horarios ocupados (muestra ocupado cuando no lo está)
+- [x] Implementar eliminación de reservas al cancelar
+- [x] Configurar envío de emails SMTP (error actual)
+- [x] Integrar Google Calendar para crear eventos
+- [x] Sincronizar eliminación de eventos en Google Calendar al cancelar reserva
+- [x] Agregar funcionalidad de edición de contactos en admin

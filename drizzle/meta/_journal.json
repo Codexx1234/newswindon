@@ -43,6 +43,13 @@
       "when": 1768195955445,
       "tag": "0005_clammy_squirrel_girl",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1768245657562,
+      "tag": "0006_mighty_cerise",
+      "breakpoints": true
     }
   ]
 }

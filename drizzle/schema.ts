@@ -97,6 +97,7 @@ export const appointments = mysqlTable("appointments", {
   appointmentType: mysqlEnum("appointmentType", ["entrevista_nivel", "consulta_general", "empresa"]).default("entrevista_nivel").notNull(),
   status: mysqlEnum("status", ["pendiente", "confirmada", "cancelada", "completada"]).default("pendiente").notNull(),
   notes: text("notes"),
+  googleCalendarEventId: varchar("googleCalendarEventId", { length: 255 }), // Google Calendar event ID for syncing
   source: varchar("source", { length: 100 }), // e.g., 'google', 'facebook', 'instagram', 'direct'
   utmSource: varchar("utmSource", { length: 100 }),
   utmMedium: varchar("utmMedium", { length: 100 }),

@@ -53,7 +53,6 @@ import {
   Loader2,
   LogIn,
   Image as ImageIcon,
-  Pencil,
   Settings as SettingsIcon,
   Calendar as CalendarIcon
 } from 'lucide-react';
@@ -242,6 +241,9 @@ function ContactsManagement() {
     contactType?: "individual" | "empresa";
     search?: string;
   }>({});
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editingContact, setEditingContact] = useState<any>(null);
+  const [editFormData, setEditFormData] = useState<any>({});
 
   const { data: contacts, isLoading, refetch } = trpc.contacts.list.useQuery(filters);
   const updateStatusMutation = trpc.contacts.update.useMutation({
@@ -250,12 +252,46 @@ function ContactsManagement() {
       refetch();
     },
   });
+  const updateContactMutation = trpc.contacts.update.useMutation({
+    onSuccess: () => {
+      toast.success('Contacto actualizado');
+      setIsEditDialogOpen(false);
+      setEditingContact(null);
+      refetch();
+    },
+    onError: (error) => {
+      toast.error('Error al actualizar contacto');
+    },
+  });
   const deleteMutation = trpc.contacts.delete.useMutation({
     onSuccess: () => {
       toast.success('Contacto eliminado');
       refetch();
     },
   });
+
+  const handleEditContact = (contact: any) => {
+    setEditingContact(contact);
+    setEditFormData({
+      id: contact.id,
+      fullName: contact.fullName,
+      email: contact.email,
+      phone: contact.phone || '',
+      age: contact.age || '',
+      currentLevel: contact.currentLevel || '',
+      courseInterest: contact.courseInterest || '',
+      message: contact.message || '',
+      companyName: contact.companyName || '',
+      employeeCount: contact.employeeCount || '',
+      status: contact.status,
+      notes: contact.notes || '',
+    });
+    setIsEditDialogOpen(true);
+  };
+
+  const handleSaveContact = () => {
+    updateContactMutation.mutate(editFormData);
+  };
 
   const statusColors: Record<string, string> = {
     nuevo: 'bg-yellow-100 text-yellow-800',
@@ -383,17 +419,26 @@ function ContactsManagement() {
                       {new Date(contact.createdAt).toLocaleDateString('es-AR')}
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => {
-                          if (confirm('¿Eliminar este contacto?')) {
-                            deleteMutation.mutate({ id: contact.id });
-                          }
-                        }}
-                      >
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                      </Button>
+                      <div className="flex gap-2 justify-end">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleEditContact(contact)}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => {
+                            if (confirm('¿Eliminar este contacto?')) {
+                              deleteMutation.mutate({ id: contact.id });
+                            }
+                          }}
+                        >
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))
@@ -402,6 +447,113 @@ function ContactsManagement() {
           </Table>
         </CardContent>
       </Card>
+
+      {/* Edit Contact Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Editar Contacto</DialogTitle>
+            <DialogDescription>Modifica los datos del contacto</DialogDescription>
+          </DialogHeader>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label>Nombre</Label>
+              <Input
+                value={editFormData.fullName || ''}
+                onChange={(e) => setEditFormData({ ...editFormData, fullName: e.target.value })}
+              />
+            </div>
+            <div>
+              <Label>Email</Label>
+              <Input
+                type="email"
+                value={editFormData.email || ''}
+                onChange={(e) => setEditFormData({ ...editFormData, email: e.target.value })}
+              />
+            </div>
+            <div>
+              <Label>Teléfono</Label>
+              <Input
+                value={editFormData.phone || ''}
+                onChange={(e) => setEditFormData({ ...editFormData, phone: e.target.value })}
+              />
+            </div>
+            <div>
+              <Label>Edad</Label>
+              <Input
+                value={editFormData.age || ''}
+                onChange={(e) => setEditFormData({ ...editFormData, age: e.target.value })}
+              />
+            </div>
+            <div>
+              <Label>Nivel Actual</Label>
+              <Input
+                value={editFormData.currentLevel || ''}
+                onChange={(e) => setEditFormData({ ...editFormData, currentLevel: e.target.value })}
+              />
+            </div>
+            <div>
+              <Label>Interés de Curso</Label>
+              <Input
+                value={editFormData.courseInterest || ''}
+                onChange={(e) => setEditFormData({ ...editFormData, courseInterest: e.target.value })}
+              />
+            </div>
+            <div className="col-span-2">
+              <Label>Mensaje</Label>
+              <Textarea
+                value={editFormData.message || ''}
+                onChange={(e) => setEditFormData({ ...editFormData, message: e.target.value })}
+              />
+            </div>
+            <div>
+              <Label>Empresa</Label>
+              <Input
+                value={editFormData.companyName || ''}
+                onChange={(e) => setEditFormData({ ...editFormData, companyName: e.target.value })}
+              />
+            </div>
+            <div>
+              <Label>Cantidad de Empleados</Label>
+              <Input
+                value={editFormData.employeeCount || ''}
+                onChange={(e) => setEditFormData({ ...editFormData, employeeCount: e.target.value })}
+              />
+            </div>
+            <div>
+              <Label>Estado</Label>
+              <Select
+                value={editFormData.status}
+                onValueChange={(v) => setEditFormData({ ...editFormData, status: v })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="nuevo">Nuevo</SelectItem>
+                  <SelectItem value="contactado">Contactado</SelectItem>
+                  <SelectItem value="en_proceso">En proceso</SelectItem>
+                  <SelectItem value="cerrado">Cerrado</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Notas</Label>
+              <Input
+                value={editFormData.notes || ''}
+                onChange={(e) => setEditFormData({ ...editFormData, notes: e.target.value })}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>Cancelar</Button>
+            <Button onClick={handleSaveContact} disabled={updateContactMutation.isPending}>
+              {updateContactMutation.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+              Guardar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

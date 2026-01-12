@@ -1,5 +1,5 @@
 import { drizzle } from "drizzle-orm/mysql2";
-import { eq, desc, sql, and, gte, lte } from "drizzle-orm";
+import { eq, desc, sql, and, gte, lte, inArray } from "drizzle-orm";
 import { 
   InsertUser, users, 
   contacts, InsertContact, Contact, 
@@ -282,23 +282,37 @@ export async function updateAppointment(id: number, data: Partial<InsertAppointm
   await db.update(appointments).set(data).where(eq(appointments.id, id));
 }
 
+export async function deleteAppointment(id: number): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.delete(appointments).where(eq(appointments.id, id));
+}
+
 export async function checkAppointmentAvailability(date: Date): Promise<boolean> {
   const db = await getDb();
   if (!db) return false;
 
-  const result = await db.select().from(appointments)
-    .where(and(
-      eq(appointments.appointmentDate, date),
-      eq(appointments.status, 'pendiente')
-    )).limit(1);
-  
-  const confirmed = await db.select().from(appointments)
-    .where(and(
-      eq(appointments.appointmentDate, date),
-      eq(appointments.status, 'confirmada')
-    )).limit(1);
+  // Get all appointments (pending and confirmed)
+  const allAppointments = await db.select().from(appointments)
+    .where(inArray(appointments.status, ['pendiente' as const, 'confirmada' as const]));
 
-  return result.length === 0 && confirmed.length === 0;
+  // Check if any appointment is at the exact same hour
+  // We compare: same year, month, day, and hour
+  for (const apt of allAppointments) {
+    const aptDate = apt.appointmentDate instanceof Date ? apt.appointmentDate : new Date(apt.appointmentDate);
+    const isSameDateTime = 
+      date.getFullYear() === aptDate.getFullYear() &&
+      date.getMonth() === aptDate.getMonth() &&
+      date.getDate() === aptDate.getDate() &&
+      date.getHours() === aptDate.getHours();
+    
+    if (isSameDateTime) {
+      return false; // Slot is occupied
+    }
+  }
+
+  return true; // Slot is available
 }
 
 // ==================== METRICS FUNCTIONS ====================

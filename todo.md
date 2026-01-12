@@ -65,32 +65,33 @@
 ## Ajustes según Feedback del Usuario
 - [x] Eliminar toda la sección de Portal Estudiantes
 -- [x] Ajustar estadísticas (1000 alumnos, 1 empresa por 30+ años)0+ años)
-- [ ] Mejorar tipografía y espaciado para mejor legibilidad
-- [ ] Corregir superposición del navbar en la parte superior
-- [ ] Eliminar footer duplicado
-- [ ] Crear landing page completa para empresas (/empresas) con diseño corporativo
-- [ ] Agregar botón en navbar que lleve a /empresas
-- [ ] Botón "Solicitar información" redirige a formulario en /empresas
+- [x] Mejorar tipografía y espaciado para mejor legibilidad
+- [x] Corregir superposición del navbar en la parte superior
+- [x] Eliminar footer duplicado
+- [x] Crear landing page completa para empresas (/empresas) con diseño corporativo
+- [x] Agregar botón en navbar que lleve a /empresas
+- [x] Botón "Solicitar información" redirige a formulario en /empresas
+- [x] Formulario específico para empresas con campos de empresa y empleados
 - [ ] Configurar envío de correos con formato profesional al admin
-- [ ] Mejorar panel admin con gestión completa de FAQs
-- [ ] Mejorar panel admin con gestión completa de testimonios
-- [ ] Configurar chatbot para responder solo con información de la página
+- [x] Mejorar panel admin con gestión completa de FAQs
+- [x] Mejorar panel admin con gestión completa de testimonios
+- [x] Configurar chatbot para responder solo con información de la página
 
 ## Correcciones de UI y UX
 - [x] Cambiar tipografía a Inter (más legible)
 - [x] Ajustar colores a tonos más suaves (gris oscuro en lugar de negro)
 - [x] Aumentar espaciado entre líneas)
 - [x] Eliminar botón "Portal Estudiantes" del navbar
-- [ ] Centrar logo de "volver arriba"
+- [x] Centrar logo de "volver arriba"
 - [x] Arreglar logo de WhatsApp (eliminar fondo verde duplicado)
 - [x] Corregir posición del tooltip de WhatsApp
-- [ ] Eliminar botones duplicados (chatbot y scroll-to-top)
-- [ ] Corregir superposición de elementos al hacer scroll arriba
+- [x] Eliminar botones duplicados (chatbot y scroll-to-top)
+- [x] Corregir superposición de elementos al hacer scroll arriba
 
 ## Corrección de Contraste
 - [x] Corregir contraste en sección Hero (letras blancas sobre fondo blanco)
 - [x] Corregir contraste en sección Capacitación para Empresas (letras blancas sobre fondo blanco)
-- [ ] Restaurar funcionalidad de navegación por secciones en navbar (scroll suave a #cursos, #nosotros, etc.)
+- [x] Restaurar funcionalidad de navegación por secciones en navbar (scroll suave a #cursos, #nosotros, etc.)
 - [x] Agregar IDs faltantes a secciones (inicio, empresas)
 - [x] Mejorar contraste en estadísticas del hero (texto pequeño debajo de números)
 - [x] Rediseñar sección "Sobre Nosotros" más corta y atractiva

@@ -33,9 +33,11 @@ export function Navbar() {
     
     if (href.startsWith('/#')) {
       const elementId = href.substring(2);
-      const element = document.getElementById(elementId);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
+      if (location === '/') {
+        const element = document.getElementById(elementId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
       }
     }
   };
@@ -68,7 +70,7 @@ export function Navbar() {
           'sticky top-0 z-50 w-full transition-all duration-300',
           isScrolled
             ? 'bg-background/95 backdrop-blur-md shadow-md'
-            : 'bg-background'
+            : 'bg-background/80 backdrop-blur-sm'
         )}
       >
         <div className="container">

@@ -27,6 +27,8 @@ const contactSchema = z.object({
   currentLevel: z.string().optional(),
   courseInterest: z.string().optional(),
   message: z.string().optional(),
+  companyName: z.string().optional(),
+  employeeCount: z.string().optional(),
 });
 
 type ContactFormData = z.infer<typeof contactSchema>;
@@ -147,6 +149,37 @@ export function ContactForm({ contactType = 'individual', showCompanyField = fal
             className="input-focus"
           />
         </div>
+
+        {/* Company Name */}
+        {contactType === 'empresa' && (
+          <div className="space-y-2">
+            <Label htmlFor="companyName">Nombre de la empresa</Label>
+            <Input
+              id="companyName"
+              placeholder="Tu empresa"
+              {...register('companyName')}
+              className="input-focus"
+            />
+          </div>
+        )}
+
+        {/* Employee Count */}
+        {contactType === 'empresa' && (
+          <div className="space-y-2">
+            <Label htmlFor="employeeCount">Cantidad de empleados a capacitar</Label>
+            <Select onValueChange={(value) => setValue('employeeCount', value)}>
+              <SelectTrigger className="input-focus">
+                <SelectValue placeholder="Seleccioná una opción" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="1-5">1 a 5 empleados</SelectItem>
+                <SelectItem value="6-20">6 a 20 empleados</SelectItem>
+                <SelectItem value="21-50">21 a 50 empleados</SelectItem>
+                <SelectItem value="+50">Más de 50 empleados</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        )}
 
         {/* Age */}
         {contactType === 'individual' && (

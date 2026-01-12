@@ -128,8 +128,8 @@
   
   body {
     @apply bg-background text-foreground font-sans antialiased;
-    line-height: 1.7;
-    letter-spacing: 0.01em;
+    line-height: 1.8;
+    letter-spacing: 0.015em;
   }
   
   h1, h2, h3, h4, h5, h6 {
@@ -151,8 +151,8 @@
   }
   
   p {
-    line-height: 1.8;
-    margin-bottom: 1rem;
+    line-height: 1.9;
+    margin-bottom: 1.25rem;
   }
   
   button:not(:disabled),

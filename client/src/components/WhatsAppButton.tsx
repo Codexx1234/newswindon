@@ -15,12 +15,12 @@ export function WhatsAppButton() {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3">
+    <div className="fixed bottom-6 left-6 z-50 flex items-center gap-3 flex-row-reverse">
       {/* Tooltip */}
       <div
         className={cn(
           'bg-white text-foreground px-4 py-2 rounded-lg shadow-xl border border-border transition-all duration-300 text-sm font-medium whitespace-nowrap',
-          isHovered ? 'opacity-100 translate-x-0 scale-100' : 'opacity-0 translate-x-4 scale-95 pointer-events-none'
+          isHovered ? 'opacity-100 translate-x-0 scale-100' : 'opacity-0 -translate-x-4 scale-95 pointer-events-none'
         )}
       >
         ¡Chateá con nosotros!

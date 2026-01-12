@@ -101,7 +101,7 @@ export function Chatbot() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          'fixed bottom-24 right-6 z-40 w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-all duration-300',
+          'fixed bottom-20 right-6 z-40 w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-all duration-300',
           'bg-primary text-primary-foreground hover:scale-110',
           isOpen && 'rotate-90'
         )}
@@ -116,6 +116,7 @@ export function Chatbot() {
           'chatbot-container',
           isOpen ? 'open' : 'closed'
         )}
+        style={{ bottom: '90px' }}
       >
         {/* Header */}
         <div className="gradient-primary text-white p-4">

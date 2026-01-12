@@ -330,6 +330,10 @@ function TestimonialsManagement() {
   };
 
   const handleSubmit = () => {
+    if (!formData.authorName || !formData.content) {
+      toast.error('Por favor completa los campos obligatorios');
+      return;
+    }
     if (editingTestimonial) {
       updateMutation.mutate({ id: editingTestimonial.id, ...formData });
     } else {
@@ -550,6 +554,10 @@ function ChatbotManagement() {
   };
 
   const handleSubmit = () => {
+    if (!formData.question || !formData.answer) {
+      toast.error('Por favor completa los campos obligatorios');
+      return;
+    }
     if (editingFaq) {
       updateMutation.mutate({ id: editingFaq.id, ...formData });
     } else {

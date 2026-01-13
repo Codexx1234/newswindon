@@ -36,6 +36,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { useScrollAnimation, useCounterAnimation } from '@/hooks/useScrollAnimation';
+import { useContent } from '@/hooks/useContent';
 import { TestimonialsCarousel } from '@/components/TestimonialsCarousel';
 import { ContactForm } from '@/components/ContactForm';
 import { GallerySection } from '@/components/GallerySection';
@@ -48,11 +49,11 @@ function HeroSection() {
   const { count: studentsCount, ref: studentsRef } = useCounterAnimation(1000, 2500);
   const { count: companiesCount, ref: companiesRef } = useCounterAnimation(30, 2000);
 
-  // Load dynamic content
-  const { data: heroTitle } = trpc.content.getByKey.useQuery({ key: 'hero_title' });
-  const { data: heroSubtitle } = trpc.content.getByKey.useQuery({ key: 'hero_subtitle' });
-  const { data: ctaPrimary } = trpc.content.getByKey.useQuery({ key: 'hero_cta_primary' });
-  const { data: ctaSecondary } = trpc.content.getByKey.useQuery({ key: 'hero_cta_secondary' });
+  // Load dynamic content with backup system
+  const heroTitle = useContent('hero_title', 'Aprendé inglés en NewSwindon');
+  const heroSubtitle = useContent('hero_subtitle', 'Instituto de inglés con más de tres décadas formando estudiantes de todas las edades. Grupos reducidos, profesores especializados y metodología efectiva.');
+  const ctaPrimary = useContent('hero_cta_primary', 'Inscribite ahora');
+  const ctaSecondary = useContent('hero_cta_secondary', 'Ver cursos');
 
   return (
     <section id="inicio" className="relative min-h-[90vh] flex items-center overflow-hidden">
@@ -86,11 +87,11 @@ function HeroSection() {
         >
           {/* Main Heading */}
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-            {heroTitle || 'Aprendé inglés en NewSwindon'}
+            {heroTitle}
           </h1>
 
           <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-2xl mx-auto">
-            {heroSubtitle || 'Instituto de inglés con más de tres décadas formando estudiantes de todas las edades. Grupos reducidos, profesores especializados y metodología efectiva.'}
+            {heroSubtitle}
           </p>
 
           {/* CTA Buttons */}
@@ -101,7 +102,7 @@ function HeroSection() {
               className="bg-white text-primary hover:bg-white/90 btn-shine text-lg px-8"
             >
               <a href="#contacto">
-                Inscribite ahora
+                {ctaPrimary}
                 <ArrowRight className="w-5 h-5 ml-2" />
               </a>
             </Button>
@@ -112,7 +113,7 @@ function HeroSection() {
               className="border-white/30 text-white hover:bg-white/10 text-lg px-8"
             >
               <a href="#cursos">
-                Ver cursos
+                {ctaSecondary}
               </a>
             </Button>
           </div>

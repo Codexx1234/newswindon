@@ -150,7 +150,7 @@ function Calendar({
           );
         },
         DayButton: CalendarDayButton,
-        WeekNumber: () => null,
+        WeekNumber: () => <></>,
         ...components,
       }}
       {...props}

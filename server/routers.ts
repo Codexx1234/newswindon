@@ -9,7 +9,6 @@ import { notifyOwner } from "./_core/notification";
 import { invokeLLM } from "./_core/llm";
 import { sendEmail } from './_core/email';
 import { CalendarService } from './_core/calendar';
-import { COOKIE_NAME } from '@shared/const';
 import { sdk } from './_core/sdk';
 
 // Admin-only procedure
@@ -56,6 +55,58 @@ export const appRouter = router({
       const cookieOptions = getSessionCookieOptions(ctx.req);
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
       return { success: true } as const;
+    }),
+    // Superadmin only: User management
+    listUsers: protectedProcedure.use(({ ctx, next }) => {
+      if (ctx.user.role !== 'super_admin') {
+        throw new TRPCError({ code: 'FORBIDDEN', message: 'Solo el superadmin puede ver usuarios.' });
+      }
+      return next({ ctx });
+    }).query(async () => {
+      return await db.getAllUsers();
+    }),
+    createUser: protectedProcedure.use(({ ctx, next }) => {
+      if (ctx.user.role !== 'super_admin') {
+        throw new TRPCError({ code: 'FORBIDDEN', message: 'Solo el superadmin puede crear usuarios.' });
+      }
+      return next({ ctx });
+    })
+    .input(z.object({
+      email: z.string().email(),
+      name: z.string(),
+      password: z.string().min(6),
+      role: z.enum(['admin', 'super_admin']).default('admin'),
+    }))
+    .mutation(async ({ input }) => {
+      const existing = await db.getUserByEmail(input.email);
+      if (existing) {
+        throw new TRPCError({ code: 'CONFLICT', message: 'El email ya está registrado.' });
+      }
+
+      const { hashPassword } = await import('./passwordUtils');
+      const hashedPassword = hashPassword(input.password);
+
+      await db.createUser({
+        openId: `local_${Date.now()}`,
+        email: input.email,
+        name: input.name,
+        password: hashedPassword,
+        role: input.role,
+        loginMethod: 'local',
+      });
+
+      return { success: true };
+    }),
+    deleteUser: protectedProcedure.use(({ ctx, next }) => {
+      if (ctx.user.role !== 'super_admin') {
+        throw new TRPCError({ code: 'FORBIDDEN', message: 'Solo el superadmin puede eliminar usuarios.' });
+      }
+      return next({ ctx });
+    })
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ input }) => {
+      await db.deleteUser(input.id);
+      return { success: true };
     }),
   }),
 

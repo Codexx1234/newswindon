@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/_core/hooks/useAuth';
 import { getLoginUrl } from '@/const';
 import ContentManagement from '@/components/ContentManagement';
+import UserManagement from '@/components/UserManagement';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -69,6 +70,7 @@ import {
   AreaChart,
   Area
 } from 'recharts';
+import { Shield } from 'lucide-react';
 import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -82,6 +84,7 @@ const navItems = [
   { href: '/admin/chatbot', icon: HelpCircle, label: 'Chatbot FAQs' },
   { href: '/admin/gallery', icon: ImageIcon, label: 'Galería' },
   { href: '/admin/audit', icon: Users, label: 'Auditoría' },
+  { href: '/admin/users', icon: Shield, label: 'Usuarios', admin: 'super_admin' },
   { href: '/admin/settings', icon: SettingsIcon, label: 'Ajustes' },
   { href: '/admin/content', icon: Pencil, label: 'Editar Contenidos', admin: 'super_admin' },
 ];
@@ -1865,6 +1868,7 @@ export default function Admin() {
     if (path === '/admin/gallery') return <GalleryManagement />;
     if (path === '/admin/settings') return <SettingsManagement />;
     if (path === '/admin/content' && user?.role === 'super_admin') return <ContentManagement />;
+    if (path === '/admin/users' && user?.role === 'super_admin') return <UserManagement />;
     return <DashboardOverview />;
   };
 

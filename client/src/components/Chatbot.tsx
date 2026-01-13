@@ -35,7 +35,7 @@ export function Chatbot() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const chatMutation = trpc.chatbot.chat.useMutation();
+  const chatMutation = trpc.chatbot.ask.useMutation();
 
   useEffect(() => {
     if (scrollRef.current) {

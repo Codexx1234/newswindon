@@ -122,6 +122,28 @@ export async function deleteUser(id: number) {
   await db.delete(users).where(eq(users.id, id));
 }
 
+export async function createUser(user: InsertUser): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.insert(users).values({
+    ...user,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    lastSignedIn: new Date(),
+  });
+}
+
+export async function updateUser(id: number, data: Partial<InsertUser>): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.update(users).set({
+    ...data,
+    updatedAt: new Date(),
+  }).where(eq(users.id, id));
+}
+
 // ==================== CONTACT FUNCTIONS ====================
 
 export async function createContact(data: InsertContact): Promise<Contact> {

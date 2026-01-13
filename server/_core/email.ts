@@ -70,9 +70,19 @@ export const sendEmail = async (options: EmailOptions) => {
       return;
     }
 
-    const templateSource = loadTemplate(options.template);
-    const template = handlebars.compile(templateSource);
-    const html = template({ ...options.context, currentYear: new Date().getFullYear() });
+    const baseTemplateSource = loadTemplate('base-template');
+    const contentTemplateSource = loadTemplate(options.template);
+    
+    const contentTemplate = handlebars.compile(contentTemplateSource);
+    const bodyHtml = contentTemplate({ ...options.context, currentYear: new Date().getFullYear() });
+    
+    const baseTemplate = handlebars.compile(baseTemplateSource);
+    const html = baseTemplate({ 
+      ...options.context, 
+      body: bodyHtml, 
+      subject: options.subject,
+      currentYear: new Date().getFullYear() 
+    });
 
     const mailOptions = {
       from: env.emailFrom || 'noreply@newswindon.com',

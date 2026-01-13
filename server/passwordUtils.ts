@@ -1,14 +1,26 @@
-import { execSync } from 'child_process';
-import path from 'path';
+import bcrypt from 'bcryptjs';
 
+/**
+ * Hashea una contraseña usando bcryptjs.
+ * @param password Contraseña en texto plano.
+ * @returns Contraseña hasheada.
+ */
 export function hashPassword(password: string): string {
-  const scriptPath = path.join(__dirname, 'hash_utils.py');
-  const result = execSync(`python3 ${scriptPath} hash "${password.replace(/"/g, '\\"')}"`).toString().trim();
-  return result;
+  const salt = bcrypt.genSaltSync(10);
+  return bcrypt.hashSync(password, salt);
 }
 
+/**
+ * Verifica si una contraseña coincide con su hash.
+ * @param password Contraseña en texto plano.
+ * @param hashed Hash almacenado en la base de datos.
+ * @returns True si coinciden, false en caso contrario.
+ */
 export function verifyPassword(password: string, hashed: string): boolean {
-  const scriptPath = path.join(__dirname, 'hash_utils.py');
-  const result = execSync(`python3 ${scriptPath} check "${password.replace(/"/g, '\\"')}" "${hashed.replace(/"/g, '\\"')}"`).toString().trim();
-  return result === 'true';
+  try {
+    return bcrypt.compareSync(password, hashed);
+  } catch (error) {
+    console.error("[PasswordUtils] Error verificando contraseña:", error);
+    return false;
+  }
 }

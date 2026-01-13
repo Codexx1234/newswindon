@@ -1,73 +1,18 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Confirmación de Reserva - New Swindon</title>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; margin: 0; padding: 0; }
-        .container { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); }
-        .header { background: linear-gradient(135deg, #004a99 0%, #0066cc 100%); color: #ffffff; padding: 30px 40px; text-align: left; }
-        .header h1 { margin: 0; font-size: 24px; font-weight: 600; display: flex; align-items: center; }
-        .header .emoji { margin-right: 12px; font-size: 28px; }
-        .content { padding: 40px; line-height: 1.6; color: #334155; }
-        .content h2 { color: #1e293b; font-size: 20px; margin-top: 0; margin-bottom: 20px; }
-        .content p { margin-bottom: 20px; font-size: 16px; }
-        .data-card { background-color: #f8fafc; border: 1px solid #f1f5f9; border-radius: 8px; padding: 25px; margin: 30px 0; }
-        .data-item { margin-bottom: 15px; display: flex; justify-content: space-between; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; }
-        .data-item:last-child { margin-bottom: 0; border-bottom: none; padding-bottom: 0; }
-        .label { font-weight: 700; color: #64748b; font-size: 14px; }
-        .value { color: #1e293b; font-weight: 500; font-size: 15px; }
-        .highlight-box { background-color: #e0f2fe; border-left: 4px solid #0066cc; padding: 20px; border-radius: 0 8px 8px 0; margin: 30px 0; }
-        .highlight-box p { margin: 0; font-size: 15px; color: #0369a1; }
-        .footer { background-color: #f8fafc; padding: 30px 40px; text-align: center; border-top: 1px solid #e2e8f0; }
-        .footer-info { font-size: 14px; color: #64748b; margin-bottom: 15px; }
-        .footer-info a { color: #0066cc; text-decoration: none; }
-        .signature { margin-top: 30px; }
-        .signature p { margin: 2px 0; }
-        .signature strong { color: #004a99; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1><span class="emoji">📅</span> ¡Reserva Confirmada!</h1>
-        </div>
-        <div class="content">
-            <h2>Hola {{fullName}},</h2>
-            <p>Tu reunión con <strong>New Swindon</strong> ha sido confirmada con éxito. Estamos ansiosos por conversar con vos.</p>
-            
-            <div class="data-card">
-                <div class="data-item">
-                    <span class="label">Fecha y Hora</span>
-                    <span class="value">{{appointmentDate}}</span>
-                </div>
-                <div class="data-item">
-                    <span class="label">Tipo de Reunión</span>
-                    <span class="value">{{appointmentType}}</span>
-                </div>
-                <div class="data-item">
-                    <span class="label">Ubicación/Medio</span>
-                    <span class="value">Online / Presencial</span>
-                </div>
-            </div>
+<h1>Reserva Confirmada</h1>
+<p>Hola <strong>{{fullName}}</strong>,</p>
+<p>Tu reserva para una <strong>{{appointmentType}}</strong> en New Swindon ha sido registrada con éxito.</p>
 
-            <div class="highlight-box">
-                <p>📌 <strong>Recordatorio:</strong> Si necesitás reprogramar o cancelar, por favor avisanos con al menos 24 horas de anticipación.</p>
-            </div>
-            
-            <div class="signature">
-                <p>Saludos cordiales,</p>
-                <p><strong>Equipo New Swindon</strong></p>
-            </div>
-        </div>
-        <div class="footer">
-            <div class="footer-info">
-                <strong>New Swindon</strong> - Instituto de Inglés<br>
-                📍 Carapachay, Buenos Aires<br>
-                📧 <a href="mailto:swindoncollege2@gmail.com">swindoncollege2@gmail.com</a>
-            </div>
-        </div>
-    </div>
-</body>
-</html>
+<div style="background-color: #f0f7ff; border-left: 4px solid #004a99; padding: 20px; margin: 25px 0;">
+    <p style="margin: 0; font-weight: bold; color: #004a99;">Detalles de la cita:</p>
+    <p style="margin: 10px 0 0 0;"><strong>Fecha y Hora:</strong> {{appointmentDate}}</p>
+    <p style="margin: 5px 0 0 0;"><strong>Modalidad:</strong> Presencial / Online (A coordinar)</p>
+</div>
+
+<p>Te esperamos puntualmente. Si necesitás reprogramar o cancelar tu reserva, por favor avisanos con al menos 24 horas de anticipación.</p>
+
+<div style="text-align: center; margin-top: 30px;">
+    <p>¿Tenés alguna duda?</p>
+    <a href="https://wa.me/5491130707350" class="button" style="background-color: #25d366;">Consultar por WhatsApp</a>
+</div>
+
+<p style="margin-top: 30px; font-size: 14px; color: #888;">Este es un correo automático, no es necesario responderlo.</p>

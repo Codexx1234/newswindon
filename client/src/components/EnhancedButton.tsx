@@ -50,7 +50,7 @@ export function EnhancedButton({
         className
       )}
       disabled={disabled || isLoading}
-      {...props}
+      {...(props as any)}
     >
       {isLoading ? (
         <>

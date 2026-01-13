@@ -1,75 +1,42 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nueva Consulta - New Swindon</title>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; margin: 0; padding: 0; }
-        .container { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); }
-        .header { background: linear-gradient(135deg, #004a99 0%, #0066cc 100%); color: #ffffff; padding: 30px 40px; text-align: left; }
-        .header h1 { margin: 0; font-size: 22px; font-weight: 600; display: flex; align-items: center; }
-        .header .emoji { margin-right: 12px; font-size: 26px; }
-        .header .timestamp { display: block; font-size: 14px; font-weight: normal; margin-top: 8px; opacity: 0.9; }
-        .content { padding: 40px; line-height: 1.6; color: #334155; }
-        .intro { margin-bottom: 30px; font-size: 16px; }
-        .data-card { background-color: #f8fafc; border: 1px solid #f1f5f9; border-radius: 8px; padding: 25px; }
-        .data-item { margin-bottom: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; }
-        .data-item:last-child { margin-bottom: 0; border-bottom: none; padding-bottom: 0; }
-        .label { display: block; font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
-        .value { display: block; font-size: 16px; color: #1e293b; font-weight: 500; }
-        .value a { color: #0066cc; text-decoration: none; }
-        .actions { margin-top: 40px; display: flex; gap: 15px; justify-content: center; }
-        .btn { padding: 12px 24px; border-radius: 8px; font-weight: 600; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; }
-        .btn-email { background-color: #0066cc; color: #ffffff; }
-        .btn-whatsapp { background-color: #25d366; color: #ffffff; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1><span class="emoji">🎓</span> Nueva Consulta en New Swindon</h1>
-            <span class="timestamp">{{currentDate}}</span>
-        </div>
-        <div class="content">
-            <p class="intro">¡Hay una persona interesada en tus clases de inglés! Aquí están los detalles:</p>
-            
-            <div class="data-card">
-                <div class="data-item">
-                    <span class="label">Nombre</span>
-                    <span class="value">{{fullName}}</span>
-                </div>
-                <div class="data-item">
-                    <span class="label">Email</span>
-                    <span class="value"><a href="mailto:{{email}}">{{email}}</a></span>
-                </div>
-                <div class="data-item">
-                    <span class="label">Teléfono</span>
-                    <span class="value">{{phone}}</span>
-                </div>
-                {{#if contactType}}
-                <div class="data-item">
-                    <span class="label">¿Para quién es?</span>
-                    <span class="value">{{contactType}}</span>
-                </div>
-                {{/if}}
-                {{#if courseInterest}}
-                <div class="data-item">
-                    <span class="label">Tipo de Clase</span>
-                    <span class="value">{{courseInterest}}</span>
-                </div>
-                {{/if}}
-                <div class="data-item">
-                    <span class="label">Mensaje</span>
-                    <span class="value">{{message}}</span>
-                </div>
-            </div>
-            
-            <div class="actions">
-                <a href="mailto:{{email}}" class="btn btn-email">📧 Responder por Email</a>
-                <a href="https://wa.me/{{phone}}" class="btn btn-whatsapp">💬 WhatsApp</a>
-            </div>
-        </div>
-    </div>
-</body>
-</html>
+<h1>Nueva Consulta Recibida</h1>
+<p>Se ha recibido un nuevo formulario de contacto desde el sitio web. Aquí están los detalles del interesado:</p>
+
+<table class="data-table">
+    <tr>
+        <td class="label">Nombre</td>
+        <td class="value">{{fullName}}</td>
+    </tr>
+    <tr>
+        <td class="label">Email</td>
+        <td class="value"><a href="mailto:{{email}}">{{email}}</a></td>
+    </tr>
+    <tr>
+        <td class="label">Teléfono</td>
+        <td class="value">{{phone}}</td>
+    </tr>
+    <tr>
+        <td class="label">Tipo</td>
+        <td class="value">{{contactType}}</td>
+    </tr>
+    {{#if companyName}}
+    <tr>
+        <td class="label">Empresa</td>
+        <td class="value">{{companyName}}</td>
+    </tr>
+    {{/if}}
+    {{#if courseInterest}}
+    <tr>
+        <td class="label">Interés</td>
+        <td class="value">{{courseInterest}}</td>
+    </tr>
+    {{/if}}
+    <tr>
+        <td class="label">Mensaje</td>
+        <td class="value">{{message}}</td>
+    </tr>
+</table>
+
+<div style="text-align: center; margin-top: 30px;">
+    <a href="mailto:{{email}}" class="button">Responder por Email</a>
+    <a href="https://wa.me/{{phone}}" class="button" style="background-color: #25d366; margin-left: 10px;">WhatsApp</a>
+</div>

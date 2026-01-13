@@ -1836,7 +1836,7 @@ export default function Admin() {
     );
   }
 
-  if (user?.role !== 'admin') {
+  if (user?.role !== 'admin' && user?.role !== 'super_admin') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-muted/30">
         <Card className="w-full max-w-md">

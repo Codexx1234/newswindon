@@ -66,3 +66,7 @@
 - [x] Agregar procedimiento login con email/password
 - [x] Copiar templates de email mejorados
 - [x] Copiar passwordUtils.ts y hash_utils.py
+
+
+## Bugs Reportados
+- [x] Super admin no puede acceder al panel de admin (verificar validación de roles)

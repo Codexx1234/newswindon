@@ -2,6 +2,7 @@ import "dotenv/config";
 import express from "express";
 import { createServer } from "http";
 import net from "net";
+import path from "path";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { registerOAuthRoutes } from "./oauth";
 import { authRateLimiter } from "./rateLimit";
@@ -42,6 +43,37 @@ async function startServer() {
   // OAuth callback under /api/oauth/callback
   app.use("/api/oauth", authRateLimiter);
   registerOAuthRoutes(app);
+  // File Upload Endpoint
+  app.post("/api/upload", async (req, res) => {
+    try {
+      const { image, name } = req.body;
+      if (!image || !name) {
+        return res.status(400).json({ error: "Faltan datos de la imagen" });
+      }
+
+      // Validar que sea una imagen base64
+      const matches = image.match(/^data:image\/([a-zA-Z+]+);base64,(.+)$/);
+      if (!matches || matches.length !== 3) {
+        return res.status(400).json({ error: "Formato de imagen inválido" });
+      }
+
+      const extension = matches[1];
+      const buffer = Buffer.from(matches[2], "base64");
+      
+      // Generar nombre único
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}.${extension}`;
+      const uploadPath = path.join(process.cwd(), "public", "uploads", fileName);
+
+      const fs = await import("fs/promises");
+      await fs.writeFile(uploadPath, buffer);
+
+      res.json({ url: `/uploads/${fileName}` });
+    } catch (error) {
+      console.error("[Upload Error]:", error);
+      res.status(500).json({ error: "Error al subir la imagen" });
+    }
+  });
+
   // tRPC API
   app.use(
     "/api/trpc",

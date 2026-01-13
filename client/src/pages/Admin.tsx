@@ -3,6 +3,7 @@ import { useAuth } from '@/_core/hooks/useAuth';
 import { getLoginUrl } from '@/const';
 import ContentManagement from '@/components/ContentManagement';
 import UserManagement from '@/components/UserManagement';
+import { ImageUpload } from '@/components/ImageUpload';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -1316,14 +1317,21 @@ function GalleryManagement() {
             </DialogHeader>
             <div className="space-y-5 py-4">
               <div className="grid gap-2">
-                <Label htmlFor="url" className="text-sm font-semibold">URL de la imagen</Label>
-                <Input
-                  id="url"
-                  value={formData.url}
-                  onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-                  placeholder="https://ejemplo.com/foto.jpg"
-                  className="rounded-lg"
+                <Label className="text-sm font-semibold">Imagen</Label>
+                <ImageUpload 
+                  currentUrl={formData.url} 
+                  onUploadSuccess={(url) => setFormData({ ...formData, url })} 
                 />
+                <div className="mt-2">
+                  <Label htmlFor="url" className="text-xs text-muted-foreground">O ingresa una URL manual</Label>
+                  <Input
+                    id="url"
+                    value={formData.url}
+                    onChange={(e) => setFormData({ ...formData, url: e.target.value })}
+                    placeholder="https://ejemplo.com/foto.jpg"
+                    className="rounded-lg mt-1 h-8 text-xs"
+                  />
+                </div>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="caption" className="text-sm font-semibold">Pie de foto (opcional)</Label>

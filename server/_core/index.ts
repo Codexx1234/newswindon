@@ -3,9 +3,11 @@ import express from "express";
 import { createServer } from "http";
 import net from "net";
 import path from "path";
+import helmet from "helmet";
+import sharp from "sharp";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { registerOAuthRoutes } from "./oauth";
-import { authRateLimiter } from "./rateLimit";
+import { authRateLimiter, globalRateLimiter } from "./rateLimit";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
@@ -37,14 +39,24 @@ async function startServer() {
 
   const app = express();
   const server = createServer(app);
+
+  // Seguridad: Configuración de cabeceras HTTP con Helmet
+  app.use(helmet({
+    contentSecurityPolicy: false, // Desactivado para facilitar la carga de recursos externos si es necesario
+    crossOriginEmbedderPolicy: false,
+  }));
+
+  // Limitador de tasa global para prevenir abusos
+  app.use(globalRateLimiter);
+
   // Configure body parser with larger size limit for file uploads
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
   // OAuth callback under /api/oauth/callback
   app.use("/api/oauth", authRateLimiter);
   registerOAuthRoutes(app);
-  // File Upload Endpoint
-  app.post("/api/upload", async (req, res) => {
+  // File Upload Endpoint (Protegido con Rate Limit)
+  app.post("/api/upload", authRateLimiter, async (req, res) => {
     try {
       const { image, name } = req.body;
       if (!image || !name) {
@@ -57,15 +69,17 @@ async function startServer() {
         return res.status(400).json({ error: "Formato de imagen inválido" });
       }
 
-      const extension = matches[1];
       const buffer = Buffer.from(matches[2], "base64");
       
-      // Generar nombre único
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}.${extension}`;
+      // Generar nombre único con extensión .webp
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}.webp`;
       const uploadPath = path.join(process.cwd(), "public", "uploads", fileName);
 
-      const fs = await import("fs/promises");
-      await fs.writeFile(uploadPath, buffer);
+      // Optimizar imagen: Redimensionar (máx 1200px ancho) y convertir a WebP
+      await sharp(buffer)
+        .resize(1200, null, { withoutEnlargement: true })
+        .webp({ quality: 80 })
+        .toFile(uploadPath);
 
       res.json({ url: `/uploads/${fileName}` });
     } catch (error) {

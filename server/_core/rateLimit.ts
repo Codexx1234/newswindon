@@ -19,3 +19,13 @@ export const contactRateLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 });
+
+export const globalRateLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minuto
+  max: 100, // 100 peticiones por minuto por IP
+  message: {
+    error: 'Demasiadas peticiones. Por favor, espera un momento.',
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});

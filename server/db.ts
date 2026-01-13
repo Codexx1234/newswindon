@@ -417,6 +417,10 @@ export async function getRecentMetrics(days: number = 7): Promise<DailyMetric[]>
 
 // ==================== AUDIT LOG FUNCTIONS ====================
 
+/**
+ * Registra una acción administrativa en el log de auditoría.
+ * @param {InsertAuditLog} data - Datos de la acción realizada.
+ */
 export async function createAuditLog(data: InsertAuditLog): Promise<void> {
   const db = await getDb();
   if (!db) return;
@@ -428,6 +432,11 @@ export async function createAuditLog(data: InsertAuditLog): Promise<void> {
   }
 }
 
+/**
+ * Obtiene los registros de auditoría más recientes.
+ * @param {number} limit - Cantidad máxima de registros a retornar.
+ * @returns {Promise<AuditLog[]>} Lista de registros de auditoría.
+ */
 export async function getRecentAuditLogs(limit: number = 50): Promise<AuditLog[]> {
   const db = await getDb();
   if (!db) return [];

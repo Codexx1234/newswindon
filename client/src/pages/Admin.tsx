@@ -1632,57 +1632,86 @@ function AuditLogsManagement() {
     );
   }
 
+  const getActionColor = (action: string) => {
+    const a = action.toLowerCase();
+    if (a.includes('create') || a.includes('add')) return 'bg-green-100 text-green-700 border-green-200';
+    if (a.includes('update') || a.includes('edit')) return 'bg-blue-100 text-blue-700 border-blue-200';
+    if (a.includes('delete') || a.includes('remove')) return 'bg-red-100 text-red-700 border-red-200';
+    return 'bg-gray-100 text-gray-700 border-gray-200';
+  };
+
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Logs de Auditoría</h1>
-        <p className="text-muted-foreground">Historial de acciones realizadas por administradores</p>
+    <div className="space-y-8">
+      <div className="flex flex-col gap-1">
+        <h1 className="text-3xl font-bold tracking-tight">Auditoría de Seguridad</h1>
+        <p className="text-muted-foreground">Registro detallado de acciones administrativas para máxima transparencia.</p>
       </div>
 
-      <Card>
+      <Card className="border-none shadow-sm overflow-hidden">
+        <CardHeader className="bg-muted/30 border-b">
+          <CardTitle className="text-lg">Historial de Actividad</CardTitle>
+          <CardDescription>Se muestran los últimos 50 eventos registrados.</CardDescription>
+        </CardHeader>
         <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Fecha</TableHead>
-                <TableHead>Acción</TableHead>
-                <TableHead>Entidad</TableHead>
-                <TableHead>Detalles</TableHead>
-                <TableHead>IP</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {logs?.length === 0 ? (
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader className="bg-muted/10">
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                    No hay logs registrados
-                  </TableCell>
+                  <TableHead className="w-[180px]">Fecha y Hora</TableHead>
+                  <TableHead>Administrador</TableHead>
+                  <TableHead>Acción</TableHead>
+                  <TableHead>Módulo</TableHead>
+                  <TableHead className="max-w-[300px]">Detalles del Cambio</TableHead>
                 </TableRow>
-              ) : (
-                logs?.map((log) => (
-                  <TableRow key={log.id}>
-                    <TableCell className="text-xs">
-                      {new Date(log.createdAt).toLocaleString('es-AR')}
-                    </TableCell>
-                    <TableCell>
-                      <span className="font-mono text-xs bg-muted px-1.5 py-0.5 rounded">
-                        {log.action}
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-xs">
-                      {log.entityType} ({log.entityId})
-                    </TableCell>
-                    <TableCell className="text-xs max-w-xs truncate">
-                      {log.details}
-                    </TableCell>
-                    <TableCell className="text-xs">
-                      {log.ipAddress}
+              </TableHeader>
+              <TableBody>
+                {logs?.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center py-12 text-muted-foreground">
+                      No hay registros de actividad todavía.
                     </TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+                ) : (
+                  logs?.map((log: any) => (
+                    <TableRow key={log.id} className="hover:bg-muted/5 transition-colors">
+                      <TableCell className="text-xs font-medium">
+                        <div className="flex flex-col">
+                          <span>{new Date(log.createdAt).toLocaleDateString('es-AR')}</span>
+                          <span className="text-muted-foreground">{new Date(log.createdAt).toLocaleTimeString('es-AR')}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-bold text-primary">
+                            AD
+                          </div>
+                          <span className="text-sm font-medium">Admin (ID: {log.userId})</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <span className={cn(
+                          "px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase border tracking-wider",
+                          getActionColor(log.action)
+                        )}>
+                          {log.action.replace('_', ' ')}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-xs font-semibold text-muted-foreground">
+                          {log.entityType?.toUpperCase()}
+                        </span>
+                      </TableCell>
+                      <TableCell className="max-w-[300px]">
+                        <p className="text-xs leading-relaxed text-muted-foreground italic">
+                          {log.details || 'Sin detalles adicionales'}
+                        </p>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
     </div>

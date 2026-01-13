@@ -19,9 +19,15 @@ const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
   return next({ ctx });
 });
 
+/**
+ * Definición principal del router de tRPC.
+ * Organizado por módulos funcionales para facilitar la extensibilidad y legibilidad por IA.
+ */
 export const appRouter = router({
+  // Rutas básicas de salud y estado del sistema
   system: systemRouter,
   
+  // ==================== AUTH ROUTES ====================
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
     login: publicProcedure
@@ -599,7 +605,7 @@ export const appRouter = router({
       }),
   }),
 
-  // ==================== CONTENT BLOCKS (CMS) ====================
+  // ==================== CONTENT ROUTES ====================
   content: router({
     getAll: publicProcedure.query(async () => {
       return await db.getAllContentBlocks();

@@ -16,6 +16,11 @@ import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
 
+/**
+ * Inicializa y retorna la instancia de la base de datos (Singleton).
+ * @returns {Promise<ReturnType<typeof drizzle> | null>} Instancia de Drizzle ORM.
+ * @throws {Error} Si la conexión falla.
+ */
 export async function getDb() {
   if (!_db && process.env.DATABASE_URL) {
     try {
@@ -29,7 +34,10 @@ export async function getDb() {
 }
 
 /**
- * Wrapper para ejecutar consultas con manejo de errores centralizado.
+ * Wrapper genérico para ejecutar consultas con manejo de errores y logging centralizado.
+ * @template T - El tipo de retorno de la consulta.
+ * @param {(db: any) => Promise<T>} fn - Función que contiene la lógica de la consulta.
+ * @returns {Promise<T>} El resultado de la consulta.
  */
 async function runQuery<T>(fn: (db: NonNullable<ReturnType<typeof drizzle>>) => Promise<T>): Promise<T> {
   const db = await getDb();
@@ -44,6 +52,10 @@ async function runQuery<T>(fn: (db: NonNullable<ReturnType<typeof drizzle>>) => 
 
 // ==================== USER FUNCTIONS ====================
 
+/**
+ * Crea o actualiza un usuario basado en su openId.
+ * @param {InsertUser} user - Datos del usuario a insertar o actualizar.
+ */
 export async function upsertUser(user: InsertUser): Promise<void> {
   if (!user.openId) {
     throw new Error("User openId is required for upsert");
@@ -103,6 +115,11 @@ export async function upsertUser(user: InsertUser): Promise<void> {
   }
 }
 
+/**
+ * Busca un usuario por su identificador único de plataforma (openId).
+ * @param {string} openId - El ID único del usuario.
+ * @returns {Promise<User | undefined>} El usuario encontrado o undefined.
+ */
 export async function getUserByOpenId(openId: string) {
   return runQuery(async (db) => {
     const result = await db.select().from(users).where(eq(users.openId, openId)).limit(1);

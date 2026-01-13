@@ -1,0 +1,28 @@
+# NewSwindon Project Rules for AI
+
+You are an expert full-stack developer working on the NewSwindon Language Institute platform. Follow these rules to maintain code quality and consistency.
+
+## Tech Stack
+- **Frontend:** React 19, Vite, Tailwind CSS, Framer Motion, Shadcn/UI.
+- **Backend:** Node.js, Express, tRPC (v11).
+- **Database:** Drizzle ORM with MySQL/TiDB.
+- **Validation:** Zod.
+
+## Coding Standards
+- **TypeScript:** Use strict typing. Avoid `any` unless absolutely necessary.
+- **Components:** Use functional components with hooks. Prefer modularity.
+- **API:** All client-server communication MUST use tRPC. Definitions are in `server/routers.ts`.
+- **Database:** Use the Repository Pattern in `server/db.ts`. Do not call Drizzle directly from routers.
+- **Styling:** Use Tailwind CSS utility classes. Follow the existing design system.
+- **Documentation:** Add JSDoc comments to exported functions and complex logic.
+
+## Project Structure
+- `client/src/components/`: UI components.
+- `client/src/hooks/`: Custom React hooks.
+- `server/_core/`: Core services (auth, email, env).
+- `shared/`: Shared types and constants.
+
+## AI Interaction
+- When modifying code, explain *why* the change is being made.
+- Always check `server/db.ts` before adding new database operations.
+- Maintain the "AI-friendly" documentation style.

@@ -9,8 +9,7 @@ import {
   dailyMetrics, InsertDailyMetric, DailyMetric,
   auditLogs, InsertAuditLog, AuditLog,
   gallery, InsertGalleryImage, GalleryImage,
-  settings, InsertSetting, Setting,
-  contentBlocks, InsertContentBlock, ContentBlock
+  settings, InsertSetting, Setting
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -68,8 +67,8 @@ export async function upsertUser(user: InsertUser): Promise<void> {
       values.role = user.role;
       updateSet.role = user.role;
     } else if (user.openId === ENV.ownerOpenId) {
-      values.role = 'super_admin';
-      updateSet.role = 'super_admin';
+      values.role = 'admin';
+      updateSet.role = 'admin';
     }
 
     if (!values.lastSignedIn) {
@@ -98,60 +97,6 @@ export async function getUserByOpenId(openId: string) {
 
   const result = await db.select().from(users).where(eq(users.openId, openId)).limit(1);
   return result.length > 0 ? result[0] : undefined;
-}
-
-export async function getUserByEmail(email: string) {
-  const db = await getDb();
-  if (!db) return undefined;
-
-  const result = await db.select().from(users).where(eq(users.email, email)).limit(1);
-  return result.length > 0 ? result[0] : undefined;
-}
-
-export async function getAllUsers() {
-  const db = await getDb();
-  if (!db) return [];
-
-  return await db.select().from(users).orderBy(desc(users.createdAt));
-}
-
-export async function deleteUser(id: number) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-
-  await db.delete(users).where(eq(users.id, id));
-}
-
-// ==================== CONTENT FUNCTIONS ====================
-
-export async function getAllContentBlocks() {
-  const db = await getDb();
-  if (!db) return [];
-  return await db.select().from(contentBlocks).orderBy(contentBlocks.page, contentBlocks.section);
-}
-
-export async function getContentBlockByKey(key: string) {
-  const db = await getDb();
-  if (!db) return undefined;
-  const result = await db.select().from(contentBlocks).where(eq(contentBlocks.key, key)).limit(1);
-  return result.length > 0 ? result[0] : undefined;
-}
-
-export async function updateContentBlock(key: string, value: string) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-  await db.update(contentBlocks).set({ value }).where(eq(contentBlocks.key, key));
-}
-
-export async function seedContentBlocks(blocks: any[]) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-  for (const block of blocks) {
-    const existing = await getContentBlockByKey(block.key);
-    if (!existing) {
-      await db.insert(contentBlocks).values(block);
-    }
-  }
 }
 
 // ==================== CONTACT FUNCTIONS ====================

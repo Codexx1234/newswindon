@@ -38,7 +38,7 @@ import { ContactForm } from '@/components/ContactForm';
 import { motion } from 'framer-motion';
 
 // Hero Section for Empresas
-function EmpresasHero({ getTxt }: { getTxt: (key: string, fallback: string) => string }) {
+function EmpresasHero() {
   const { ref, isVisible } = useScrollAnimation<HTMLDivElement>();
 
   return (
@@ -60,11 +60,13 @@ function EmpresasHero({ getTxt }: { getTxt: (key: string, fallback: string) => s
           </div>
 
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-            {getTxt('empresas_hero_title', 'Capacitación en inglés para empresas')}
+            Capacitación en inglés para empresas
           </h1>
 
           <p className="text-xl text-foreground/80 mb-8 max-w-2xl font-medium">
-            {getTxt('empresas_hero_subtitle', 'Más de 30 años de experiencia brindando servicios de capacitación en inglés a empresas. Programas personalizados.')}
+            Más de 30 años de experiencia brindando servicios de capacitación en inglés 
+            a empresas. Programas personalizados que se adaptan a las necesidades 
+            específicas de tu organización.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4">
@@ -198,25 +200,16 @@ function ServicesSection() {
           {services.map((service, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ 
-                duration: 0.6, 
-                delay: index * 0.1,
-                ease: [0.21, 0.47, 0.32, 0.98]
-              }}
-              whileHover={{ 
-                y: -10,
-                transition: { duration: 0.3, ease: "easeOut" }
-              }}
-              className="bg-card rounded-2xl p-8 border shadow-sm hover:shadow-xl transition-all duration-300 group"
+              initial={{ opacity: 0, y: 20 }}
+              animate={isVisible ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              className="bg-card rounded-2xl p-6 border shadow-sm card-hover"
             >
-              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+              <div className="icon-container mb-4">
                 <service.icon className="w-6 h-6" />
               </div>
-              <h3 className="text-xl font-bold mb-3 group-hover:text-primary transition-colors duration-300">{service.title}</h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">{service.description}</p>
+              <h3 className="text-xl font-semibold mb-3">{service.title}</h3>
+              <p className="text-muted-foreground text-sm">{service.description}</p>
             </motion.div>
           ))}
         </div>
@@ -691,19 +684,13 @@ function AppointmentBookingForm({ defaultType = 'entrevista_nivel' }: { defaultT
 import { Helmet } from "@/components/Helmet";
 
 export default function Empresas() {
-  const { data: content } = trpc.content.list.useQuery();
-  
-  const getTxt = (key: string, fallback: string) => {
-    return content?.find(b => b.key === key)?.value || fallback;
-  };
-
   return (
     <>
       <Helmet 
         title="Empresas" 
         description="Capacitación en inglés para empresas con más de 30 años de experiencia. Programas personalizados de Business English e inglés técnico." 
       />
-      <EmpresasHero getTxt={getTxt} />
+      <EmpresasHero />
       <StatsSection />
       <ServicesSection />
       <BenefitsSection />

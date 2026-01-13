@@ -3,72 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nueva Consulta - New Swindon</title>
+    <title>Nuevo Contacto - NewSwindon</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; margin: 0; padding: 0; }
-        .container { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); }
-        .header { background: linear-gradient(135deg, #004a99 0%, #0066cc 100%); color: #ffffff; padding: 30px 40px; text-align: left; }
-        .header h1 { margin: 0; font-size: 22px; font-weight: 600; display: flex; align-items: center; }
-        .header .emoji { margin-right: 12px; font-size: 26px; }
-        .header .timestamp { display: block; font-size: 14px; font-weight: normal; margin-top: 8px; opacity: 0.9; }
-        .content { padding: 40px; line-height: 1.6; color: #334155; }
-        .intro { margin-bottom: 30px; font-size: 16px; }
-        .data-card { background-color: #f8fafc; border: 1px solid #f1f5f9; border-radius: 8px; padding: 25px; }
-        .data-item { margin-bottom: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; }
-        .data-item:last-child { margin-bottom: 0; border-bottom: none; padding-bottom: 0; }
-        .label { display: block; font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
-        .value { display: block; font-size: 16px; color: #1e293b; font-weight: 500; }
-        .value a { color: #0066cc; text-decoration: none; }
-        .actions { margin-top: 40px; display: flex; gap: 15px; justify-content: center; }
-        .btn { padding: 12px 24px; border-radius: 8px; font-weight: 600; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; }
-        .btn-email { background-color: #0066cc; color: #ffffff; }
-        .btn-whatsapp { background-color: #25d366; color: #ffffff; }
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 20px auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
+        .header { background-color: #007bff; color: #ffffff; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+        .header h1 { margin: 0; font-size: 24px; }
+        .content { padding: 20px 0; line-height: 1.6; color: #333333; }
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .data-table th, .data-table td { border: 1px solid #dddddd; text-align: left; padding: 8px; }
+        .data-table th { background-color: #f2f2f2; }
+        .footer { text-align: center; padding: 20px 0; font-size: 12px; color: #777777; border-top: 1px solid #eeeeee; margin-top: 20px; }
+        .logo { max-width: 150px; margin-bottom: 10px; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1><span class="emoji">🎓</span> Nueva Consulta en New Swindon</h1>
-            <span class="timestamp">{{currentDate}}</span>
+            <img src="https://newswindon.com/logo.png" alt="NewSwindon Logo" class="logo">
+            <h1>¡Nuevo Contacto Recibido!</h1>
         </div>
         <div class="content">
-            <p class="intro">¡Hay una persona interesada en tus clases de inglés! Aquí están los detalles:</p>
-            
-            <div class="data-card">
-                <div class="data-item">
-                    <span class="label">Nombre</span>
-                    <span class="value">{{fullName}}</span>
-                </div>
-                <div class="data-item">
-                    <span class="label">Email</span>
-                    <span class="value"><a href="mailto:{{email}}">{{email}}</a></span>
-                </div>
-                <div class="data-item">
-                    <span class="label">Teléfono</span>
-                    <span class="value">{{phone}}</span>
-                </div>
-                {{#if contactType}}
-                <div class="data-item">
-                    <span class="label">¿Para quién es?</span>
-                    <span class="value">{{contactType}}</span>
-                </div>
+            <p>Se ha recibido un nuevo mensaje a través del formulario de contacto de NewSwindon. Aquí están los detalles:</p>
+            <table class="data-table">
+                <tr>
+                    <th>Campo</th>
+                    <th>Valor</th>
+                </tr>
+                <tr>
+                    <td>Nombre Completo</td>
+                    <td>{{fullName}}</td>
+                </tr>
+                <tr>
+                    <td>Email</td>
+                    <td>{{email}}</td>
+                </tr>
+                <tr>
+                    <td>Teléfono</td>
+                    <td>{{phone}}</td>
+                </tr>
+                <tr>
+                    <td>Tipo de Contacto</td>
+                    <td>{{contactType}}</td>
+                </tr>
+                {{#if companyName}}
+                <tr>
+                    <td>Nombre de la Empresa</td>
+                    <td>{{companyName}}</td>
+                </tr>
+                {{/if}}
+                {{#if employeeCount}}
+                <tr>
+                    <td>Cantidad de Empleados</td>
+                    <td>{{employeeCount}}</td>
+                </tr>
+                {{/if}}
+                {{#if age}}
+                <tr>
+                    <td>Edad del Estudiante</td>
+                    <td>{{age}}</td>
+                </tr>
+                {{/if}}
+                {{#if currentLevel}}
+                <tr>
+                    <td>Nivel Actual de Inglés</td>
+                    <td>{{currentLevel}}</td>
+                </tr>
                 {{/if}}
                 {{#if courseInterest}}
-                <div class="data-item">
-                    <span class="label">Tipo de Clase</span>
-                    <span class="value">{{courseInterest}}</span>
-                </div>
+                <tr>
+                    <td>Interés en Curso</td>
+                    <td>{{courseInterest}}</td>
+                </tr>
                 {{/if}}
-                <div class="data-item">
-                    <span class="label">Mensaje</span>
-                    <span class="value">{{message}}</span>
-                </div>
-            </div>
-            
-            <div class="actions">
-                <a href="mailto:{{email}}" class="btn btn-email">📧 Responder por Email</a>
-                <a href="https://wa.me/{{phone}}" class="btn btn-whatsapp">💬 WhatsApp</a>
-            </div>
+                <tr>
+                    <td>Mensaje</td>
+                    <td>{{message}}</td>
+                </tr>
+            </table>
+            <p>Por favor, contacta a esta persona a la brevedad.</p>
+            <p>Atentamente,</p>
+            <p>El sistema de NewSwindon</p>
+        </div>
+        <div class="footer">
+            <p>&copy; {{currentYear}} NewSwindon. Todos los derechos reservados.</p>
+            <p>Carapachay, Buenos Aires, Argentina</p>
         </div>
     </div>
 </body>

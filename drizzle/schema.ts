@@ -9,8 +9,7 @@ export const users = mysqlTable("users", {
   name: text("name"),
   email: varchar("email", { length: 320 }),
   loginMethod: varchar("loginMethod", { length: 64 }),
-  password: text("password"),
-  role: mysqlEnum("role", ["user", "admin", "super_admin"]).default("user").notNull(),
+  role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
@@ -18,19 +17,6 @@ export const users = mysqlTable("users", {
 
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
-
-export const contentBlocks = mysqlTable("content_blocks", {
-  id: int("id").autoincrement().primaryKey(),
-  key: varchar("key", { length: 128 }).notNull().unique(),
-  value: text("value").notNull(),
-  page: varchar("page", { length: 64 }).notNull(),
-  section: varchar("section", { length: 64 }).notNull(),
-  label: text("label").notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-});
-
-export type ContentBlock = typeof contentBlocks.$inferSelect;
-export type InsertContentBlock = typeof contentBlocks.$inferInsert;
 
 /**
  * Contact form submissions from potential students and companies

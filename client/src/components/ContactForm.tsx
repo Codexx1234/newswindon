@@ -113,12 +113,11 @@ export function ContactForm({ contactType = 'individual', showCompanyField = fal
 
   return (
     <form
-      id="formulario-contacto"
       ref={ref}
       onSubmit={handleSubmit(onSubmit)}
       onFocus={() => trackInteraction.mutate()}
       className={cn(
-        'bg-card rounded-2xl border shadow-lg p-6 md:p-8 space-y-6 fade-in-up scroll-mt-24',
+        'bg-card rounded-2xl border shadow-lg p-6 md:p-8 space-y-6 fade-in-up',
         isVisible && 'visible'
       )}
     >

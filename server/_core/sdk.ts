@@ -260,11 +260,6 @@ class SDKServer {
     // Regular authentication flow
     const cookies = this.parseCookies(req.headers.cookie);
     const sessionCookie = cookies.get(COOKIE_NAME);
-    
-    if (!sessionCookie) {
-      throw ForbiddenError("Missing session cookie");
-    }
-
     const session = await this.verifySession(sessionCookie);
 
     if (!session) {
@@ -278,21 +273,18 @@ class SDKServer {
     // If user not in DB, sync from OAuth server automatically
     if (!user) {
       try {
-        // For database-only users, openId is their email or a unique string
-        // If it's a JWT from Manus OAuth, we sync it
-        if (sessionCookie.split('.').length === 3) {
-          const userInfo = await this.getUserInfoWithJwt(sessionCookie);
-          await db.upsertUser({
-            openId: userInfo.openId,
-            name: userInfo.name || null,
-            email: userInfo.email ?? null,
-            loginMethod: userInfo.loginMethod ?? userInfo.platform ?? null,
-            lastSignedIn: signedInAt,
-          });
-          user = await db.getUserByOpenId(userInfo.openId);
-        }
+        const userInfo = await this.getUserInfoWithJwt(sessionCookie ?? "");
+        await db.upsertUser({
+          openId: userInfo.openId,
+          name: userInfo.name || null,
+          email: userInfo.email ?? null,
+          loginMethod: userInfo.loginMethod ?? userInfo.platform ?? null,
+          lastSignedIn: signedInAt,
+        });
+        user = await db.getUserByOpenId(userInfo.openId);
       } catch (error) {
         console.error("[Auth] Failed to sync user from OAuth:", error);
+        throw ForbiddenError("Failed to sync user info");
       }
     }
 
@@ -300,7 +292,6 @@ class SDKServer {
       throw ForbiddenError("User not found");
     }
 
-    // Update last signed in
     await db.upsertUser({
       openId: user.openId,
       lastSignedIn: signedInAt,

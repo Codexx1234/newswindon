@@ -55,7 +55,14 @@ import {
   LogIn,
   Image as ImageIcon,
   Settings as SettingsIcon,
-  Calendar as CalendarIcon
+  Calendar as CalendarIcon,
+  Database as DatabaseIcon,
+  Upload,
+  Image,
+  Menu,
+  X,
+  Shield,
+  FileText
 } from 'lucide-react';
 import { 
   LineChart, 
@@ -77,6 +84,7 @@ const navItems = [
   { href: '/admin', icon: LayoutDashboard, label: 'Dashboard' },
   { href: '/admin/contacts', icon: MessageSquare, label: 'Contactos' },
   { href: '/admin/appointments', icon: Clock, label: 'Reservas' },
+  { href: '/admin/content', icon: FileText, label: 'Editor Web' },
   { href: '/admin/testimonials', icon: Star, label: 'Testimonios' },
   { href: '/admin/chatbot', icon: HelpCircle, label: 'Chatbot FAQs' },
   { href: '/admin/gallery', icon: ImageIcon, label: 'Galería' },
@@ -482,10 +490,10 @@ function ContactsManagement() {
             <TableHeader className="bg-muted/20">
               <TableRow>
                 <TableHead className="pl-6">Nombre y Contacto</TableHead>
-                <TableHead>Tipo</TableHead>
-                <TableHead>Origen</TableHead>
+                <TableHead className="hidden md:table-cell">Tipo</TableHead>
+                <TableHead className="hidden lg:table-cell">Origen</TableHead>
                 <TableHead>Estado</TableHead>
-                <TableHead>Fecha</TableHead>
+                <TableHead className="hidden sm:table-cell">Fecha</TableHead>
                 <TableHead className="text-right pr-6">Acciones</TableHead>
               </TableRow>
             </TableHeader>
@@ -505,11 +513,11 @@ function ContactsManagement() {
                     <TableCell className="pl-6">
                       <div className="flex flex-col">
                         <span className="font-semibold text-foreground">{contact.fullName}</span>
-                        <span className="text-xs text-muted-foreground">{contact.email}</span>
+                        <span className="text-xs text-muted-foreground truncate max-w-[120px] md:max-w-none">{contact.email}</span>
                         {contact.phone && <span className="text-[10px] text-muted-foreground/70">{contact.phone}</span>}
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="hidden md:table-cell">
                       <span className={cn(
                         'px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider',
                         contact.contactType === 'empresa' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'
@@ -517,7 +525,7 @@ function ContactsManagement() {
                         {contact.contactType === 'empresa' ? 'Empresa' : 'Individual'}
                       </span>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="hidden lg:table-cell">
                       <div className="flex flex-col gap-1">
                         <span className="text-xs font-medium capitalize">{contact.source || 'Directo'}</span>
                         {contact.utmCampaign && (
@@ -534,7 +542,7 @@ function ContactsManagement() {
                         })}
                       >
                         <SelectTrigger className={cn(
-                          "w-[140px] h-9 text-xs font-medium rounded-lg transition-all",
+                          "w-[100px] md:w-[140px] h-8 md:h-9 text-[10px] md:text-xs font-medium rounded-lg transition-all",
                           contact.status === 'nuevo' && "border-amber-200 text-amber-700 bg-amber-50 hover:bg-amber-100",
                           contact.status === 'contactado' && "border-blue-200 text-blue-700 bg-blue-50 hover:bg-blue-100",
                           contact.status === 'cerrado' && "border-emerald-200 text-emerald-700 bg-emerald-50 hover:bg-emerald-100",
@@ -550,7 +558,7 @@ function ContactsManagement() {
                         </SelectContent>
                       </Select>
                     </TableCell>
-                    <TableCell className="text-xs text-muted-foreground">
+                    <TableCell className="hidden sm:table-cell text-xs text-muted-foreground">
                       {new Date(contact.createdAt).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: '2-digit' })}
                     </TableCell>
                     <TableCell className="text-right pr-6">
@@ -558,22 +566,35 @@ function ContactsManagement() {
                         <Button 
                           variant="ghost" 
                           size="icon"
-                          className="h-8 w-8 rounded-lg hover:bg-primary/10 hover:text-primary"
-                          onClick={() => handleEditContact(contact)}
+                          asChild
+                          className="h-8 w-8 rounded-lg hover:bg-blue-100 hover:text-blue-600"
+                          title="Enviar Email"
                         >
-                          <Pencil className="h-4 w-4" />
+                          <a href={`mailto:${contact.email}`}>
+                            <Mail className="h-4 w-4" />
+                          </a>
                         </Button>
+                        {contact.phone && (
+                          <Button 
+                            variant="ghost" 
+                            size="icon"
+                            asChild
+                            className="h-8 w-8 rounded-lg hover:bg-green-100 hover:text-green-600"
+                            title="Contactar por WhatsApp"
+                          >
+                            <a href={`https://wa.me/${contact.phone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer">
+                              <MessageCircle className="h-4 w-4" />
+                            </a>
+                          </Button>
+                        )}
                         <Button 
                           variant="ghost" 
                           size="icon"
-                          className="h-8 w-8 rounded-lg hover:bg-destructive/10 hover:text-destructive"
-                          onClick={() => {
-                            if (confirm('¿Estás seguro de eliminar este contacto?')) {
-                              deleteMutation.mutate({ id: contact.id });
-                            }
-                          }}
+                          className="h-8 w-8 rounded-lg hover:bg-primary/10 hover:text-primary"
+                          onClick={() => handleEditContact(contact)}
+                          title="Editar / Ver Detalles"
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Pencil className="h-4 w-4" />
                         </Button>
                       </div>
                     </TableCell>
@@ -589,8 +610,38 @@ function ContactsManagement() {
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Editar Contacto</DialogTitle>
-            <DialogDescription>Modifica los datos del contacto</DialogDescription>
+            <div className="flex justify-between items-center pr-8">
+              <div>
+                <DialogTitle>Detalles del Contacto</DialogTitle>
+                <DialogDescription>Gestiona la información y contacta al interesado</DialogDescription>
+              </div>
+              <div className="flex gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  asChild
+                  className="bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100"
+                >
+                  <a href={`mailto:${editFormData.email}`}>
+                    <Mail className="w-4 h-4 mr-2" />
+                    Email
+                  </a>
+                </Button>
+                {editFormData.phone && (
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    asChild
+                    className="bg-green-50 text-green-600 border-green-200 hover:bg-green-100"
+                  >
+                    <a href={`https://wa.me/${editFormData.phone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer">
+                      <MessageCircle className="w-4 h-4 mr-2" />
+                      WhatsApp
+                    </a>
+                  </Button>
+                )}
+              </div>
+            </div>
           </DialogHeader>
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -1156,9 +1207,34 @@ function ChatbotManagement() {
 // Admin Sidebar Component
 function AdminSidebar({ currentPath }: { currentPath: string }) {
   const { user, logout } = useAuth();
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="w-64 bg-card border-r min-h-screen flex flex-col">
+    <>
+      {/* Mobile Menu Button */}
+      <div className="lg:hidden fixed top-4 left-4 z-50">
+        <Button 
+          variant="outline" 
+          size="icon" 
+          className="rounded-xl shadow-md bg-background"
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+        </Button>
+      </div>
+
+      {/* Overlay */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+
+      <div className={cn(
+        "fixed inset-y-0 left-0 z-40 w-64 bg-card border-r flex flex-col transition-transform duration-300 lg:relative lg:translate-x-0",
+        !isOpen && "-translate-x-full"
+      )}>
       {/* Header */}
       <div className="p-4 border-b">
         <div className="flex items-center gap-3">
@@ -1173,12 +1249,13 @@ function AdminSidebar({ currentPath }: { currentPath: string }) {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-4">
+      <nav className="flex-1 p-4 overflow-y-auto">
         <ul className="space-y-1">
           {navItems.map((item) => (
             <li key={item.href}>
               <a
                 href={item.href}
+                onClick={() => setIsOpen(false)}
                 className={cn(
                   'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
                   currentPath === item.href
@@ -1254,6 +1331,43 @@ function GalleryManagement() {
     },
   });
 
+  const uploadMutation = trpc.storage.upload.useMutation({
+    onSuccess: (data) => {
+      setFormData(prev => ({ ...prev, url: data.url }));
+      toast.success('Imagen subida correctamente');
+    },
+    onError: (error) => {
+      toast.error('Error al subir imagen: ' + error.message);
+    }
+  });
+
+  const [isDragging, setIsDragging] = useState(false);
+
+  const handleFile = (file: File) => {
+    if (!file.type.startsWith('image/')) {
+      toast.error('Por favor, selecciona un archivo de imagen válido');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = (reader.result as string).split(',')[1];
+      uploadMutation.mutate({
+        fileName: file.name,
+        fileData: base64,
+        contentType: file.type
+      });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const onDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files[0];
+    if (file) handleFile(file);
+  };
+
   const resetForm = () => {
     setFormData({ url: '', caption: '', displayOrder: 0, isActive: true });
     setEditingImage(null);
@@ -1310,8 +1424,52 @@ function GalleryManagement() {
               <DialogDescription>Sube una imagen mediante URL para mostrarla en la web.</DialogDescription>
             </DialogHeader>
             <div className="space-y-5 py-4">
+              <div 
+                className={cn(
+                  "border-2 border-dashed rounded-xl p-8 text-center transition-all duration-200 flex flex-col items-center gap-3 cursor-pointer",
+                  isDragging ? "border-primary bg-primary/5 scale-[0.98]" : "border-muted-foreground/20 hover:border-primary/50 hover:bg-muted/30",
+                  formData.url && "border-green-500/50 bg-green-50/30"
+                )}
+                onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+                onDragLeave={() => setIsDragging(false)}
+                onDrop={onDrop}
+                onClick={() => document.getElementById('file-upload')?.click()}
+              >
+                <input 
+                  id="file-upload" 
+                  type="file" 
+                  className="hidden" 
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleFile(file);
+                  }}
+                />
+                
+                {uploadMutation.isPending ? (
+                  <Loader2 className="w-10 h-10 animate-spin text-primary" />
+                ) : formData.url ? (
+                  <div className="relative w-full aspect-video rounded-lg overflow-hidden border shadow-sm">
+                    <img src={formData.url} className="w-full h-full object-cover" alt="Preview" />
+                    <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                      <p className="text-white text-xs font-bold">Click para cambiar</p>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                      <Upload className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold">Arrastrá una imagen o hacé clic</p>
+                      <p className="text-xs text-muted-foreground mt-1">Soporta JPG, PNG, WEBP</p>
+                    </div>
+                  </>
+                )}
+              </div>
+
               <div className="grid gap-2">
-                <Label htmlFor="url" className="text-sm font-semibold">URL de la imagen</Label>
+                <Label htmlFor="url" className="text-sm font-semibold">O pegá la URL directamente</Label>
                 <Input
                   id="url"
                   value={formData.url}
@@ -1462,12 +1620,126 @@ function SettingsManagement() {
     setSettingMutation.mutate({ key, value: newValue });
   };
 
+  const { data: usersList, refetch: refetchUsers } = trpc.users.list.useQuery(undefined, {
+    enabled: user?.role === 'super_admin'
+  });
+  const createUserMutation = trpc.users.create.useMutation({
+    onSuccess: () => {
+      toast.success('Usuario creado correctamente');
+      refetchUsers();
+    },
+    onError: (error) => toast.error(error.message)
+  });
+  const deleteUserMutation = trpc.users.delete.useMutation({
+    onSuccess: () => {
+      toast.success('Usuario eliminado');
+      refetchUsers();
+    },
+    onError: (error) => toast.error(error.message)
+  });
+
+  const [newUserName, setNewUserName] = useState('');
+  const [newUserEmail, setNewUserEmail] = useState('');
+  const [newUserPassword, setNewUserPassword] = useState('');
+
+  const handleCreateUser = () => {
+    if (!newUserName || !newUserEmail || !newUserPassword) {
+      toast.error('Completa todos los campos');
+      return;
+    }
+    createUserMutation.mutate({
+      name: newUserName,
+      email: newUserEmail,
+      password: newUserPassword,
+      role: 'admin'
+    });
+    setNewUserName('');
+    setNewUserEmail('');
+    setNewUserPassword('');
+  };
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Ajustes del Sistema</h1>
-        <p className="text-muted-foreground">Configura las integraciones y parámetros globales</p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold">Ajustes del Sistema</h1>
+          <p className="text-muted-foreground">Configura las integraciones y parámetros globales</p>
+        </div>
+        {user?.role === 'super_admin' && (
+          <div className="bg-primary/10 text-primary px-4 py-2 rounded-full flex items-center gap-2 text-sm font-bold border border-primary/20">
+            <Shield className="w-4 h-4" />
+            ADMIN SUPREMO
+          </div>
+        )}
       </div>
+
+      {user?.role === 'super_admin' && (
+        <Card className="border-primary/20 shadow-md">
+          <CardHeader className="bg-primary/5 border-b">
+            <div className="flex items-center gap-2">
+              <Shield className="w-5 h-5 text-primary" />
+              <CardTitle>Gestión de Accesos (Solo Super Admin)</CardTitle>
+            </div>
+            <CardDescription>
+              Crea y elimina cuentas de administrador para el panel.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-6 space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-muted/30 rounded-xl border border-dashed">
+              <div className="space-y-2">
+                <Label>Nombre</Label>
+                <Input value={newUserName} onChange={e => setNewUserName(e.target.value)} placeholder="Nombre del admin" />
+              </div>
+              <div className="space-y-2">
+                <Label>Email</Label>
+                <Input value={newUserEmail} onChange={e => setNewUserEmail(e.target.value)} placeholder="email@newswindon.com" />
+              </div>
+              <div className="space-y-2">
+                <Label>Contraseña</Label>
+                <Input type="password" value={newUserPassword} onChange={e => setNewUserPassword(e.target.value)} placeholder="******" />
+              </div>
+              <Button onClick={handleCreateUser} className="md:col-span-3" disabled={createUserMutation.isPending}>
+                {createUserMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
+                Crear Nuevo Administrador
+              </Button>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="font-bold text-sm uppercase tracking-wider text-muted-foreground">Usuarios Actuales</h3>
+              <div className="space-y-2">
+                {usersList?.map(u => (
+                  <div key={u.id} className="flex items-center justify-between p-3 rounded-lg border bg-background">
+                    <div className="flex flex-col">
+                      <span className="font-medium">{u.name}</span>
+                      <span className="text-xs text-muted-foreground">{u.email}</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className={cn(
+                        "text-[10px] font-bold px-2 py-0.5 rounded-full uppercase",
+                        u.role === 'super_admin' ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                      )}>
+                        {u.role}
+                      </span>
+                      {u.role !== 'super_admin' && (
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-8 w-8 text-destructive hover:bg-destructive/10"
+                          onClick={() => {
+                            if(confirm('¿Eliminar este acceso?')) deleteUserMutation.mutate({ id: u.id });
+                          }}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <Card>
         <CardHeader>
@@ -1594,15 +1866,156 @@ function SettingsManagement() {
 
       <Card className="bg-muted/50 border-dashed">
         <CardHeader>
-          <CardTitle className="text-sm">Estado de la API</CardTitle>
+          <CardTitle className="text-sm flex items-center gap-2">
+            <SettingsIcon className="w-4 h-4" />
+            Estado de Servicios Críticos
+          </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="flex items-center gap-2 text-sm">
-            <div className="w-2 h-2 rounded-full bg-yellow-500" />
-            <span>Pendiente de configuración de credenciales en el servidor (.env)</span>
+        <CardContent className="space-y-4">
+          <div className="grid gap-3">
+            <div className="flex items-center justify-between p-2 rounded-lg bg-background border">
+              <div className="flex items-center gap-2 text-sm">
+                <Mail className="w-4 h-4 text-muted-foreground" />
+                <span>Servidor de Email (SMTP)</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="w-2 h-2 rounded-full bg-green-500" />
+                <span className="text-[10px] font-bold uppercase">Activo</span>
+              </div>
+            </div>
+            
+            <div className="flex items-center justify-between p-2 rounded-lg bg-background border">
+              <div className="flex items-center gap-2 text-sm">
+                <CalendarIcon className="w-4 h-4 text-muted-foreground" />
+                <span>Google Calendar API</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="w-2 h-2 rounded-full bg-yellow-500" />
+                <span className="text-[10px] font-bold uppercase">Configuración Pendiente</span>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between p-2 rounded-lg bg-background border">
+              <div className="flex items-center gap-2 text-sm">
+                <DatabaseIcon className="w-4 h-4 text-muted-foreground" />
+                <span>Base de Datos (TiDB)</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="w-2 h-2 rounded-full bg-green-500" />
+                <span className="text-[10px] font-bold uppercase">Conectado</span>
+              </div>
+            </div>
           </div>
+          
+          <p className="text-[11px] text-muted-foreground leading-relaxed">
+            <strong>Nota:</strong> El estado "Pendiente" en Google Calendar indica que las credenciales (Client Email y Private Key) no están configuradas en el archivo .env del servidor. Esto impedirá que las reservas se agenden automáticamente en tu calendario de Google.
+          </p>
         </CardContent>
       </Card>
+    </div>
+  );
+}
+
+// Content Management (CMS)
+function ContentManagement() {
+  const { data: blocks, isLoading, refetch } = trpc.content.list.useQuery();
+  const updateMutation = trpc.content.update.useMutation({
+    onSuccess: () => {
+      toast.success('Contenido actualizado');
+      refetch();
+    },
+    onError: (error) => toast.error(error.message)
+  });
+  const seedMutation = trpc.content.seed.useMutation({
+    onSuccess: () => {
+      toast.success('Contenido inicial generado');
+      refetch();
+    },
+    onError: (error) => toast.error(error.message)
+  });
+
+  const [editingKey, setEditingKey] = useState<string | null>(null);
+  const [editValue, setEditValue] = useState('');
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  const handleUpdate = (key: string) => {
+    updateMutation.mutate({ key, value: editValue });
+    setEditingKey(null);
+  };
+
+  const pages = Array.from(new Set(blocks?.map(b => b.page) || []));
+
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold">Editor de Contenido</h1>
+          <p className="text-muted-foreground">Modifica los textos de la web en tiempo real</p>
+        </div>
+        {blocks?.length === 0 && (
+          <Button onClick={() => seedMutation.mutate()} disabled={seedMutation.isPending}>
+            Generar Contenido Inicial
+          </Button>
+        )}
+      </div>
+
+      {pages.map(page => (
+        <div key={page} className="space-y-4">
+          <h2 className="text-xl font-bold capitalize border-b pb-2">{page}</h2>
+          <div className="grid gap-4">
+            {blocks?.filter(b => b.page === page).map(block => (
+              <Card key={block.key} className="overflow-hidden">
+                <CardHeader className="bg-muted/30 py-3">
+                  <div className="flex justify-between items-center">
+                    <CardTitle className="text-sm font-bold text-primary">{block.label}</CardTitle>
+                    <span className="text-[10px] uppercase font-bold text-muted-foreground bg-background px-2 py-0.5 rounded border">{block.section}</span>
+                  </div>
+                </CardHeader>
+                <CardContent className="pt-4">
+                  {editingKey === block.key ? (
+                    <div className="space-y-3">
+                      <textarea 
+                        className="w-full min-h-[100px] p-3 rounded-lg border bg-background text-sm focus:ring-2 focus:ring-primary outline-none"
+                        value={editValue}
+                        onChange={(e) => setEditValue(e.target.value)}
+                      />
+                      <div className="flex gap-2">
+                        <Button size="sm" onClick={() => handleUpdate(block.key)} disabled={updateMutation.isPending}>
+                          {updateMutation.isPending && <Loader2 className="w-3 h-3 animate-spin mr-2" />}
+                          Guardar Cambios
+                        </Button>
+                        <Button size="sm" variant="ghost" onClick={() => setEditingKey(null)}>Cancelar</Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex justify-between items-start gap-4">
+                      <p className="text-sm leading-relaxed whitespace-pre-wrap">{block.value}</p>
+                      <Button 
+                        variant="outline" 
+                        size="icon" 
+                        className="shrink-0 h-8 w-8"
+                        onClick={() => {
+                          setEditingKey(block.key);
+                          setEditValue(block.value);
+                        }}
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
@@ -1801,7 +2214,9 @@ function AppointmentsManagement() {
 
 // Main Admin Page
 export default function Admin() {
-  const { user, loading, isAuthenticated } = useAuth();
+  const { user, loading, isAuthenticated } = useAuth({
+    redirectOnUnauthenticated: true,
+  });
   const path = typeof window !== 'undefined' ? window.location.pathname : '/admin';
 
   if (loading) {
@@ -1812,43 +2227,21 @@ export default function Admin() {
     );
   }
 
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-muted/30">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center mx-auto mb-4">
-              <span className="text-primary-foreground font-bold text-2xl">N</span>
-            </div>
-            <CardTitle>Panel de Administración</CardTitle>
-            <CardDescription>Inicia sesión para acceder al panel de NewSwindon</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button asChild className="w-full">
-              <a href={getLoginUrl()}>
-                <LogIn className="mr-2 h-4 w-4" />
-                Iniciar sesión
-              </a>
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+  if (!isAuthenticated) return null;
 
-  if (user?.role !== 'admin') {
+  if (user?.role !== 'admin' && user?.role !== 'super_admin') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-muted/30">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <CardTitle>Acceso Denegado</CardTitle>
-            <CardDescription>No tenés permisos para acceder a esta sección</CardDescription>
+            <CardDescription>No tienes permisos para acceder a esta sección.</CardDescription>
           </CardHeader>
-          <CardContent>
-            <Button asChild variant="outline" className="w-full">
+          <CardFooter>
+            <Button className="w-full" asChild>
               <a href="/">Volver al inicio</a>
             </Button>
-          </CardContent>
+          </CardFooter>
         </Card>
       </div>
     );
@@ -1868,8 +2261,10 @@ export default function Admin() {
   return (
     <div className="flex min-h-screen bg-muted/30">
       <AdminSidebar currentPath={path} />
-      <main className="flex-1 p-6 overflow-auto">
-        {renderContent()}
+      <main className="flex-1 p-4 md:p-6 overflow-auto w-full">
+        <div className="max-w-7xl mx-auto">
+          {renderContent()}
+        </div>
       </main>
     </div>
   );

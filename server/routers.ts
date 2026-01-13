@@ -9,10 +9,12 @@ import { notifyOwner } from "./_core/notification";
 import { invokeLLM } from "./_core/llm";
 import { sendEmail } from './_core/email';
 import { CalendarService } from './_core/calendar';
+import { storagePut } from './storage';
+import { sdk } from './_core/sdk';
 
 // Admin-only procedure
 const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
-  if (ctx.user.role !== 'admin') {
+  if (ctx.user.role !== 'admin' && ctx.user.role !== 'super_admin') {
     throw new TRPCError({ code: 'FORBIDDEN', message: 'Acceso denegado. Solo administradores.' });
   }
   return next({ ctx });
@@ -20,14 +22,128 @@ const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
 
 export const appRouter = router({
   system: systemRouter,
+
+  content: router({
+    list: publicProcedure.query(async () => {
+      return await db.getAllContentBlocks();
+    }),
+    update: adminProcedure
+      .input(z.object({
+        key: z.string(),
+        value: z.string(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        await db.updateContentBlock(input.key, input.value);
+        
+        await db.createAuditLog({
+          userId: ctx.user.id,
+          action: 'UPDATE_CONTENT',
+          entityType: 'content_block',
+          entityId: 0, // No tenemos ID numérico fácil aquí, usamos la key en los detalles
+          details: `Updated ${input.key}`,
+          ipAddress: ctx.req.ip,
+        });
+
+        return { success: true };
+      }),
+    seed: adminProcedure.mutation(async () => {
+      const initialBlocks = [
+        { key: 'home_hero_title', page: 'home', section: 'hero', label: 'Título Principal', value: 'Aprender inglés nunca fue tan fácil' },
+        { key: 'home_hero_subtitle', page: 'home', section: 'hero', label: 'Subtítulo Principal', value: 'Clases personalizadas para todos los niveles y edades.' },
+        { key: 'home_about_title', page: 'home', section: 'about', label: 'Título Sobre Nosotros', value: '35 años formando profesionales bilingües' },
+        { key: 'home_about_text', page: 'home', section: 'about', label: 'Texto Sobre Nosotros', value: 'En New Swindon nos enfocamos en que cada alumno alcance sus objetivos con el idioma de una manera dinámica y efectiva.' },
+        { key: 'empresas_hero_title', page: 'empresas', section: 'hero', label: 'Título Empresas', value: 'Soluciones a medida para tu empresa' },
+        { key: 'empresas_hero_subtitle', page: 'empresas', section: 'hero', label: 'Subtítulo Empresas', value: 'Diseñamos programas de capacitación adaptados a los objetivos y necesidades específicas de cada organización.' },
+      ];
+      await db.seedContentBlocks(initialBlocks);
+      return { success: true };
+    }),
+  }),
   
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
+    login: publicProcedure
+      .input(z.object({
+        email: z.string().email(),
+        password: z.string(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        const user = await db.getUserByEmail(input.email);
+        if (!user || !user.password) {
+          throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Credenciales inválidas' });
+        }
+
+        const { verifyPassword } = await import('./passwordUtils');
+        const isValid = verifyPassword(input.password, user.password);
+        
+        if (!isValid) {
+          throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Credenciales inválidas' });
+        }
+
+        const sessionToken = await sdk.createSessionToken(user.openId, {
+          name: user.name || user.email || "Admin",
+        });
+
+        const cookieOptions = getSessionCookieOptions(ctx.req);
+        ctx.res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: 30 * 24 * 60 * 60 * 1000 });
+
+        return { success: true, user };
+      }),
     logout: publicProcedure.mutation(({ ctx }) => {
       const cookieOptions = getSessionCookieOptions(ctx.req);
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
       return { success: true } as const;
     }),
+  }),
+
+  users: router({
+    list: adminProcedure.query(async () => {
+      return await db.getAllUsers();
+    }),
+    create: protectedProcedure
+      .input(z.object({
+        name: z.string(),
+        email: z.string().email(),
+        password: z.string().min(6),
+        role: z.enum(["admin", "super_admin"]).default("admin"),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        // Solo el super_admin puede crear otros admins
+        if (ctx.user.role !== 'super_admin') {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Solo el administrador supremo puede crear usuarios.' });
+        }
+
+        const existing = await db.getUserByEmail(input.email);
+        if (existing) {
+          throw new TRPCError({ code: 'BAD_REQUEST', message: 'El email ya está registrado.' });
+        }
+
+        const { hashPassword } = await import('./passwordUtils');
+        const hashedPassword = hashPassword(input.password);
+
+        await db.upsertUser({
+          openId: input.email, // Usamos el email como openId para usuarios manuales
+          name: input.name,
+          email: input.email,
+          password: hashedPassword,
+          role: input.role,
+          loginMethod: 'password',
+        });
+
+        return { success: true };
+      }),
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input, ctx }) => {
+        if (ctx.user.role !== 'super_admin') {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Solo el administrador supremo puede eliminar usuarios.' });
+        }
+        if (ctx.user.id === input.id) {
+          throw new TRPCError({ code: 'BAD_REQUEST', message: 'No puedes eliminarte a ti mismo.' });
+        }
+        await db.deleteUser(input.id);
+        return { success: true };
+      }),
   }),
 
   // ==================== CONTACT ROUTES ====================
@@ -89,6 +205,14 @@ export const appRouter = router({
               currentLevel: input.currentLevel || "N/A",
               courseInterest: input.courseInterest || "N/A",
               message: input.message || "Sin mensaje adicional",
+              currentDate: new Date().toLocaleString('es-AR', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+              })
             },
           });
 
@@ -165,6 +289,22 @@ export const appRouter = router({
         });
 
         return { success: true };
+      }),
+  }),
+
+  // ==================== STORAGE ROUTES ====================
+  storage: router({
+    upload: adminProcedure
+      .input(z.object({
+        fileName: z.string(),
+        fileData: z.string(), // base64
+        contentType: z.string(),
+      }))
+      .mutation(async ({ input }) => {
+        const buffer = Buffer.from(input.fileData, 'base64');
+        const path = `gallery/${Date.now()}-${input.fileName}`;
+        const { url } = await storagePut(path, buffer, input.contentType);
+        return { url };
       }),
   }),
 
@@ -283,6 +423,14 @@ export const appRouter = router({
             phone: input.phone,
             contactType: "Cita / Reserva",
             message: `Tipo de cita: ${input.appointmentType}. Fecha: ${input.appointmentDate.toLocaleString('es-AR')}. Notas: ${input.notes || "Sin notas"}`,
+            currentDate: new Date().toLocaleString('es-AR', { 
+              weekday: 'long', 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit'
+            })
           },
         });
 
@@ -330,10 +478,11 @@ export const appRouter = router({
           await sendEmail({
             to: appointment.email,
             subject: "Tu cita en NewSwindon ha sido cancelada",
-            template: "appointment-confirmation", // Fallback or specific cancellation template
+            template: "appointment-cancellation",
             context: {
               fullName: appointment.fullName,
-              isCancellation: true
+              appointmentDate: appointment.appointmentDate.toLocaleString('es-AR'),
+              appointmentType: appointment.appointmentType,
             }
           });
         }

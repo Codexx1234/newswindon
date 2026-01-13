@@ -3,62 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cita - NewSwindon</title>
+    <title>Confirmación de Reserva - New Swindon</title>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }
-        .container { max-width: 600px; margin: 20px auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
-        .header { background-color: #007bff; color: #ffffff; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
-        .header h1 { margin: 0; font-size: 24px; }
-        .content { padding: 20px 0; line-height: 1.6; color: #333333; }
-        .data-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        .data-table th, .data-table td { border: 1px solid #dddddd; text-align: left; padding: 8px; }
-        .data-table th { background-color: #f2f2f2; }
-        .footer { text-align: center; padding: 20px 0; font-size: 12px; color: #777777; border-top: 1px solid #eeeeee; margin-top: 20px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); }
+        .header { background: linear-gradient(135deg, #004a99 0%, #0066cc 100%); color: #ffffff; padding: 30px 40px; text-align: left; }
+        .header h1 { margin: 0; font-size: 24px; font-weight: 600; display: flex; align-items: center; }
+        .header .emoji { margin-right: 12px; font-size: 28px; }
+        .content { padding: 40px; line-height: 1.6; color: #334155; }
+        .content h2 { color: #1e293b; font-size: 20px; margin-top: 0; margin-bottom: 20px; }
+        .content p { margin-bottom: 20px; font-size: 16px; }
+        .data-card { background-color: #f8fafc; border: 1px solid #f1f5f9; border-radius: 8px; padding: 25px; margin: 30px 0; }
+        .data-item { margin-bottom: 15px; display: flex; justify-content: space-between; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; }
+        .data-item:last-child { margin-bottom: 0; border-bottom: none; padding-bottom: 0; }
+        .label { font-weight: 700; color: #64748b; font-size: 14px; }
+        .value { color: #1e293b; font-weight: 500; font-size: 15px; }
+        .highlight-box { background-color: #e0f2fe; border-left: 4px solid #0066cc; padding: 20px; border-radius: 0 8px 8px 0; margin: 30px 0; }
+        .highlight-box p { margin: 0; font-size: 15px; color: #0369a1; }
+        .footer { background-color: #f8fafc; padding: 30px 40px; text-align: center; border-top: 1px solid #e2e8f0; }
+        .footer-info { font-size: 14px; color: #64748b; margin-bottom: 15px; }
+        .footer-info a { color: #0066cc; text-decoration: none; }
+        .signature { margin-top: 30px; }
+        .signature p { margin: 2px 0; }
+        .signature strong { color: #004a99; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>{{#if isReminder}}Recordatorio de Cita{{else}}¡Cita Agendada con Éxito!{{/if}}</h1>
+            <h1><span class="emoji">📅</span> ¡Reserva Confirmada!</h1>
         </div>
         <div class="content">
-            <p>Hola {{fullName}},</p>
-            <p>
-                {{#if isReminder}}
-                Te escribimos para recordarte tu cita programada para mañana en NewSwindon.
-                {{else}}
-                Tu cita en NewSwindon ha sido agendada correctamente.
-                {{/if}}
-                Aquí están los detalles:
-            </p>
-            <table class="data-table">
-                <tr>
-                    <th>Detalle</th>
-                    <th>Información</th>
-                </tr>
-                <tr>
-                    <td>Fecha y Hora</td>
-                    <td>{{appointmentDate}}</td>
-                </tr>
-                <tr>
-                    <td>Tipo de Cita</td>
-                    <td>{{appointmentType}}</td>
-                </tr>
-                <tr>
-                    <td>Nombre</td>
-                    <td>{{fullName}}</td>
-                </tr>
-                <tr>
-                    <td>Teléfono</td>
-                    <td>{{phone}}</td>
-                </tr>
-            </table>
-            <p>Si necesitas cancelar o reprogramar, por favor contáctanos lo antes posible.</p>
-            <p>¡Te esperamos!</p>
-            <p>Atentamente,<br>El equipo de NewSwindon</p>
+            <h2>Hola {{fullName}},</h2>
+            <p>Tu reunión con <strong>New Swindon</strong> ha sido confirmada con éxito. Estamos ansiosos por conversar con vos.</p>
+            
+            <div class="data-card">
+                <div class="data-item">
+                    <span class="label">Fecha y Hora</span>
+                    <span class="value">{{appointmentDate}}</span>
+                </div>
+                <div class="data-item">
+                    <span class="label">Tipo de Reunión</span>
+                    <span class="value">{{appointmentType}}</span>
+                </div>
+                <div class="data-item">
+                    <span class="label">Ubicación/Medio</span>
+                    <span class="value">Online / Presencial</span>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <p>📌 <strong>Recordatorio:</strong> Si necesitás reprogramar o cancelar, por favor avisanos con al menos 24 horas de anticipación.</p>
+            </div>
+            
+            <div class="signature">
+                <p>Saludos cordiales,</p>
+                <p><strong>Equipo New Swindon</strong></p>
+            </div>
         </div>
         <div class="footer">
-            <p>&copy; {{currentYear}} NewSwindon. Todos los derechos reservados.</p>
+            <div class="footer-info">
+                <strong>New Swindon</strong> - Instituto de Inglés<br>
+                📍 Carapachay, Buenos Aires<br>
+                📧 <a href="mailto:swindoncollege2@gmail.com">swindoncollege2@gmail.com</a>
+            </div>
         </div>
     </div>
 </body>

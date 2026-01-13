@@ -42,14 +42,14 @@ import { GallerySection } from '@/components/GallerySection';
 import { motion } from 'framer-motion';
 
 // Hero Section
-function HeroSection() {
+function HeroSection({ getTxt }: { getTxt: (key: string, fallback: string) => string }) {
   const { ref, isVisible } = useScrollAnimation<HTMLDivElement>({ threshold: 0.1 });
   const { count: yearsCount, ref: yearsRef } = useCounterAnimation(35, 2000);
   const { count: studentsCount, ref: studentsRef } = useCounterAnimation(1000, 2500);
   const { count: companiesCount, ref: companiesRef } = useCounterAnimation(30, 2000);
 
   return (
-    <section id="inicio" className="relative min-h-[90vh] flex items-center overflow-hidden">
+    <section id="inicio" className="relative min-h-[90vh] flex items-center overflow-hidden scroll-mt-16">
       {/* Animated Background */}
       <div className="absolute inset-0 animated-gradient" />
       <div className="absolute inset-0 hero-pattern" />
@@ -80,18 +80,11 @@ function HeroSection() {
         >
           {/* Main Heading */}
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-            Aprendé inglés en{' '}
-            <span className="relative">
-              NewSwindon
-              <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 300 12" fill="none">
-                <path d="M2 10C50 4 150 2 298 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" className="text-white/50"/>
-              </svg>
-            </span>
+            {getTxt('home_hero_title', 'Aprendé inglés en NewSwindon')}
           </h1>
 
           <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-2xl mx-auto">
-            Instituto de inglés con más de tres décadas formando estudiantes de todas las edades. 
-            Grupos reducidos, profesores especializados y metodología efectiva.
+            {getTxt('home_hero_subtitle', 'Instituto de inglés con más de tres décadas formando estudiantes de todas las edades.')}
           </p>
 
           {/* CTA Buttons */}
@@ -101,7 +94,7 @@ function HeroSection() {
               size="lg" 
               className="bg-white text-primary hover:bg-white/90 btn-shine text-lg px-8"
             >
-              <a href="#contacto">
+              <a href="#formulario-contacto">
                 Inscribite ahora
                 <ArrowRight className="w-5 h-5 ml-2" />
               </a>
@@ -156,11 +149,11 @@ function HeroSection() {
 }
 
 // About Section
-function AboutSection() {
+function AboutSection({ getTxt }: { getTxt: (key: string, fallback: string) => string }) {
   const { ref, isVisible } = useScrollAnimation<HTMLDivElement>({ threshold: 0.2 });
 
   return (
-    <section id="nosotros" className="py-20">
+    <section id="nosotros" className="py-20 scroll-mt-16">
       <div className="container">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Content */}
@@ -170,11 +163,10 @@ function AboutSection() {
           >
             <span className="badge-primary mb-4">Sobre Nosotros</span>
             <h2 className="text-3xl md:text-4xl font-bold mt-4 mb-6">
-              Más de 35 años formando estudiantes de excelencia
+              {getTxt('home_about_title', 'Más de 35 años formando estudiantes de excelencia')}
             </h2>
             <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
-              Más de <strong className="text-foreground">35 años</strong> formando estudiantes en Carapachay, Buenos Aires. 
-              Grupos reducidos, profesores certificados y metodología moderna para un aprendizaje efectivo y personalizado.
+              {getTxt('home_about_text', 'Más de 35 años formando estudiantes en Carapachay, Buenos Aires. Grupos reducidos, profesores certificados y metodología moderna.')}
             </p>
 
             {/* Features List */}
@@ -457,7 +449,7 @@ function ContactSection() {
   const { ref, isVisible } = useScrollAnimation<HTMLDivElement>();
 
   return (
-    <section id="contacto" className="py-20">
+    <section id="contacto" className="py-20 scroll-mt-16">
       <div className="container">
         <div className="grid lg:grid-cols-2 gap-12 items-start">
           {/* Contact Info */}
@@ -767,14 +759,20 @@ function AppointmentBookingForm() {
 import { Helmet } from "@/components/Helmet";
 
 export default function Home() {
+  const { data: content } = trpc.content.list.useQuery();
+  
+  const getTxt = (key: string, fallback: string) => {
+    return content?.find(b => b.key === key)?.value || fallback;
+  };
+
   return (
     <>
       <Helmet 
         title="Inicio" 
         description="Academia de inglés en Carapachay con 35 años de experiencia. Clases para niños, adolescentes y adultos. Preparación para exámenes Cambridge." 
       />
-      <HeroSection />
-      <AboutSection />
+      <HeroSection getTxt={getTxt} />
+      <AboutSection getTxt={getTxt} />
       <CoursesSection />
       <BenefitsSection />
       <GallerySection />

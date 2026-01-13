@@ -10,6 +10,7 @@ import { PageTransition } from "./components/PageTransition";
 import Home from "./pages/Home";
 const Empresas = lazy(() => import("./pages/Empresas"));
 const Admin = lazy(() => import("./pages/Admin"));
+const Login = lazy(() => import("./pages/Login"));
 import { Navbar } from "./components/Navbar";
 import { useEffect, useState } from "react";
 import { trpc } from "./lib/trpc";
@@ -82,6 +83,11 @@ function Router() {
         <Route path="/admin/:rest*">
           <PageTransition key="admin-rest">
             <Admin />
+          </PageTransition>
+        </Route>
+        <Route path="/login">
+          <PageTransition key="login">
+            <Login />
           </PageTransition>
         </Route>
         <Route path="/404">

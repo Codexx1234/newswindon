@@ -21,11 +21,25 @@ export async function getDb() {
     try {
       _db = drizzle(process.env.DATABASE_URL);
     } catch (error) {
-      console.warn("[Database] Failed to connect:", error);
-      _db = null;
+      console.error("[Database] Connection Error:", error);
+      throw new Error("No se pudo conectar a la base de datos");
     }
   }
   return _db;
+}
+
+/**
+ * Wrapper para ejecutar consultas con manejo de errores centralizado.
+ */
+async function runQuery<T>(fn: (db: NonNullable<ReturnType<typeof drizzle>>) => Promise<T>): Promise<T> {
+  const db = await getDb();
+  if (!db) throw new Error("Base de datos no disponible");
+  try {
+    return await fn(db as any);
+  } catch (error) {
+    console.error("[Database Query Error]:", error);
+    throw error;
+  }
 }
 
 // ==================== USER FUNCTIONS ====================
@@ -90,58 +104,49 @@ export async function upsertUser(user: InsertUser): Promise<void> {
 }
 
 export async function getUserByOpenId(openId: string) {
-  const db = await getDb();
-  if (!db) {
-    console.warn("[Database] Cannot get user: database not available");
-    return undefined;
-  }
-
-  const result = await db.select().from(users).where(eq(users.openId, openId)).limit(1);
-  return result.length > 0 ? result[0] : undefined;
+  return runQuery(async (db) => {
+    const result = await db.select().from(users).where(eq(users.openId, openId)).limit(1);
+    return result[0];
+  });
 }
 
 export async function getUserByEmail(email: string) {
-  const db = await getDb();
-  if (!db) return undefined;
-
-  const result = await db.select().from(users).where(eq(users.email, email)).limit(1);
-  return result.length > 0 ? result[0] : undefined;
+  return runQuery(async (db) => {
+    const result = await db.select().from(users).where(eq(users.email, email)).limit(1);
+    return result[0];
+  });
 }
 
 export async function getAllUsers() {
-  const db = await getDb();
-  if (!db) return [];
-
-  return await db.select().from(users).orderBy(desc(users.createdAt));
+  return runQuery(async (db) => {
+    return await db.select().from(users).orderBy(desc(users.createdAt));
+  });
 }
 
 export async function deleteUser(id: number) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-
-  await db.delete(users).where(eq(users.id, id));
+  return runQuery(async (db) => {
+    await db.delete(users).where(eq(users.id, id));
+  });
 }
 
 export async function createUser(user: InsertUser): Promise<void> {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-
-  await db.insert(users).values({
-    ...user,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    lastSignedIn: new Date(),
+  return runQuery(async (db) => {
+    await db.insert(users).values({
+      ...user,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      lastSignedIn: new Date(),
+    });
   });
 }
 
 export async function updateUser(id: number, data: Partial<InsertUser>): Promise<void> {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-
-  await db.update(users).set({
-    ...data,
-    updatedAt: new Date(),
-  }).where(eq(users.id, id));
+  return runQuery(async (db) => {
+    await db.update(users).set({
+      ...data,
+      updatedAt: new Date(),
+    }).where(eq(users.id, id));
+  });
 }
 
 // ==================== CONTACT FUNCTIONS ====================

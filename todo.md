@@ -52,3 +52,17 @@
 - [x] Implementar valores por defecto para settings
 - [x] Mejorar setSetting con mejor manejo de errores
 - [x] Agregar importación de nodemailer en email.ts
+
+## Integración de Cambios de GitHub (Nueva Sesión)
+- [x] Revisar panel de edición nuevo en Admin.tsx
+- [x] Verificar templates nuevos de correos
+- [x] Corregir errores de TypeScript
+- [x] Probar funcionalidad completa
+- [x] Validar que no haya errores en runtime
+- [x] Agregar campo password a tabla users
+- [x] Agregar rol super_admin
+- [x] Integrar funciones de usuario (getUserByEmail, getAllUsers, deleteUser)
+- [x] Integrar funciones de content blocks
+- [x] Agregar procedimiento login con email/password
+- [x] Copiar templates de email mejorados
+- [x] Copiar passwordUtils.ts y hash_utils.py

@@ -173,3 +173,22 @@ export const settings = mysqlTable("settings", {
 
 export type Setting = typeof settings.$inferSelect;
 export type InsertSetting = typeof settings.$inferInsert;
+
+
+/**
+ * Dynamic content blocks for CMS - allows super_admin to edit page content
+ */
+export const contentBlocks = mysqlTable("content_blocks", {
+  id: int("id").autoincrement().primaryKey(),
+  key: varchar("key", { length: 100 }).notNull().unique(),
+  page: varchar("page", { length: 50 }).notNull(), // 'home', 'empresas', etc
+  section: varchar("section", { length: 50 }).notNull(), // 'hero', 'about', etc
+  label: varchar("label", { length: 255 }).notNull(), // Display name in admin
+  defaultValue: text("defaultValue").notNull(), // Original/fallback value
+  value: text("value"), // Edited value (NULL means use defaultValue)
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type ContentBlock = typeof contentBlocks.$inferSelect;
+export type InsertContentBlock = typeof contentBlocks.$inferInsert;

@@ -9,7 +9,8 @@ import {
   dailyMetrics, InsertDailyMetric, DailyMetric,
   auditLogs, InsertAuditLog, AuditLog,
   gallery, InsertGalleryImage, GalleryImage,
-  settings, InsertSetting, Setting
+  settings, InsertSetting, Setting,
+  contentBlocks, InsertContentBlock, ContentBlock
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -526,3 +527,49 @@ export async function runMigrations(): Promise<void> {
   }
 }
 
+
+
+// ==================== CONTENT BLOCKS FUNCTIONS ====================
+
+export async function getAllContentBlocks() {
+  const db = await getDb();
+  if (!db) return [];
+  return await db.select().from(contentBlocks).orderBy(contentBlocks.page, contentBlocks.section);
+}
+
+export async function getContentBlockByKey(key: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(contentBlocks).where(eq(contentBlocks.key, key)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function getContentBlockValue(key: string): Promise<string | undefined> {
+  const block = await getContentBlockByKey(key);
+  if (!block) return undefined;
+  // Return edited value if exists, otherwise return default value
+  return block.value || block.defaultValue;
+}
+
+export async function updateContentBlock(key: string, value: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(contentBlocks).set({ value }).where(eq(contentBlocks.key, key));
+}
+
+export async function resetContentBlock(key: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(contentBlocks).set({ value: null }).where(eq(contentBlocks.key, key));
+}
+
+export async function seedContentBlocks(blocks: InsertContentBlock[]) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  for (const block of blocks) {
+    const existing = await getContentBlockByKey(block.key);
+    if (!existing) {
+      await db.insert(contentBlocks).values(block);
+    }
+  }
+}

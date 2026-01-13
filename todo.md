@@ -70,3 +70,13 @@
 
 ## Bugs Reportados
 - [x] Super admin no puede acceder al panel de admin (verificar validación de roles)
+
+
+## Nuevas Funcionalidades (Nueva Sesión)
+- [x] Crear tabla contentBlocks en schema
+- [x] Agregar funciones de content blocks en db.ts
+- [x] Agregar procedimientos de content blocks a routers.ts
+- [x] Crear componente ContentManagement en Admin
+- [x] Inicializar content blocks con valores por defecto
+- [x] Integrar content blocks en Home.tsx para mostrar valores dinámicos
+- [x] Probar flujo completo de edición

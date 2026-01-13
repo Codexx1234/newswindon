@@ -547,6 +547,49 @@ export const appRouter = router({
         return { success: true };
       }),
   }),
+
+  // ==================== CONTENT BLOCKS (CMS) ====================
+  content: router({
+    getAll: publicProcedure.query(async () => {
+      return await db.getAllContentBlocks();
+    }),
+
+    getByKey: publicProcedure
+      .input(z.object({ key: z.string() }))
+      .query(async ({ input }) => {
+        const block = await db.getContentBlockByKey(input.key);
+        return block ? (block.value || block.defaultValue) : undefined;
+      }),
+
+    update: protectedProcedure
+      .use(({ ctx, next }) => {
+        if (ctx.user.role !== 'super_admin') {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Solo super_admin puede editar contenidos' });
+        }
+        return next({ ctx });
+      })
+      .input(z.object({
+        key: z.string(),
+        value: z.string(),
+      }))
+      .mutation(async ({ input }) => {
+        await db.updateContentBlock(input.key, input.value);
+        return { success: true };
+      }),
+
+    reset: protectedProcedure
+      .use(({ ctx, next }) => {
+        if (ctx.user.role !== 'super_admin') {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Solo super_admin puede resetear contenidos' });
+        }
+        return next({ ctx });
+      })
+      .input(z.object({ key: z.string() }))
+      .mutation(async ({ input }) => {
+        await db.resetContentBlock(input.key);
+        return { success: true };
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;

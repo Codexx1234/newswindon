@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/_core/hooks/useAuth';
 import { getLoginUrl } from '@/const';
+import ContentManagement from '@/components/ContentManagement';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -82,6 +83,7 @@ const navItems = [
   { href: '/admin/gallery', icon: ImageIcon, label: 'Galería' },
   { href: '/admin/audit', icon: Users, label: 'Auditoría' },
   { href: '/admin/settings', icon: SettingsIcon, label: 'Ajustes' },
+  { href: '/admin/content', icon: Pencil, label: 'Editar Contenidos', admin: 'super_admin' },
 ];
 
 function SiteInfoDisplay() {
@@ -1862,6 +1864,7 @@ export default function Admin() {
     if (path === '/admin/audit') return <AuditLogsManagement />;
     if (path === '/admin/gallery') return <GalleryManagement />;
     if (path === '/admin/settings') return <SettingsManagement />;
+    if (path === '/admin/content' && user?.role === 'super_admin') return <ContentManagement />;
     return <DashboardOverview />;
   };
 

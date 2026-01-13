@@ -64,6 +64,13 @@
       "when": 1768280264819,
       "tag": "0008_brief_scarecrow",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "5",
+      "when": 1768281514418,
+      "tag": "0009_fuzzy_la_nuit",
+      "breakpoints": true
     }
   ]
 }

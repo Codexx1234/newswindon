@@ -48,6 +48,12 @@ function HeroSection() {
   const { count: studentsCount, ref: studentsRef } = useCounterAnimation(1000, 2500);
   const { count: companiesCount, ref: companiesRef } = useCounterAnimation(30, 2000);
 
+  // Load dynamic content
+  const { data: heroTitle } = trpc.content.getByKey.useQuery({ key: 'hero_title' });
+  const { data: heroSubtitle } = trpc.content.getByKey.useQuery({ key: 'hero_subtitle' });
+  const { data: ctaPrimary } = trpc.content.getByKey.useQuery({ key: 'hero_cta_primary' });
+  const { data: ctaSecondary } = trpc.content.getByKey.useQuery({ key: 'hero_cta_secondary' });
+
   return (
     <section id="inicio" className="relative min-h-[90vh] flex items-center overflow-hidden">
       {/* Animated Background */}
@@ -80,18 +86,11 @@ function HeroSection() {
         >
           {/* Main Heading */}
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-            Aprendé inglés en{' '}
-            <span className="relative">
-              NewSwindon
-              <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 300 12" fill="none">
-                <path d="M2 10C50 4 150 2 298 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" className="text-white/50"/>
-              </svg>
-            </span>
+            {heroTitle || 'Aprendé inglés en NewSwindon'}
           </h1>
 
           <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-2xl mx-auto">
-            Instituto de inglés con más de tres décadas formando estudiantes de todas las edades. 
-            Grupos reducidos, profesores especializados y metodología efectiva.
+            {heroSubtitle || 'Instituto de inglés con más de tres décadas formando estudiantes de todas las edades. Grupos reducidos, profesores especializados y metodología efectiva.'}
           </p>
 
           {/* CTA Buttons */}

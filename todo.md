@@ -80,3 +80,7 @@
 - [x] Inicializar content blocks con valores por defecto
 - [x] Integrar content blocks en Home.tsx para mostrar valores dinámicos
 - [x] Probar flujo completo de edición
+
+
+## Bugs Actuales
+- [ ] content.getByKey retorna undefined - corregir función en db.ts y procedimiento en routers.ts

@@ -615,7 +615,7 @@ export const appRouter = router({
       .input(z.object({ key: z.string() }))
       .query(async ({ input }) => {
         const block = await db.getContentBlockByKey(input.key);
-        return block ? (block.value || block.defaultValue) : undefined;
+        return block ? (block.value || (block as any).defaultValue) : undefined;
       }),
 
     update: protectedProcedure

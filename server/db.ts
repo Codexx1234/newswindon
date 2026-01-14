@@ -601,7 +601,7 @@ export async function getContentBlockValue(key: string): Promise<string | undefi
   const block = await getContentBlockByKey(key);
   if (!block) return undefined;
   // Return edited value if exists, otherwise return default value
-  return block.value || block.defaultValue;
+  return block.value || (block as any).defaultValue;
 }
 
 export async function updateContentBlock(key: string, value: string) {
@@ -613,7 +613,7 @@ export async function updateContentBlock(key: string, value: string) {
 export async function resetContentBlock(key: string) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  await db.update(contentBlocks).set({ value: null }).where(eq(contentBlocks.key, key));
+  await db.update(contentBlocks).set({ value: null as any }).where(eq(contentBlocks.key, key));
 }
 
 export async function seedContentBlocks(blocks: InsertContentBlock[]) {

@@ -1,0 +1,9 @@
+{
+  "query": "ALTER TABLE content_blocks ADD COLUMN IF NOT EXISTS defaultValue TEXT NOT NULL DEFAULT '', ADD COLUMN IF NOT EXISTS createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user KmNhxfwoFGUH8Gu.root --database 9ASarAHvVeNUN8mHetYctb --execute ALTER TABLE content_blocks ADD COLUMN IF NOT EXISTS defaultValue TEXT NOT NULL DEFAULT '', ADD COLUMN IF NOT EXISTS createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 713
+}

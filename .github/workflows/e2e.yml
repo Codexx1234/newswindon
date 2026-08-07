@@ -10,22 +10,27 @@ jobs:
   test-and-build:
     name: Test and Build
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
     
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
     
+    - name: Install pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: latest
+
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: 20
         cache: 'pnpm'
-    
-    - name: Install pnpm
-      uses: pnpm/action-setup@v4
-      with:
-        version: latest
-        run_install: true
+
+    - name: Install dependencies
+      run: pnpm install
 
     - name: Run Unit Tests
       run: pnpm test
@@ -71,13 +76,18 @@ jobs:
       if: github.event_name == 'pull_request' && always()
       uses: actions/github-script@v7
       with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
-          const { job, payload } = context;
-          const status = job.status === 'success' ? '✅' : '❌';
-          const body = `${status} CI Pipeline finished with status: ${job.status}.`;
-          github.rest.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: body
-          });
+          try {
+            const { job } = context;
+            const status = job.status === 'success' ? '✅' : '❌';
+            const body = `${status} CI Pipeline finished with status: ${job.status}.`;
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+          } catch (error) {
+            console.error('Failed to create PR comment:', error);
+          }

@@ -18,11 +18,7 @@ import {
   Mail,
   Calendar,
   Loader2,
-  ChevronRight,
-  Search,
-  PenTool,
-  Rocket,
-  LineChart
+  ChevronRight
 } from 'lucide-react';
 import {
   Dialog,
@@ -46,105 +42,67 @@ function EmpresasHero() {
   const { ref, isVisible } = useScrollAnimation<HTMLDivElement>();
 
   return (
-    <section className="relative min-h-[85vh] flex items-center overflow-hidden bg-background">
-      {/* Creative Asymmetric Background */}
-      <div className="absolute top-0 right-0 w-1/2 h-full bg-primary [clip-path:polygon(20%_0,100%_0,100%_100%,0%_100%)] z-0" />
-      <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-transparent z-0" />
+    <section className="relative min-h-[70vh] flex items-center overflow-hidden">
+      <div className="absolute inset-0 bg-[#e0f2f1]" />
+      <div className="absolute inset-0 hero-pattern opacity-20" />
 
-      {/* Background Image overlaid with primary color on right */}
-      <div className="absolute top-0 right-0 w-1/2 h-full opacity-40 mix-blend-overlay z-0">
-         <img
-          src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80"
-          alt="Corporate training"
-          className="w-full h-full object-cover"
-         />
-      </div>
-
-      <div className="container relative z-10 py-20">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          <div
-            ref={ref}
-            className={cn(
-              'fade-in-up text-foreground pr-8',
-              isVisible && 'visible'
-            )}
-          >
-            <div className="inline-flex items-center gap-2 bg-accent/20 text-accent-foreground font-semibold rounded-full px-5 py-2 mb-8 border border-accent/30 backdrop-blur-sm shadow-sm">
-              <Building2 className="w-5 h-5 text-accent" />
-              <span>Soluciones Corporativas Exclusivas</span>
-            </div>
-
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-black mb-8 leading-[1.1] tracking-tight">
-              Potenciamos el <br/>
-              <span className="text-primary inline-block transform hover:-rotate-2 transition-transform cursor-default">crecimiento</span> de tu equipo
-            </h1>
-
-            <p className="text-xl md:text-2xl text-muted-foreground mb-10 leading-relaxed max-w-lg">
-              Más de <strong className="text-foreground">30 años</strong> diseñando programas de inglés a medida para las empresas más exigentes.
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-5">
-              <Button
-                asChild
-                size="lg"
-                className="bg-primary text-white hover:bg-primary-dark shadow-xl hover:-translate-y-1 transition-all h-14 px-8 text-lg rounded-2xl"
-              >
-                <a href="#contacto-empresas">
-                  Solicitar Propuesta
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </a>
-              </Button>
-              <Button
-                asChild
-                size="lg"
-                variant="outline"
-                className="border-2 border-primary/20 bg-background/50 backdrop-blur hover:bg-primary/5 h-14 px-8 text-lg rounded-2xl"
-              >
-                <a href="tel:+5491130707350">
-                  <Phone className="w-5 h-5 mr-2 text-primary" />
-                  Llamar ahora
-                </a>
-              </Button>
-            </div>
+      <div className="container relative z-10">
+        <div
+          ref={ref}
+          className={cn(
+            'max-w-3xl fade-in-up text-foreground',
+            isVisible && 'visible'
+          )}
+        >
+          <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-6">
+            <Building2 className="w-4 h-4" />
+            <span className="text-sm font-medium">Soluciones Corporativas</span>
           </div>
 
-          {/* Creative floating cards for right side */}
-          <div className="hidden lg:block relative h-full min-h-[500px]">
-             <motion.div
-               initial={{ opacity: 0, y: 50, rotate: -5 }}
-               animate={{ opacity: 1, y: 0, rotate: -2 }}
-               transition={{ duration: 0.8, delay: 0.3 }}
-               className="absolute top-10 right-10 w-80 glass-effect p-6 rounded-3xl shadow-2xl z-20 border border-white/20"
-             >
-                <div className="flex gap-4 items-start">
-                  <div className="bg-primary text-white p-3 rounded-2xl shadow-inner">
-                    <Target className="w-8 h-8" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-xl text-foreground">ROI Garantizado</h3>
-                    <p className="text-sm text-muted-foreground mt-2">Programas enfocados en resultados y métricas medibles.</p>
-                  </div>
-                </div>
-             </motion.div>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+            Capacitación en inglés para empresas
+          </h1>
 
-             <motion.div
-               initial={{ opacity: 0, x: 50, rotate: 5 }}
-               animate={{ opacity: 1, x: 0, rotate: 3 }}
-               transition={{ duration: 0.8, delay: 0.6 }}
-               className="absolute bottom-20 left-0 w-80 glass-effect p-6 rounded-3xl shadow-2xl z-30 border border-white/20"
-             >
-                <div className="flex gap-4 items-start">
-                  <div className="bg-accent text-white p-3 rounded-2xl shadow-inner">
-                    <TrendingUp className="w-8 h-8" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-xl text-foreground">Progreso Continuo</h3>
-                    <p className="text-sm text-muted-foreground mt-2">Evaluaciones periódicas y ajustes de contenido.</p>
-                  </div>
-                </div>
-             </motion.div>
+          <p className="text-xl text-foreground/80 mb-8 max-w-2xl font-medium">
+            Más de 30 años de experiencia brindando servicios de capacitación en inglés
+            a empresas. Programas personalizados que se adaptan a las necesidades
+            específicas de tu organización.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Button
+              asChild
+              size="lg"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 btn-shine text-base"
+            >
+              <a href="#contacto-empresas">
+                Solicitar información
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </a>
+            </Button>
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
+              className="border-primary/30 text-primary hover:bg-primary/5 text-base bg-transparent"
+            >
+              <a href="tel:+5491130707350">
+                <Phone className="w-4 h-4 mr-2" />
+                Llamar ahora
+              </a>
+            </Button>
           </div>
         </div>
+      </div>
+
+      {/* Wave Divider */}
+      <div className="absolute bottom-0 left-0 right-0">
+        <svg viewBox="0 0 1440 120" fill="none" className="w-full h-auto">
+          <path
+            d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 85C1200 90 1320 90 1380 90L1440 90V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z"
+            className="fill-background"
+          />
+        </svg>
       </div>
     </section>
   );
@@ -192,65 +150,66 @@ function ServicesSection() {
     {
       icon: Briefcase,
       title: 'Inglés de Negocios',
-      description: 'Comunicación efectiva en reuniones, presentaciones y negocios.',
-      color: 'bg-blue-100 text-blue-600',
+      description: 'Comunicación efectiva en reuniones, presentaciones, negociaciones y correspondencia comercial.',
     },
     {
       icon: Globe,
       title: 'Inglés Técnico',
-      description: 'Vocabulario especializado (IT, finanzas, legal, etc).',
-      color: 'bg-emerald-100 text-emerald-600',
+      description: 'Vocabulario especializado según el rubro de tu empresa: IT, finanzas, legal, medicina, etc.',
     },
     {
       icon: Users,
       title: 'Clases Grupales',
-      description: 'Grupos reducidos por nivel para máxima participación.',
-      color: 'bg-purple-100 text-purple-600',
+      description: 'Grupos reducidos de empleados con niveles similares para un aprendizaje efectivo.',
     },
     {
       icon: Target,
       title: 'Clases Individuales',
-      description: 'Coaching 1-on-1 para ejecutivos (C-Level) y posiciones clave.',
-      color: 'bg-orange-100 text-orange-600',
+      description: 'Atención personalizada para ejecutivos y personal clave con objetivos específicos.',
+    },
+    {
+      icon: TrendingUp,
+      title: 'Evaluación de Nivel',
+      description: 'Diagnóstico inicial y evaluaciones periódicas para medir el progreso de los participantes.',
+    },
+    {
+      icon: Award,
+      title: 'Certificación',
+      description: 'Preparación para exámenes internacionales Cambridge y certificados de nivel.',
     },
   ];
 
   return (
-    <section className="py-24 bg-muted/30">
+    <section className="py-20">
       <div className="container">
         <div 
           ref={ref}
-          className={cn('text-center mb-16 fade-in-up', isVisible && 'visible')}
+          className={cn('text-center mb-12 fade-in-up', isVisible && 'visible')}
         >
-          <div className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary font-bold text-sm mb-6 uppercase tracking-wider">
-            Modalidades
-          </div>
-          <h2 className="text-4xl md:text-5xl font-extrabold mb-6">
-            Programas a tu medida
+          <span className="badge-primary mb-4">Servicios</span>
+          <h2 className="text-3xl md:text-4xl font-bold mt-4 mb-4">
+            Soluciones a medida para tu empresa
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Flexibilidad total. Adaptamos contenidos, formatos y horarios al ritmo de tu empresa.
+          <p className="text-muted-foreground max-w-2xl mx-auto">
+            Diseñamos programas de capacitación adaptados a los objetivos y necesidades
+            específicas de cada organización.
           </p>
         </div>
 
-        <div className={cn('grid md:grid-cols-2 lg:grid-cols-4 gap-6', isVisible && 'visible')}>
+        <div className={cn('grid md:grid-cols-2 lg:grid-cols-3 gap-6 stagger-children', isVisible && 'visible')}>
           {services.map((service, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: index * 0.1 }}
-              className="bg-card rounded-[2rem] p-8 border shadow-sm card-hover relative overflow-hidden group"
+              initial={{ opacity: 0, y: 20 }}
+              animate={isVisible ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              className="bg-card rounded-2xl p-6 border shadow-sm card-hover"
             >
-              {/* Creative background blob */}
-              <div className={`absolute -right-8 -top-8 w-32 h-32 rounded-full opacity-20 transition-transform duration-500 group-hover:scale-150 ${service.color.split(' ')[0]}`} />
-
-              <div className={`relative w-16 h-16 rounded-2xl ${service.color} flex items-center justify-center mb-8 shadow-sm`}>
-                <service.icon className="w-8 h-8" />
+              <div className="icon-container mb-4">
+                <service.icon className="w-6 h-6" />
               </div>
-              <h3 className="text-2xl font-bold mb-4">{service.title}</h3>
-              <p className="text-muted-foreground leading-relaxed">{service.description}</p>
+              <h3 className="text-xl font-semibold mb-3">{service.title}</h3>
+              <p className="text-muted-foreground text-sm">{service.description}</p>
             </motion.div>
           ))}
         </div>
@@ -341,83 +300,64 @@ function BenefitsSection() {
   );
 }
 
-// Process Section - Redesigned as an organic timeline
+// Process Section
 function ProcessSection() {
   const { ref, isVisible } = useScrollAnimation<HTMLDivElement>();
 
   const steps = [
     {
       number: '01',
-      title: 'Auditoría & Diagnóstico',
-      description: 'Evaluamos nivel oral y escrito. Identificamos los objetivos corporativos.',
-      icon: Search,
+      title: 'Diagnóstico',
+      description: 'Evaluamos el nivel actual y las necesidades específicas de tu equipo.',
     },
     {
       number: '02',
-      title: 'Diseño a Medida',
-      description: 'Creamos un plan de estudio personalizado con KPIs claros.',
-      icon: PenTool,
+      title: 'Propuesta',
+      description: 'Diseñamos un programa personalizado con objetivos claros y medibles.',
     },
     {
       number: '03',
-      title: 'Lanzamiento',
-      description: 'Kick-off del programa con los equipos y asignación de profesores.',
-      icon: Rocket,
+      title: 'Implementación',
+      description: 'Iniciamos las clases con profesores especializados y material a medida.',
     },
     {
       number: '04',
-      title: 'Medición Continua',
-      description: 'Reportes trimestrales de asistencia, desempeño y ROI.',
-      icon: LineChart,
+      title: 'Seguimiento',
+      description: 'Evaluamos el progreso y ajustamos el programa según los resultados.',
     },
   ];
 
   return (
-    <section className="py-24 relative overflow-hidden">
-      <div className="absolute top-1/2 left-0 w-full h-[500px] bg-primary/5 -skew-y-3 transform -translate-y-1/2 z-0" />
-
-      <div className="container relative z-10">
+    <section className="py-20">
+      <div className="container">
         <div 
           ref={ref}
-          className={cn('text-center mb-20 fade-in-up', isVisible && 'visible')}
+          className={cn('text-center mb-12 fade-in-up', isVisible && 'visible')}
         >
-          <h2 className="text-4xl md:text-5xl font-extrabold mb-6">
-            Ruta hacia el <span className="text-primary italic">éxito</span>
+          <span className="badge-primary mb-4">Proceso</span>
+          <h2 className="text-3xl md:text-4xl font-bold mt-4 mb-4">
+            ¿Cómo trabajamos?
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Metodología ágil en 4 pasos para asegurar la correcta implementación.
+          <p className="text-muted-foreground max-w-2xl mx-auto">
+            Un proceso simple y efectivo para implementar la capacitación en tu empresa.
           </p>
         </div>
 
-        <div className="relative">
-          {/* Connecting Line */}
-          <div className="hidden lg:block absolute top-1/2 left-0 w-full h-1 bg-gradient-to-r from-primary/10 via-primary to-primary/10 transform -translate-y-1/2 z-0" />
-
-          <div className={cn('grid md:grid-cols-2 lg:grid-cols-4 gap-8', isVisible && 'visible')}>
-            {steps.map((step, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.2 }}
-                className="relative group"
-              >
-                {/* Number badge */}
-                <div className="absolute -top-6 -left-4 text-7xl font-black text-primary/10 z-0 select-none group-hover:text-primary/20 transition-colors">
-                  {step.number}
+        <div className={cn('grid md:grid-cols-2 lg:grid-cols-4 gap-6 stagger-children', isVisible && 'visible')}>
+          {steps.map((step, index) => (
+            <div key={index} className="relative">
+              <div className="bg-card rounded-2xl p-6 border shadow-sm h-full">
+                <span className="text-5xl font-bold text-primary/20">{step.number}</span>
+                <h3 className="text-xl font-semibold mt-2 mb-3">{step.title}</h3>
+                <p className="text-muted-foreground text-sm">{step.description}</p>
+              </div>
+              {index < steps.length - 1 && (
+                <div className="hidden lg:block absolute top-1/2 -right-3 transform -translate-y-1/2">
+                  <ArrowRight className="w-6 h-6 text-primary/30" />
                 </div>
-
-                <div className="bg-card rounded-3xl p-8 border shadow-lg h-full relative z-10 card-hover">
-                  <div className="w-14 h-14 bg-primary text-white rounded-full flex items-center justify-center mb-6 shadow-md transform -mt-12 mx-auto border-4 border-background">
-                    <CheckCircle className="w-6 h-6" />
-                  </div>
-                  <h3 className="text-2xl font-bold mt-2 mb-4 text-center">{step.title}</h3>
-                  <p className="text-muted-foreground text-center leading-relaxed">{step.description}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+              )}
+            </div>
+          ))}
         </div>
       </div>
     </section>

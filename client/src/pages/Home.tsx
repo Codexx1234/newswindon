@@ -46,112 +46,110 @@ import { motion } from 'framer-motion';
 function HeroSection() {
   const { ref, isVisible } = useScrollAnimation<HTMLDivElement>({ threshold: 0.1 });
   const { count: yearsCount, ref: yearsRef } = useCounterAnimation(35, 2000);
+  const { count: studentsCount, ref: studentsRef } = useCounterAnimation(1000, 2500);
+  const { count: companiesCount, ref: companiesRef } = useCounterAnimation(30, 2000);
 
   // Load dynamic content with backup system
   const heroTitle = useContent('hero_title', 'Aprendé inglés en NewSwindon');
-  const heroSubtitle = useContent('hero_subtitle', 'Instituto con más de tres décadas formando estudiantes de excelencia.');
+  const heroSubtitle = useContent('hero_subtitle', 'Instituto de inglés con más de tres décadas formando estudiantes de todas las edades. Grupos reducidos, profesores especializados y metodología efectiva.');
   const ctaPrimary = useContent('hero_cta_primary', 'Inscribite ahora');
   const ctaSecondary = useContent('hero_cta_secondary', 'Ver cursos');
 
   return (
-    <section id="inicio" className="relative min-h-[90vh] flex items-center overflow-hidden bg-background">
-      {/* Abstract Creative Background */}
-      <div className="absolute top-0 right-0 w-2/3 h-full bg-primary/5 [clip-path:polygon(20%_0%,100%_0,100%_100%,0%_100%)] z-0" />
-      <div className="absolute top-20 right-10 w-96 h-96 bg-accent/20 rounded-full blur-[100px] z-0" />
-      <div className="absolute bottom-10 left-10 w-72 h-72 bg-primary/20 rounded-full blur-[80px] z-0" />
+    <section id="inicio" className="relative min-h-[90vh] flex items-center overflow-hidden">
+      {/* Animated Background */}
+      <div className="absolute inset-0 animated-gradient" />
+      <div className="absolute inset-0 hero-pattern" />
 
-      <div className="container relative z-10 py-20">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            className="max-w-xl"
-          >
-            <div className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary font-semibold text-sm mb-6 border border-primary/20">
-              <Sparkles className="w-4 h-4 inline-block mr-2" />
-              Más de 35 años de experiencia
+      {/* Floating Elements */}
+      <motion.div
+        animate={{ y: [0, -20, 0], opacity: [0.1, 0.2, 0.1] }}
+        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-20 left-10 w-20 h-20 bg-white/10 rounded-full blur-xl"
+      />
+      <motion.div
+        animate={{ y: [0, 30, 0], opacity: [0.1, 0.3, 0.1] }}
+        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+        className="absolute bottom-20 right-20 w-32 h-32 bg-white/10 rounded-full blur-xl"
+      />
+      <motion.div
+        animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
+        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+        className="absolute top-1/2 right-1/4 w-16 h-16 bg-white/10 rounded-full blur-xl"
+      />
+
+      <div className="container relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="max-w-4xl mx-auto text-center text-white"
+        >
+          {/* Main Heading */}
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+            {heroTitle}
+          </h1>
+
+          <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-2xl mx-auto">
+            {heroSubtitle}
+          </p>
+
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+            <Button
+              asChild
+              size="lg"
+              className="bg-white text-primary hover:bg-white/90 btn-shine text-lg px-8"
+            >
+              <a href="#contacto">
+                {ctaPrimary}
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </a>
+            </Button>
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
+              className="border-white/30 text-white hover:bg-white/10 text-lg px-8"
+            >
+              <a href="#cursos">
+                {ctaSecondary}
+              </a>
+            </Button>
+          </div>
+
+          {/* Stats */}
+          <div className="grid grid-cols-3 gap-8 max-w-2xl mx-auto pb-16">
+            <div className="text-center">
+              <span ref={yearsRef} className="text-4xl md:text-5xl font-bold counter-animate">
+                {yearsCount}+
+              </span>
+              <p className="text-white text-sm mt-1 font-medium">Años de experiencia</p>
             </div>
-
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold mb-6 leading-tight text-foreground tracking-tight">
-              {heroTitle.split(' ').map((word, i) => (
-                word.toLowerCase() === 'inglés' || word.toLowerCase() === 'newswindon' ?
-                <span key={i} className="text-primary block"> {word}</span> :
-                <span key={i}> {word}</span>
-              ))}
-            </h1>
-
-            <p className="text-xl md:text-2xl text-muted-foreground mb-8">
-              {heroSubtitle}
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Button
-                asChild
-                size="lg"
-                className="bg-primary text-white hover:bg-primary/90 shadow-xl shadow-primary/25 rounded-2xl h-14 px-8 text-lg btn-enhanced"
-              >
-                <a href="#contacto">
-                  {ctaPrimary}
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </a>
-              </Button>
-              <Button
-                asChild
-                size="lg"
-                variant="outline"
-                className="border-2 border-primary/20 text-foreground hover:bg-primary/5 rounded-2xl h-14 px-8 text-lg"
-              >
-                <a href="#cursos">
-                  {ctaSecondary}
-                </a>
-              </Button>
+            <div className="text-center">
+              <span ref={studentsRef} className="text-4xl md:text-5xl font-bold counter-animate">
+                {studentsCount}+
+              </span>
+              <p className="text-white text-sm mt-1 font-medium">Alumnos formados</p>
             </div>
-
-            <div className="mt-12 flex items-center gap-8 text-sm font-medium text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-5 h-5 text-accent" />
-                Grupos reducidos
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-5 h-5 text-accent" />
-                Profesores nativos
-              </div>
+            <div className="text-center">
+              <span ref={companiesRef} className="text-4xl md:text-5xl font-bold counter-animate">
+                {companiesCount}+
+              </span>
+              <p className="text-white text-sm mt-1 font-medium">Años con empresas</p>
             </div>
-          </motion.div>
+          </div>
+        </motion.div>
+      </div>
 
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1, delay: 0.2 }}
-            className="relative hidden lg:block h-[600px]"
-          >
-            {/* Scrapbook Creative Layout */}
-            <div className="absolute top-10 right-0 w-72 h-80 z-20 polaroid polaroid-right">
-              <div className="w-full h-full bg-muted overflow-hidden img-zoom-container">
-                <img src="https://images.unsplash.com/photo-1577896851231-70ef18881754?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Students learning" className="w-full h-full object-cover" />
-              </div>
-              <p className="text-center mt-3 font-medium text-foreground text-sm">Clases Dinámicas</p>
-            </div>
-
-            <div className="absolute bottom-20 left-10 w-80 h-64 z-30 polaroid">
-              <div className="w-full h-full bg-muted overflow-hidden img-zoom-container">
-                <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Students together" className="w-full h-full object-cover" />
-              </div>
-              <p className="text-center mt-3 font-medium text-foreground text-sm">Comunidad NewSwindon</p>
-            </div>
-
-            {/* Stats Blob */}
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-primary text-white rounded-full flex flex-col items-center justify-center z-40 shadow-2xl border-4 border-background p-6">
-              <span ref={yearsRef} className="text-4xl font-black">{yearsCount}+</span>
-              <span className="text-sm font-medium text-center leading-tight">Años formando líderes</span>
-            </div>
-
-            {/* Decorative element */}
-            <div className="absolute -bottom-10 right-20 w-24 h-24 bg-accent/20 rounded-tl-full rounded-br-full z-10" />
-            <div className="absolute top-0 left-20 w-16 h-16 bg-primary/20 rounded-tr-full rounded-bl-full z-10" />
-          </motion.div>
-        </div>
+      {/* Wave Divider */}
+      <div className="absolute bottom-0 left-0 right-0">
+        <svg viewBox="0 0 1440 120" fill="none" className="w-full h-auto">
+          <path
+            d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 85C1200 90 1320 90 1380 90L1440 90V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z"
+            className="fill-background"
+          />
+        </svg>
       </div>
     </section>
   );
@@ -162,78 +160,82 @@ function AboutSection() {
   const { ref, isVisible } = useScrollAnimation<HTMLDivElement>({ threshold: 0.2 });
 
   return (
-    <section id="nosotros" className="py-24 bg-primary/5 relative overflow-hidden">
-      {/* Decorative Blob */}
-      <div className="absolute top-0 right-0 w-full h-full opacity-30 pointer-events-none">
-        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" className="absolute -right-20 -top-20 w-96 h-96 fill-primary">
-          <path d="M44.7,-76.4C58.9,-69.2,71.8,-59.1,81.3,-46.3C90.8,-33.5,96.9,-17.9,96.4,-2.5C95.9,12.9,88.7,28.2,78.2,40.7C67.7,53.2,53.9,62.9,39.1,69.5C24.3,76.1,8.5,79.5,-6.6,80.7C-21.7,81.9,-36.1,80.9,-49.6,74.5C-63.1,68.1,-75.7,56.3,-83.5,41.9C-91.3,27.5,-94.3,10.5,-91.3,-5.1C-88.3,-20.7,-79.3,-35,-68.2,-46C-57.1,-57,-43.9,-64.7,-30.5,-72.1C-17.1,-79.5,-3.5,-86.6,10.6,-88.3C24.7,-90,30.5,-83.6,44.7,-76.4Z" transform="translate(100 100)" />
-        </svg>
-      </div>
-
-      <div className="container relative z-10">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-
-          {/* Creative Image Composition */}
-          <div className={cn('slide-in-left relative', isVisible && 'visible')}>
-            <div className="relative aspect-square w-full max-w-md mx-auto">
-              <div className="absolute inset-0 bg-accent rounded-[30%_70%_70%_30%/30%_30%_70%_70%] shadow-lg transition-all duration-500 hover:rounded-[70%_30%_30%_70%/70%_70%_30%_30%]" />
-              <img
-                src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                alt="Teacher helping students"
-                className="absolute inset-2 w-[calc(100%-16px)] h-[calc(100%-16px)] object-cover rounded-[30%_70%_70%_30%/30%_30%_70%_70%] transition-all duration-500 hover:rounded-[70%_30%_30%_70%/70%_70%_30%_30%]"
-              />
-
-              {/* Glassmorphism Stats Card */}
-              <div className="absolute -bottom-8 -right-8 glass-effect p-6 rounded-2xl max-w-[200px] z-20">
-                <div className="flex items-center gap-4 mb-2">
-                  <div className="bg-primary/20 p-2 rounded-full">
-                    <Star className="w-6 h-6 text-primary fill-primary" />
-                  </div>
-                  <div>
-                    <h4 className="text-2xl font-bold text-foreground">4.9/5</h4>
-                  </div>
-                </div>
-                <p className="text-sm font-medium text-muted-foreground">Calificación promedio de nuestros alumnos</p>
-              </div>
-            </div>
-          </div>
-
+    <section id="nosotros" className="py-20">
+      <div className="container">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Content */}
           <div 
             ref={ref}
-            className={cn('slide-in-right flex flex-col', isVisible && 'visible')}
+            className={cn('slide-in-left flex flex-col items-center text-center lg:items-start lg:text-left', isVisible && 'visible')}
           >
-            <div className="inline-flex items-center w-max px-4 py-2 rounded-full bg-background border border-border shadow-sm mb-6">
-              <span className="w-2 h-2 rounded-full bg-accent mr-2 animate-pulse"></span>
-              <span className="text-sm font-semibold tracking-wide">SOBRE NOSOTROS</span>
-            </div>
-
-            <h2 className="text-4xl md:text-5xl font-extrabold mb-6 leading-tight">
-              Enseñanza que <span className="text-primary relative inline-block">transforma<svg className="absolute w-full h-3 -bottom-1 left-0 text-accent/50" viewBox="0 0 100 20" preserveAspectRatio="none"><path d="M0 10 Q 50 20 100 10" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round"/></svg></span> tu futuro
+            <span className="badge-primary mb-4">Sobre Nosotros</span>
+            <h2 className="text-3xl md:text-4xl font-bold mt-4 mb-6">
+              Más de 35 años formando estudiantes de excelencia
             </h2>
-            <p className="text-xl text-muted-foreground mb-10 leading-relaxed font-light">
-              Desde hace más de <strong className="font-semibold text-foreground">35 años</strong> formamos estudiantes en Carapachay.
-              Nuestra metodología combina la calidez humana con recursos innovadores para un aprendizaje efectivo.
+            <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
+              Más de <strong className="text-foreground">35 años</strong> formando estudiantes en Carapachay, Buenos Aires.
+              Grupos reducidos, profesores certificados y metodología moderna para un aprendizaje efectivo y personalizado.
             </p>
 
-            {/* Features List with Custom Design */}
-            <div className="grid sm:grid-cols-2 gap-6">
+            {/* Features List */}
+            <div className="grid sm:grid-cols-2 gap-4 w-full">
               {[
-                { title: 'Profesores Especializados', icon: GraduationCap, desc: 'Equipo docente en constante formación.' },
-                { title: 'Grupos Reducidos', icon: Users, desc: 'Atención 100% personalizada por alumno.' },
-                { title: 'Inglés Corporativo', icon: Building2, desc: 'Más de 30 años con empresas líderes.' },
-                { title: 'Exámenes Internacionales', icon: Award, desc: 'Preparación para Cambridge FCE/CPE.' },
-              ].map((feature, idx) => (
-                <div key={idx} className="flex gap-4 group">
-                  <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-background border shadow-sm flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors duration-300">
-                    <feature.icon className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-foreground mb-1">{feature.title}</h4>
-                    <p className="text-sm text-muted-foreground leading-snug">{feature.desc}</p>
-                  </div>
+                'Profesores especializados',
+                'Grupos reducidos',
+                'Metodología comunicativa',
+                'Recursos multimedios',
+                'Seguimiento personalizado',
+                'Ambiente cálido y profesional',
+              ].map((feature) => (
+                <div key={feature} className="flex items-center justify-center lg:justify-start gap-2">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
+                  <span className="text-sm font-medium">{feature}</span>
                 </div>
               ))}
+            </div>
+          </div>
+
+          {/* Image/Stats Card */}
+          <div className={cn('slide-in-right', isVisible && 'visible')}>
+            <div className="relative">
+              {/* Main Card */}
+              <div className="bg-gradient-to-br from-primary to-primary/80 rounded-3xl p-8 text-white">
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="text-center p-4 bg-white/10 rounded-2xl">
+                    <GraduationCap className="w-10 h-10 mx-auto mb-2" />
+                    <p className="text-3xl font-bold">35+</p>
+                    <p className="text-sm text-white/80">Años de experiencia</p>
+                  </div>
+                  <div className="text-center p-4 bg-white/10 rounded-2xl">
+                    <Users className="w-10 h-10 mx-auto mb-2" />
+                    <p className="text-3xl font-bold">1000+</p>
+                    <p className="text-sm text-white/80">Alumnos formados</p>
+                  </div>
+                  <div className="text-center p-4 bg-white/10 rounded-2xl">
+                    <Building2 className="w-10 h-10 mx-auto mb-2" />
+                    <p className="text-3xl font-bold">30+</p>
+                    <p className="text-sm text-white/80">Años con empresas</p>
+                  </div>
+                  <div className="text-center p-4 bg-white/10 rounded-2xl">
+                    <Award className="w-10 h-10 mx-auto mb-2" />
+                    <p className="text-3xl font-bold">100%</p>
+                    <p className="text-sm text-white/80">Compromiso</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Floating Badge */}
+              <div className="absolute -bottom-24 -right-16 bg-card rounded-2xl shadow-xl p-6 border hidden md:block">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 bg-yellow-100 rounded-full flex items-center justify-center">
+                    <Star className="w-8 h-8 text-yellow-500 fill-yellow-500" />
+                  </div>
+                  <div>
+                    <p className="text-xl font-bold">4.9/5</p>
+                    <p className="text-sm text-muted-foreground">Calificación promedio</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -248,99 +250,82 @@ function CoursesSection() {
 
   const courses = [
     {
+      icon: Users,
       title: 'Inglés para Niños',
-      description: 'Desde los 3 años, metodología lúdica y grupos reducidos para un aprendizaje natural.',
-      image: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
-      tag: 'Kids',
-      color: 'bg-blue-100 text-blue-700',
+      description: 'Desde los 3 años, con metodología lúdica y grupos reducidos para un aprendizaje natural y divertido.',
+      features: ['Desde 3 años', 'Metodología lúdica', 'Grupos reducidos'],
     },
     {
+      icon: BookOpen,
       title: 'Inglés General',
-      description: 'Cursos para jóvenes y adultos de todos los niveles, enfoque comunicativo y práctico.',
-      image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
-      tag: 'Adultos',
-      color: 'bg-green-100 text-green-700',
+      description: 'Cursos para jóvenes y adultos de todos los niveles, con enfoque comunicativo y práctico.',
+      features: ['Todos los niveles', 'Enfoque comunicativo', 'Horarios flexibles'],
     },
     {
+      icon: Award,
       title: 'Exámenes Cambridge',
-      description: 'Preparación intensiva para First Certificate (FCE) y Proficiency (CPE) con alto éxito.',
-      image: 'https://images.unsplash.com/photo-1546410531-bea5acadb6a0?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
-      tag: 'Internacional',
-      color: 'bg-purple-100 text-purple-700',
+      description: 'Preparación intensiva para First Certificate (FCE) y Proficiency (CPE) con alto índice de aprobación.',
+      features: ['First Certificate', 'Proficiency', 'Alto índice de aprobación'],
     },
     {
+      icon: MessageSquare,
       title: 'Taller de Conversación',
-      description: 'Práctica intensiva para ganar fluidez y confianza al hablar en situaciones reales.',
-      image: 'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
-      tag: 'Práctico',
-      color: 'bg-orange-100 text-orange-700',
+      description: 'Práctica intensiva de conversación para ganar fluidez y confianza al hablar inglés.',
+      features: ['Práctica intensiva', 'Grupos pequeños', 'Temas actuales'],
     },
     {
+      icon: GraduationCap,
       title: 'Ingreso a Profesorado',
-      description: 'Preparación completa para el ingreso a carreras de profesorado y traductorado.',
-      image: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
-      tag: 'Académico',
-      color: 'bg-rose-100 text-rose-700',
+      description: 'Preparación completa para el ingreso a carreras de profesorado y traductorado de inglés.',
+      features: ['Profesorado', 'Traductorado', 'Preparación integral'],
     },
     {
+      icon: Building2,
       title: 'Inglés Corporativo',
-      description: 'Programas in-company personalizados según las necesidades de cada organización.',
-      image: 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
-      tag: 'Empresas',
-      color: 'bg-slate-100 text-slate-700',
+      description: 'Más de 30 años de relación con una empresa líder. Programas personalizados según las necesidades de cada organización.',
+      features: ['In-company', 'Programas a medida', '30+ años con 1 empresa'],
     },
   ];
 
   return (
-    <section id="cursos" className="py-24">
+    <section id="cursos" className="py-20 bg-muted/30">
       <div className="container">
         <div 
           ref={ref}
-          className={cn('text-center mb-16 fade-in-up max-w-3xl mx-auto', isVisible && 'visible')}
+          className={cn('text-center mb-12 fade-in-up', isVisible && 'visible')}
         >
-          <h2 className="text-4xl md:text-5xl font-extrabold mb-6">
-            Programas diseñados para <span className="text-primary">vos</span>
+          <span className="badge-primary mb-4">Nuestros Cursos</span>
+          <h2 className="text-3xl md:text-4xl font-bold mt-4 mb-4">
+            Programas para todas las edades y necesidades
           </h2>
-          <p className="text-xl text-muted-foreground">
-            No importa tu edad ni tu nivel actual. Tenemos el curso perfecto para que alcances tus metas con el inglés.
+          <p className="text-muted-foreground max-w-2xl mx-auto">
+            Ofrecemos una amplia variedad de cursos diseñados para adaptarse a tus objetivos,
+            desde el aprendizaje inicial hasta la preparación para exámenes internacionales.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {courses.map((course, index) => (
             <motion.div
               key={course.title}
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: index * 0.1, duration: 0.5 }}
-              className="group cursor-pointer bg-card rounded-[2rem] overflow-hidden border shadow-sm card-hover flex flex-col h-full"
+              transition={{ delay: index * 0.1 }}
+              whileHover={{ y: -10, transition: { duration: 0.2 } }}
+              className="bg-card rounded-2xl p-8 border shadow-sm hover:shadow-xl transition-shadow flex flex-col items-center text-center"
             >
-              <div className="relative h-56 overflow-hidden">
-                <img
-                  src={course.image}
-                  alt={course.title}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60" />
-                <span className={cn("absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-bold shadow-sm", course.color)}>
-                  {course.tag}
-                </span>
+              <div className="icon-container mb-6">
+                <course.icon className="w-8 h-8" />
               </div>
-
-              <div className="p-8 flex-1 flex flex-col relative bg-card">
-                {/* Floating Button that appears on hover */}
-                <div className="absolute -top-6 right-6 w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center shadow-lg transform scale-0 group-hover:scale-100 transition-transform duration-300">
-                  <ArrowRight className="w-6 h-6" />
-                </div>
-
-                <h3 className="text-2xl font-bold mb-3 text-foreground group-hover:text-primary transition-colors">{course.title}</h3>
-                <p className="text-muted-foreground leading-relaxed flex-1">{course.description}</p>
-
-                <div className="mt-6 pt-6 border-t flex items-center justify-between text-sm font-semibold text-primary">
-                  <span>Saber más</span>
-                  <ChevronRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
-                </div>
+              <h3 className="text-xl font-bold mb-3">{course.title}</h3>
+              <p className="text-muted-foreground text-sm mb-6 leading-relaxed">{course.description}</p>
+              <div className="flex flex-wrap gap-2 justify-center">
+                {course.features.map((feature) => (
+                  <span key={feature} className="text-xs px-3 py-1 bg-primary/5 text-primary rounded-full font-medium">
+                    {feature}
+                  </span>
+                ))}
               </div>
             </motion.div>
           ))}
@@ -359,70 +344,69 @@ function BenefitsSection() {
       icon: CheckCircle,
       title: 'Sin matrícula',
       description: 'No cobramos matrícula de inscripción. Solo abonás las clases.',
-      bg: 'bg-green-100', text: 'text-green-600'
     },
     {
       icon: Award,
       title: 'Sin derecho de examen',
       description: 'Los exámenes internos no tienen costo adicional.',
-      bg: 'bg-blue-100', text: 'text-blue-600'
     },
     {
       icon: Users,
       title: 'Grupos reducidos',
-      description: 'Máximo 8 alumnos por grupo para una atención super personalizada.',
-      bg: 'bg-purple-100', text: 'text-purple-600'
+      description: 'Máximo 8 alumnos por grupo para una atención personalizada.',
     },
     {
       icon: Globe,
       title: 'Recursos multimedios',
-      description: 'Material digital, videos y recursos interactivos para un aprendizaje moderno.',
-      bg: 'bg-orange-100', text: 'text-orange-600'
+      description: 'Revistas, DVDs, videos y CDs para un aprendizaje dinámico.',
+    },
+    {
+      icon: Clock,
+      title: 'Horarios flexibles',
+      description: 'Múltiples opciones de horarios para adaptarnos a tu rutina.',
+    },
+    {
+      icon: GraduationCap,
+      title: 'Profesores certificados',
+      description: 'Docentes especializados con formación continua.',
     },
   ];
 
   return (
-    <section id="beneficios" className="py-24 bg-muted/50">
+    <section id="beneficios" className="py-20">
       <div className="container">
-        <div className="grid lg:grid-cols-12 gap-12 items-center">
+        <div
+          ref={ref}
+          className={cn('text-center mb-12 fade-in-up', isVisible && 'visible')}
+        >
+          <span className="badge-accent mb-4">Beneficios</span>
+          <h2 className="text-3xl md:text-4xl font-bold mt-4 mb-4">
+            ¿Por qué elegir NewSwindon?
+          </h2>
+          <p className="text-muted-foreground max-w-2xl mx-auto">
+            Nos diferenciamos por nuestra calidad educativa, compromiso con el alumno
+            y beneficios exclusivos que hacen más accesible el aprendizaje del inglés.
+          </p>
+        </div>
 
-          <div className="lg:col-span-5" ref={ref}>
-            <div className={cn('fade-in-up', isVisible && 'visible')}>
-              <h2 className="text-4xl font-extrabold mb-6">
-                Razones para elegirnos
-              </h2>
-              <p className="text-lg text-muted-foreground mb-8">
-                Nos enfocamos en eliminar barreras para que tu única preocupación sea aprender. Por eso te ofrecemos beneficios exclusivos únicos en el rubro.
-              </p>
-
-              <Button size="lg" className="rounded-xl btn-enhanced shadow-lg">
-                Agendar Entrevista <ChevronRight className="w-5 h-5 ml-2" />
-              </Button>
-            </div>
-          </div>
-
-          <div className="lg:col-span-7 grid sm:grid-cols-2 gap-6">
-            {benefits.map((benefit, index) => (
-              <motion.div
-                key={benefit.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="bg-card p-8 rounded-3xl border shadow-sm card-hover hover:border-primary/50 relative overflow-hidden"
-              >
-                {/* Decorative background shape */}
-                <div className={`absolute -right-6 -top-6 w-24 h-24 rounded-full opacity-50 ${benefit.bg}`} />
-
-                <div className={`relative w-14 h-14 rounded-2xl ${benefit.bg} ${benefit.text} flex items-center justify-center mb-6`}>
-                  <benefit.icon className="w-7 h-7" />
-                </div>
-                <h3 className="text-xl font-bold mb-3">{benefit.title}</h3>
-                <p className="text-muted-foreground">{benefit.description}</p>
-              </motion.div>
-            ))}
-          </div>
-
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {benefits.map((benefit, index) => (
+            <motion.div
+              key={benefit.title}
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1 }}
+              whileHover={{ scale: 1.05 }}
+              className="flex flex-col items-center text-center p-8 rounded-2xl bg-card border shadow-sm hover:shadow-lg transition-all"
+            >
+              <div className="icon-container mb-6">
+                <benefit.icon className="w-8 h-8" />
+              </div>
+              <h3 className="text-xl font-bold mb-3">{benefit.title}</h3>
+              <p className="text-muted-foreground leading-relaxed">{benefit.description}</p>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>

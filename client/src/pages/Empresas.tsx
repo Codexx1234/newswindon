@@ -47,7 +47,7 @@ function EmpresasHero() {
       <div className="absolute inset-0 hero-pattern opacity-20" />
 
       <div className="container relative z-10">
-        <div 
+        <div
           ref={ref}
           className={cn(
             'max-w-3xl fade-in-up text-foreground',
@@ -64,15 +64,15 @@ function EmpresasHero() {
           </h1>
 
           <p className="text-xl text-foreground/80 mb-8 max-w-2xl font-medium">
-            Más de 30 años de experiencia brindando servicios de capacitación en inglés 
-            a empresas. Programas personalizados que se adaptan a las necesidades 
+            Más de 30 años de experiencia brindando servicios de capacitación en inglés
+            a empresas. Programas personalizados que se adaptan a las necesidades
             específicas de tu organización.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4">
-            <Button 
-              asChild 
-              size="lg" 
+            <Button
+              asChild
+              size="lg"
               className="bg-primary text-primary-foreground hover:bg-primary/90 btn-shine text-base"
             >
               <a href="#contacto-empresas">
@@ -80,10 +80,10 @@ function EmpresasHero() {
                 <ArrowRight className="w-4 h-4 ml-2" />
               </a>
             </Button>
-            <Button 
-              asChild 
-              size="lg" 
-              variant="outline" 
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
               className="border-primary/30 text-primary hover:bg-primary/5 text-base bg-transparent"
             >
               <a href="tel:+5491130707350">
@@ -98,8 +98,8 @@ function EmpresasHero() {
       {/* Wave Divider */}
       <div className="absolute bottom-0 left-0 right-0">
         <svg viewBox="0 0 1440 120" fill="none" className="w-full h-auto">
-          <path 
-            d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 85C1200 90 1320 90 1380 90L1440 90V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" 
+          <path
+            d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 85C1200 90 1320 90 1380 90L1440 90V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z"
             className="fill-background"
           />
         </svg>
@@ -191,7 +191,7 @@ function ServicesSection() {
             Soluciones a medida para tu empresa
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Diseñamos programas de capacitación adaptados a los objetivos y necesidades 
+            Diseñamos programas de capacitación adaptados a los objetivos y necesidades
             específicas de cada organización.
           </p>
         </div>

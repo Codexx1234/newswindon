@@ -60,26 +60,26 @@ function HeroSection() {
       {/* Animated Background */}
       <div className="absolute inset-0 animated-gradient" />
       <div className="absolute inset-0 hero-pattern" />
-      
+
       {/* Floating Elements */}
-      <motion.div 
+      <motion.div
         animate={{ y: [0, -20, 0], opacity: [0.1, 0.2, 0.1] }}
         transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-20 left-10 w-20 h-20 bg-white/10 rounded-full blur-xl" 
+        className="absolute top-20 left-10 w-20 h-20 bg-white/10 rounded-full blur-xl"
       />
-      <motion.div 
+      <motion.div
         animate={{ y: [0, 30, 0], opacity: [0.1, 0.3, 0.1] }}
         transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-        className="absolute bottom-20 right-20 w-32 h-32 bg-white/10 rounded-full blur-xl" 
+        className="absolute bottom-20 right-20 w-32 h-32 bg-white/10 rounded-full blur-xl"
       />
-      <motion.div 
+      <motion.div
         animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
         transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-        className="absolute top-1/2 right-1/4 w-16 h-16 bg-white/10 rounded-full blur-xl" 
+        className="absolute top-1/2 right-1/4 w-16 h-16 bg-white/10 rounded-full blur-xl"
       />
 
       <div className="container relative z-10">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
@@ -96,9 +96,9 @@ function HeroSection() {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-            <Button 
-              asChild 
-              size="lg" 
+            <Button
+              asChild
+              size="lg"
               className="bg-white text-primary hover:bg-white/90 btn-shine text-lg px-8"
             >
               <a href="#contacto">
@@ -106,10 +106,10 @@ function HeroSection() {
                 <ArrowRight className="w-5 h-5 ml-2" />
               </a>
             </Button>
-            <Button 
-              asChild 
-              size="lg" 
-              variant="outline" 
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
               className="border-white/30 text-white hover:bg-white/10 text-lg px-8"
             >
               <a href="#cursos">
@@ -145,8 +145,8 @@ function HeroSection() {
       {/* Wave Divider */}
       <div className="absolute bottom-0 left-0 right-0">
         <svg viewBox="0 0 1440 120" fill="none" className="w-full h-auto">
-          <path 
-            d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 85C1200 90 1320 90 1380 90L1440 90V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" 
+          <path
+            d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 85C1200 90 1320 90 1380 90L1440 90V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z"
             className="fill-background"
           />
         </svg>
@@ -173,7 +173,7 @@ function AboutSection() {
               Más de 35 años formando estudiantes de excelencia
             </h2>
             <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
-              Más de <strong className="text-foreground">35 años</strong> formando estudiantes en Carapachay, Buenos Aires. 
+              Más de <strong className="text-foreground">35 años</strong> formando estudiantes en Carapachay, Buenos Aires.
               Grupos reducidos, profesores certificados y metodología moderna para un aprendizaje efectivo y personalizado.
             </p>
 
@@ -299,7 +299,7 @@ function CoursesSection() {
             Programas para todas las edades y necesidades
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Ofrecemos una amplia variedad de cursos diseñados para adaptarse a tus objetivos, 
+            Ofrecemos una amplia variedad de cursos diseñados para adaptarse a tus objetivos,
             desde el aprendizaje inicial hasta la preparación para exámenes internacionales.
           </p>
         </div>
@@ -375,7 +375,7 @@ function BenefitsSection() {
   return (
     <section id="beneficios" className="py-20">
       <div className="container">
-        <div 
+        <div
           ref={ref}
           className={cn('text-center mb-12 fade-in-up', isVisible && 'visible')}
         >
@@ -384,7 +384,7 @@ function BenefitsSection() {
             ¿Por qué elegir NewSwindon?
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Nos diferenciamos por nuestra calidad educativa, compromiso con el alumno 
+            Nos diferenciamos por nuestra calidad educativa, compromiso con el alumno
             y beneficios exclusivos que hacen más accesible el aprendizaje del inglés.
           </p>
         </div>
